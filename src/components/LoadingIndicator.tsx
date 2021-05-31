@@ -4,7 +4,7 @@ import { ActivityIndicator } from 'react-native-paper';
 import { useTheme } from 'styled-components/native';
 import tailwind from 'tailwind-rn';
 
-export const LoadingIndicator = () => {
+const LoadingIndicator = () => {
   const theme = useTheme();
   return (
     <View
@@ -12,7 +12,9 @@ export const LoadingIndicator = () => {
         'flex flex-col overflow-hidden text-center justify-center items-center'
       )}
     >
-      <ActivityIndicator animating={true} color={theme.colors.primary} />
+      <ActivityIndicator animating color={theme.colors.primary} />
     </View>
   );
 };
+
+export default LoadingIndicator;

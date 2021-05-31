@@ -35,7 +35,7 @@ const ThemeProvider: React.FC<Props> = ({
         changeDisplay(colorScheme === 'dark' ? 'dark' : 'light');
     });
     return () => subscription.remove();
-  }, []);
+  }, [changeDisplay, themeKey]);
 
   return (
     <PaperProvider theme={theme}>

@@ -22,20 +22,16 @@ import {
 declare global {
   interface Window {
     __REDUX_DEVTOOLS_EXTENSION_COMPOSE__: (
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       obj: Record<string, any>
     ) => Function;
-    __SAGA_MONITOR_EXTENSION__: (
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      obj: Record<string, any>
-    ) => Function;
+    __SAGA_MONITOR_EXTENSION__: (obj: Record<string, any>) => Function;
   }
 }
 
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  // whitelist: ['theme', 'auth'],
+  whitelist: ['theme'],
   version: 1,
 };
 

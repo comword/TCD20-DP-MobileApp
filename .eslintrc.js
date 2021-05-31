@@ -6,10 +6,15 @@ const prettierOptions = JSON.parse(
 );
 
 module.exports = {
+  parser: `@typescript-eslint/parser`,
+  parserOptions: {
+    project: `./tsconfig.json`
+  },
   extends: ['@react-native-community', 'prettier'],
   plugins: ['prettier'],
   rules: {
     'prettier/prettier': 0,
+    "no-shadow": "off",
   },
   overrides: [
     {

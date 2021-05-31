@@ -14,7 +14,7 @@ import {
 } from '@react-navigation/native';
 import AppNavigator from './AppNavigator';
 import { ThemeContext } from 'styled-components/native';
-import { LoadingIndicator } from 'components/LoadingIndicator';
+import LoadingIndicator from 'components/LoadingIndicator';
 import { compose, bindActionCreators, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 
