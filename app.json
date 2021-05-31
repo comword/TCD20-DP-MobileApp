@@ -1,0 +1,18 @@
+{
+  "name": "VerumInvigilatus",
+  "displayName": "Invigilator",
+  "expo": {
+    "name": "Invigilator",
+    "slug": "Invigilator",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "android": {
+      "package": "ie.tcd.cs7cs5.invigilatus"
+    },
+    "ios": {
+      "bundleIdentifier": "ie.tcd.cs7cs5.invigilatus"
+    }
+  }
+}
