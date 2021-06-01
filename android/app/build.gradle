@@ -144,7 +144,21 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0.0"
+        externalNativeBuild {
+            cmake {
+                cppFlags "-frtti -fexceptions"
+                abiFilters 'arm64-v8a', "x86_64"
+            }
+        }
     }
+
+    externalNativeBuild {
+        cmake {
+            path "src/main/cpp/CMakeLists.txt"
+            version "3.10.2"
+        }
+    }
+
     splits {
         abi {
             reset()
@@ -207,9 +221,9 @@ dependencies {
     implementation "androidx.appcompat:appcompat:${appcompat_version}"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1'
 
-    implementation 'org.tensorflow:tensorflow-lite:2.5.0'
-    implementation 'org.tensorflow:tensorflow-lite-gpu:2.5.0'
-    implementation 'org.tensorflow:tensorflow-lite-support:0.2.0'
+//    implementation 'org.tensorflow:tensorflow-lite:2.5.0'
+//    implementation 'org.tensorflow:tensorflow-lite-gpu:2.5.0'
+//    implementation 'org.tensorflow:tensorflow-lite-support:0.2.0'
     
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
       exclude group:'com.facebook.fbjni'
