@@ -1,9 +1,0 @@
-#include <jni.h>
-#include <string>
-#include <android/asset_manager.h>
-#include <android/asset_manager_jni.h>
-#include <cstdio>
-#include "tensorflow/lite/interpreter.h"
-#include "tensorflow/lite/kernels/register.h"
-#include "tensorflow/lite/model.h"
-#include "tensorflow/lite/optional_debug_tools.h"

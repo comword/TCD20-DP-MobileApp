@@ -130,6 +130,15 @@ def jscFlavor = 'org.webkit:android-jsc:+'
  */
 def enableHermes = project.ext.react.get("enableHermes", false);
 
+task fetchTFLiteLibs() {
+    copy {
+        from zipTree("${project.rootDir}/app/src/main/cpp/tf-lite/tensorflow-lite.aar")
+        into 'libs'
+        include "classes.jar"
+        rename ('classes.jar','tensorflow-lite.jar')
+    }
+}
+
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
@@ -208,6 +217,22 @@ android {
     buildFeatures {
         viewBinding true
         dataBinding true
+    }
+
+    packagingOptions {
+        if (enableHermes) {
+            def taskName = getGradle().getStartParameter().getTaskRequests().toString()
+
+            exclude "**/libjsc*.so"
+            if (taskName.toLowerCase().contains("release")) {
+                exclude '**/libhermes-inspector.so'
+                exclude '**/libhermes-executor-debug.so'
+            } else {
+                exclude '**/libhermes-executor-release.so'
+            }
+        } else {
+            exclude "**/libhermes*.so"
+        }
     }
 }
 

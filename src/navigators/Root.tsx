@@ -4,7 +4,7 @@
  *
  * You can add other navigation functions that you need and export them
  */
-import React, { Suspense, useContext } from 'react';
+import React, { Suspense, useContext, useEffect } from 'react';
 import {
   CommonActions,
   NavigationContainer,
@@ -16,7 +16,9 @@ import AppNavigator from './AppNavigator';
 import { ThemeContext } from 'styled-components/native';
 import LoadingIndicator from 'components/LoadingIndicator';
 import { compose, bindActionCreators, Dispatch } from 'redux';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
+import { Platform } from 'react-native';
+import { initPCService } from 'services/ml/slice';
 
 export const navigatorRef = React.createRef<NavigationContainerRef>();
 let stack: Array<object> = [];
@@ -69,7 +71,13 @@ type Props = ReturnType<typeof mapDispatchToProps>;
 
 const RootNavigator: React.FC<Props> = ({}) => {
   const themeContext = useContext(ThemeContext);
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (Platform.OS === 'android') {
+      initPCService(dispatch);
+    }
+  }, [dispatch]);
 
   return (
     <Suspense fallback={<LoadingIndicator />}>
