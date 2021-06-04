@@ -1,4 +1,3 @@
-#include <android/log.h>
 #include <jni.h>
 
 #include <cinttypes>
@@ -9,3 +8,4 @@
 #include <android/asset_manager_jni.h>
 
 #include "PostureClassify.h"
+#include "dlog.h"

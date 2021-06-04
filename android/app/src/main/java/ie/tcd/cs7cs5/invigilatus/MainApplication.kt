@@ -18,7 +18,7 @@ import java.lang.reflect.InvocationTargetException
 
 class MainApplication : Application(), ReactApplication {
     private val mModuleRegistryProvider = ReactModuleRegistryProvider(
-        BasePackageList().packageList
+        BasePackageList().packageList + ExpoPackage()
     )
     private val mReactNativeHost: ReactNativeHost = object : ReactNativeHost(this) {
         override fun getUseDeveloperSupport(): Boolean {
@@ -28,7 +28,7 @@ class MainApplication : Application(), ReactApplication {
         override fun getPackages(): List<ReactPackage> {
             val packages: MutableList<ReactPackage> = PackageList(this).packages
             packages.add(ModuleRegistryAdapter(mModuleRegistryProvider))
-            packages.add(NativePackage())
+//            packages.add(NativePackage())
             return packages
         }
 

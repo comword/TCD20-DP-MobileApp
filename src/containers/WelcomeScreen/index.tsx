@@ -3,7 +3,7 @@ import { compose, bindActionCreators, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AppScreens } from 'navigators/ScreenDefs';
-import { View, Text as RNText } from 'react-native';
+import { View } from 'react-native';
 import tailwind from 'tailwind-rn';
 
 import { useTheme } from 'styled-components/native';
@@ -13,6 +13,7 @@ import { StatusBar } from 'expo-status-bar';
 import { selectDisplay, themeSliceKey, reducer } from 'theme/slice';
 import { RootState } from 'store/types';
 import { injectReducer } from 'redux-injectors';
+import CameraGLView from 'services/video/CameraGLView';
 
 type ComponentProps = {
   navigation: StackNavigationProp<any, AppScreens.Welcome>;
@@ -55,6 +56,7 @@ const WelcomeScreen: React.FC<Props> = ({ navigation, themeDisplay }) => {
           <Text style={tailwind('text-lg')}>Log in</Text>
         </Button>
       </View>
+      <CameraGLView style={tailwind('flex h-1/2')}/>
     </View>
   );
 };

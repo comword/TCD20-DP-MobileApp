@@ -5,14 +5,14 @@ import {
   PayloadAction,
 } from '@reduxjs/toolkit';
 import {
-  EmitterSubscription,
-  NativeEventEmitter,
-  NativeModule,
+  NativeModulesProxy,
+  EventEmitter,
   Platform,
-} from 'react-native';
+  Subscription,
+} from '@unimodules/core';
+const { PostureClassify } = NativeModulesProxy;
 import { ErrorMsg } from 'services/types';
 import { RootState } from 'store/types';
-import PCService from './wrapper';
 
 export interface PCState {
   lastError?: ErrorMsg;
@@ -41,27 +41,25 @@ export const selectPCSrv = createSelector(
   PCSrv => PCSrv
 );
 
-let eventListeners: EmitterSubscription[] = [];
+let eventListeners: Subscription[] = [];
 
-export const initPCService = (dispatch: Dispatch) => {
-  if (Platform.OS === 'android') {
-    const eventEmitter = new NativeEventEmitter(
-      PCService as unknown as NativeModule
-    );
-    eventListeners.push(
-      eventEmitter.addListener('OnServiceMsg', event =>
-        dispatch(
-          PCSlice.actions.setError({
-            code: event.code,
-            msg: event.msg,
-            show: event.code < 0,
-          })
+export const initPCService = async (dispatch: Dispatch) => {
+  if (!(await PostureClassify.getTFLiteInitialised()))
+    if (Platform.OS === 'android') {
+      const eventEmitter = new EventEmitter(PostureClassify);
+      eventListeners.push(
+        eventEmitter.addListener(
+          'OnPostureClassifyMsg',
+          (event: { code: number; msg: string }) =>
+            dispatch(
+              PCSlice.actions.setError({
+                code: event.code,
+                msg: event.msg,
+                show: event.code < 0,
+              })
+            )
         )
-      )
-    );
-    PCService.initTFLite(result => {
-      console.log(`Service start: ${result}`);
-      PCSlice.actions.setStatus('RUN');
-    });
-  }
+      );
+      await PostureClassify.initTFLite('');
+    }
 };
