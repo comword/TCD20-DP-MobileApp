@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useLayoutEffect } from 'react';
 import { compose, bindActionCreators, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -13,7 +13,10 @@ import { StatusBar } from 'expo-status-bar';
 import { selectDisplay, themeSliceKey, reducer } from 'theme/slice';
 import { RootState } from 'store/types';
 import { injectReducer } from 'redux-injectors';
-import CameraGLView from 'services/video/CameraGLView';
+import CameraGLView from 'services/camera/CameraGLView';
+
+import { NativeModulesProxy } from '@unimodules/core';
+const { CameraGLModule } = NativeModulesProxy;
 
 type ComponentProps = {
   navigation: StackNavigationProp<any, AppScreens.Welcome>;
@@ -25,6 +28,22 @@ type Props = ComponentProps &
 
 const WelcomeScreen: React.FC<Props> = ({ navigation, themeDisplay }) => {
   const theme = useTheme();
+
+  useLayoutEffect(() => {
+    const setupCamera = async () => {
+      await CameraGLModule.requestCameraPermissionsAsync();
+      await CameraGLModule.requestMicrophonePermissionsAsync();
+    };
+    setupCamera();
+  });
+
+  useEffect(() => {
+    const setupCamera = async () => {
+      await CameraGLModule.startCamera();
+    };
+    setupCamera();
+  });
+
   return (
     <View style={tailwind('flex h-full w-full')}>
       <StatusBar
@@ -56,7 +75,7 @@ const WelcomeScreen: React.FC<Props> = ({ navigation, themeDisplay }) => {
           <Text style={tailwind('text-lg')}>Log in</Text>
         </Button>
       </View>
-      <CameraGLView style={tailwind('flex h-1/2')}/>
+      <CameraGLView style={tailwind('flex h-1/2')} />
     </View>
   );
 };

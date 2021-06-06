@@ -2,20 +2,23 @@ package ie.tcd.cs7cs5.invigilatus.video
 
 import android.content.Context
 import android.opengl.GLSurfaceView
-import android.util.AttributeSet
 import android.util.Log
+import org.unimodules.core.ModuleRegistry
+import org.unimodules.core.interfaces.LifecycleEventListener
+import org.unimodules.core.interfaces.services.UIManager
 import javax.microedition.khronos.egl.EGL10
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.egl.EGLContext
 import javax.microedition.khronos.egl.EGLDisplay
 
-class GLView : GLSurfaceView {
+class CamGLView : GLSurfaceView, LifecycleEventListener {
 
-    var camRenderer: CamRenderer
+    private var camRenderer: CamRenderer
+    private var mModuleRegistry: ModuleRegistry
 
-    constructor(context: Context): this(context, null)
-
-    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+    constructor(context: Context, moduleRegistry: ModuleRegistry) : super(context) {
+        mModuleRegistry = moduleRegistry
+        mModuleRegistry.getModule(UIManager::class.java).registerLifecycleEventListener(this)
         setEGLContextFactory(object : EGLContextFactory {
             private val EGL_CONTEXT_CLIENT_VERSION = 0x3098
 
@@ -53,8 +56,18 @@ class GLView : GLSurfaceView {
             }
         })
         setEGLContextClientVersion(3)
-        camRenderer = CamRenderer()
+        val cameraModule: CameraModule? = mModuleRegistry.getExportedModule("CameraGLModule") as CameraModule?
+        camRenderer = CamRenderer(cameraModule?.cameraHandle)
         setRenderer(camRenderer)
     }
 
+    override fun onHostResume() {
+        onResume()
+    }
+
+    override fun onHostPause() {
+        onPause()
+    }
+
+    override fun onHostDestroy() {}
 }

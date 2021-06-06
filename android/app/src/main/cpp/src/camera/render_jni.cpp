@@ -1,9 +1,10 @@
 #include <jni.h>
 #include <cstdlib>
 
-#include "gl_utils.h"
+#include "utils.h"
+#include "Camera.h"
 
-using namespace glUtils;
+using namespace utils;
 
 auto vertexShaderSrc = R"(
         precision highp float;
@@ -43,7 +44,7 @@ static GLuint textureId;
 static int width = 0;
 static int height = 0;
 
-static void initSurface(jint texId, jobject surface)
+static void initSurface(jint texId)
 {
     printGLString("Version", GL_VERSION);
     printGLString("Vendor", GL_VENDOR);
@@ -108,8 +109,6 @@ static void drawFrame(JNIEnv* env, jfloatArray texMatArray)
     glUniformMatrix4fv(mvpMatrix, 1, false, mvp);
 
 
-    // Prepare texture for drawing
-
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_EXTERNAL_OES, textureId);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -140,62 +139,15 @@ static void drawFrame(JNIEnv* env, jfloatArray texMatArray)
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
-//GLuint gProgram;
-//GLuint gvPositionHandle;
-
-//bool setupGraphics(int w, int h) {
-//    printGLString("Version", GL_VERSION);
-//    printGLString("Vendor", GL_VENDOR);
-//    printGLString("Renderer", GL_RENDERER);
-//    printGLString("Extensions", GL_EXTENSIONS);
-//
-//    LOGI("setupGraphics(%d, %d)", w, h);
-//    gProgram = createProgram(gVertexShader, gFragmentShader);
-//    if (!gProgram) {
-//        LOGE("Could not create program.");
-//        return false;
-//    }
-//    gvPositionHandle = glGetAttribLocation(gProgram, "vPosition");
-//    checkGlError("glGetAttribLocation");
-//    LOGI("glGetAttribLocation(\"vPosition\") = %d\n",
-//         gvPositionHandle);
-//
-//    glViewport(0, 0, w, h);
-//    checkGlError("glViewport");
-//    return true;
-//}
-
-//const GLfloat gTriangleVertices[] = { 0.0f, 0.5f, -0.5f, -0.5f,
-//                                      0.5f, -0.5f };
-//
-//void renderFrame() {
-//    static float grey;
-//    grey += 0.01f;
-//    if (grey > 1.0f) {
-//        grey = 0.0f;
-//    }
-//    glClearColor(grey, grey, grey, 1.0f);
-//    checkGlError("glClearColor");
-//    glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-//    checkGlError("glClear");
-//
-//    glUseProgram(gProgram);
-//    checkGlError("glUseProgram");
-//
-//    glVertexAttribPointer(gvPositionHandle, 2, GL_FLOAT, GL_FALSE, 0, gTriangleVertices);
-//    checkGlError("glVertexAttribPointer");
-//    glEnableVertexAttribArray(gvPositionHandle);
-//    checkGlError("glEnableVertexAttribArray");
-//    glDrawArrays(GL_TRIANGLES, 0, 3);
-//    checkGlError("glDrawArrays");
-//}
-
 extern "C"
 JNIEXPORT void JNICALL
-Java_ie_tcd_cs7cs5_invigilatus_video_CamRenderer_onSurfaceCreated(JNIEnv *env, jobject thiz, jint texture_id, jobject surface) {
-    initSurface(texture_id, surface);
+Java_ie_tcd_cs7cs5_invigilatus_video_CamRenderer_onSurfaceCreated(JNIEnv *env, jobject thiz, jlong camera_handle, jint texture_id, jobject surface) {
+    auto camera = Camera::convertLongToCamera(env, camera_handle);
+    if(!camera)
+        return;
+    initSurface(texture_id);
+    camera->initSurface(env, surface);
 }
-
 
 extern "C"
 JNIEXPORT void JNICALL

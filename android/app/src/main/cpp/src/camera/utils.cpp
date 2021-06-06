@@ -1,9 +1,9 @@
 #include <cstdlib>
 
-#include "gl_utils.h"
+#include "utils.h"
 #include "dlog.h"
 
-namespace glUtils {
+namespace utils {
 
     void printGLString(const char *name, GLenum s) {
         const char *v = (const char *) glGetString(s);
@@ -95,5 +95,27 @@ namespace glUtils {
 
         mat4[10] = -2.0f / fn;
         mat4[14] = -(far + near) / fn;
+    }
+
+    const char kIllegalArgumentException[] = "java/lang/IllegalArgumentException";
+    const char kIllegalStateException[] = "java/lang/IllegalStateException";
+    const char kNullPointerException[] = "java/lang/NullPointerException";
+    const char kUnsupportedOperationException[] =
+            "java/lang/UnsupportedOperationException";
+
+    void ThrowException(JNIEnv* env, const char* clazz, const char* fmt, ...) {
+        va_list args;
+        va_start(args, fmt);
+        const size_t max_msg_len = 512;
+        auto* message = static_cast<char*>(malloc(max_msg_len));
+        if (message && (vsnprintf(message, max_msg_len, fmt, args) >= 0)) {
+            env->ThrowNew(env->FindClass(clazz), message);
+        } else {
+            env->ThrowNew(env->FindClass(clazz), "");
+        }
+        if (message) {
+            free(message);
+        }
+        va_end(args);
     }
 }

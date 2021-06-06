@@ -10,11 +10,12 @@ import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
 // Ref: https://github.com/sixo/native-camera/blob/master/app/src/main/java/eu/sisik/cam/CamRenderer.kt
-class CamRenderer: GLSurfaceView.Renderer {
-    lateinit var surfaceTexture: SurfaceTexture
-    val texMatrix = FloatArray(16)
-    @Volatile var frameAvailable: Boolean = false
-    val lock = Object()
+class CamRenderer(camHandle: Long?) : GLSurfaceView.Renderer {
+    private lateinit var surfaceTexture: SurfaceTexture
+    private val texMatrix = FloatArray(16)
+    @Volatile private var frameAvailable: Boolean = false
+    private val lock = Object()
+    private var cameraHandle: Long? = camHandle
 
     init {
         System.loadLibrary("camera-view")
@@ -37,9 +38,12 @@ class CamRenderer: GLSurfaceView.Renderer {
         }
 
         val surface = Surface(surfaceTexture)
-
-        // Pass to native code
-        onSurfaceCreated(textures[0], surface)
+        if(cameraHandle == null)
+            onSurfaceCreated(0, textures[0], surface)
+        else {
+            Log.i(TAG, "cameraHandle: $cameraHandle")
+            onSurfaceCreated(cameraHandle!!, textures[0], surface)
+        }
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
@@ -59,7 +63,7 @@ class CamRenderer: GLSurfaceView.Renderer {
         onDrawFrame(texMatrix)
     }
 
-    external fun onSurfaceCreated(textureId: Int, surface: Surface)
-    external fun onSurfaceChanged(width: Int, height: Int)
-    external fun onDrawFrame(texMat: FloatArray)
+    private external fun onSurfaceCreated(cameraHandle: Long, textureId: Int, surface: Surface)
+    private external fun onSurfaceChanged(width: Int, height: Int)
+    private external fun onDrawFrame(texMat: FloatArray)
 }

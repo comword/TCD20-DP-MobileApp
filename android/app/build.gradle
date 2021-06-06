@@ -132,10 +132,16 @@ def enableHermes = project.ext.react.get("enableHermes", false);
 
 task fetchTFLiteLibs() {
     copy {
-        from zipTree("${project.rootDir}/app/src/main/cpp/tf-lite/tensorflow-lite.aar")
+        from zipTree("${project.rootDir}/app/libs/tf-lite/tensorflow-lite.aar")
         into 'libs'
         include "classes.jar"
         rename ('classes.jar','tensorflow-lite.jar')
+    }
+    copy {
+        from zipTree("${project.rootDir}/app/libs/opencv/opencv-release.aar")
+        into 'libs'
+        include "classes.jar"
+        rename ('classes.jar','opencv-release.jar')
     }
 }
 
@@ -190,6 +196,7 @@ android {
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
+            debuggable true
         }
         release {
             // Caution! In production, you need to generate your own keystore file.
