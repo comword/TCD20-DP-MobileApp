@@ -1,3 +1,6 @@
 [submodule "android/app/src/main/cpp/tf-lite"]
 	path = android/app/src/main/cpp/tf-lite
 	url = git@github.com:comword/tflite-bin.git
+[submodule "android/app/src/main/cpp/opencv"]
+	path = android/app/src/main/cpp/opencv
+	url = git@github.com:comword/opencv-android-bin.git

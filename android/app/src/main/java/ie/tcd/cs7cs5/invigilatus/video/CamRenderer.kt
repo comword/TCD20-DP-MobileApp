@@ -48,13 +48,13 @@ class CamRenderer: GLSurfaceView.Renderer {
     }
 
     override fun onDrawFrame(gl: GL10?) {
-//        synchronized(lock) {
-//            if (frameAvailable) {
-//                surfaceTexture.updateTexImage()
-//                surfaceTexture.getTransformMatrix(texMatrix)
-//                frameAvailable = false
-//            }
-//        }
+        synchronized(lock) {
+            if (frameAvailable) {
+                surfaceTexture.updateTexImage()
+                surfaceTexture.getTransformMatrix(texMatrix)
+                frameAvailable = false
+            }
+        }
 
         onDrawFrame(texMatrix)
     }

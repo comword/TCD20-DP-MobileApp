@@ -8,7 +8,6 @@
 #define S_(x) S(x)
 #define S__LINE__ S_(__LINE__)
 
-
 #if defined(NDEBUG)
 
 #define LOGI(...) ((void)0)
@@ -18,7 +17,7 @@
 
 #else
 
-#define LOGI(...) (__android_log_print(ANDROID_LOG_SILENT, "LOGI: " __FILE__ " | " S__LINE__, __VA_ARGS__))
+#define LOGI(...) (__android_log_print(ANDROID_LOG_INFO, "LOGI: " __FILE__ " | " S__LINE__, __VA_ARGS__))
 #define LOGD(...) (__android_log_print(ANDROID_LOG_DEBUG, "LOGD: " __FILE__ " | " S__LINE__, __VA_ARGS__))
 #define LOGW(...) (__android_log_print(ANDROID_LOG_WARN, "LOGW: " __FILE__ " | " S__LINE__, __VA_ARGS__))
 #define LOGE(...) (__android_log_print(ANDROID_LOG_ERROR, "LOGE: " __FILE__ " | " S__LINE__, __VA_ARGS__))
