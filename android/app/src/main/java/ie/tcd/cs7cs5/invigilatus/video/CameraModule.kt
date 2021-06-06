@@ -154,6 +154,16 @@ class CameraModule(context: Context): ExportedModule(context) {
         promise.resolve(true)
     }
 
+    @ExpoMethod
+    fun setCameraSize(width: Int, height: Int, promise: Promise) {
+        if(cameraHandle == 0L) {
+            promise.reject("E_NOT_INIT", "Native cameraHandle is empty, please call initCamera first.")
+            return
+        }
+        nativeCameraSize(cameraHandle, width, height)
+        promise.resolve(true)
+    }
+
     private external fun nativeInitCamera(): Long
     private external fun nativeDeInitCamera(camHandle: Long)
     private external fun nativeCameraStart(camHandle: Long, camIdx: Int): Boolean

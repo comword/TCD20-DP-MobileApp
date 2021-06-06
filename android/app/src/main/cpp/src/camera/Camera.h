@@ -24,7 +24,8 @@ private:
     std::shared_ptr<ACameraManager> cameraManager;
     std::shared_ptr<ANativeWindow> textureWindow;
     std::unique_ptr<cv::VideoCapture> cvCapture;
-    int cacheWidth=0, cacheHeight=0;
+    int cacheWidth = 0, cacheHeight = 0;
+    long cptThreadHandle = 0;
 };
 
 #endif //INVIGILATOR_CAMERA_H

@@ -7,6 +7,7 @@
 
 #include <media/NdkImageReader.h>
 #include <android/native_window_jni.h>
+#include <pthread.h>
 
 using namespace std;
 
@@ -16,6 +17,11 @@ static inline void deleter_ACameraManager(ACameraManager *cameraManager) {
 
 static inline void deleter_ANativeWindow(ANativeWindow *nativeWindow) {
     ANativeWindow_release(nativeWindow);
+}
+
+static void thread_exit_handler(int sig)
+{
+    pthread_exit(0);
 }
 
 Camera::Camera() {
@@ -51,6 +57,12 @@ bool Camera::start(int index) {
     }
     // start capture thread
     auto cptThread = thread([this](){
+        struct sigaction actions{};
+        sigemptyset(&actions.sa_mask);
+        actions.sa_flags = 0;
+        actions.sa_handler = thread_exit_handler;
+        sigaction(SIGUSR1, &actions,nullptr);
+
         if(!textureWindow) {
             LOGW("Camera output did not bind to target surface.");
             return;
@@ -58,31 +70,46 @@ bool Camera::start(int index) {
         cv::Mat frame;
         for(;;){
             cvCapture->read(frame);
-            if (frame.empty()) {
-                LOGI("Blank frame grabbed");
-                break;
-            }
+            if (frame.empty())
+                continue;
+//            if (frame.empty()) {
+//                LOGI("Blank frame grabbed");
+//                break;
+//            }
+            auto srcWidth = frame.size().width;
+            auto srcHeight = frame.size().height;
             ANativeWindow_acquire(textureWindow.get());
 
             ANativeWindow_Buffer buffer;
-            ANativeWindow_setBuffersGeometry(textureWindow.get(), frame.size().width, frame.size().height, 0/* format unchanged */);
+            ANativeWindow_setBuffersGeometry(textureWindow.get(), srcWidth, srcHeight, 0/* format unchanged */);
 
             if (int32_t err = ANativeWindow_lock(textureWindow.get(), &buffer, nullptr)) {
                 LOGE("ANativeWindow_lock failed with error code: %d\n", err);
                 ANativeWindow_release(textureWindow.get());
                 return;
             }
+            auto dstLumaPtr = reinterpret_cast<uint8_t *>(buffer.bits);
+            cv::Mat dstRgba(srcHeight, buffer.stride, CV_8UC4, dstLumaPtr);
+            auto sbuf = frame.data;
+            for (int i = 0; i < frame.rows/2; i++) {
+                auto dbuf = dstRgba.data + i * buffer.stride * 4;
+                memcpy(dbuf, sbuf, frame.rows * 3);
+                memset(dbuf+buffer.stride * 3, 255, frame.rows);
+                sbuf += frame.rows * 4;
+            }
 
             ANativeWindow_unlockAndPost(textureWindow.get());
             ANativeWindow_release(textureWindow.get());
         }
     });
+    cptThreadHandle = cptThread.native_handle();
     cptThread.detach();
     return true;
 }
 
 void Camera::stop() {
     if (cvCapture->isOpened()) {
+        pthread_kill(cptThreadHandle, SIGUSR1);
         cvCapture.reset();
         LOGD("Camera closed");
         cvCapture = std::make_unique<cv::VideoCapture>();

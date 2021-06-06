@@ -6,6 +6,7 @@ import {
 import { AppScreens } from './ScreenDefs';
 import { ThemeContext } from 'styled-components/native';
 import WelcomeScreen from 'containers/WelcomeScreen';
+import CameraScreen from 'containers/CameraScreen';
 
 const TransitionScreenOptions = {
   ...TransitionPresets.SlideFromRightIOS,
@@ -25,6 +26,11 @@ const AppNavigator: React.FC = () => {
         name={AppScreens.Welcome}
         options={{ headerShown: false, ...navOptions }}
         component={WelcomeScreen}
+      />
+      <Stack.Screen
+        name={AppScreens.Camera}
+        options={{ headerShown: false, ...navOptions }}
+        component={CameraScreen}
       />
     </Stack.Navigator>
   );
