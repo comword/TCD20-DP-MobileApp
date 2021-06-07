@@ -1,6 +1,7 @@
 #include <jni.h>
 #include <cstdlib>
 
+#include "dlog.h"
 #include "utils.h"
 #include "Camera.h"
 
@@ -43,6 +44,8 @@ static GLuint textureId;
 
 static int width = 0;
 static int height = 0;
+static int camWidth = 0;
+static int camHeight = 0;
 
 static void initSurface(jint texId)
 {
@@ -108,7 +111,6 @@ static void drawFrame(JNIEnv* env, jfloatArray texMatArray)
 
     glUniformMatrix4fv(mvpMatrix, 1, false, mvp);
 
-
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_EXTERNAL_OES, textureId);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -145,6 +147,10 @@ Java_ie_tcd_cs7cs5_invigilatus_video_CamRenderer_onSurfaceCreated(JNIEnv *env, j
     auto camera = Camera::convertLongToCamera(env, camera_handle);
     if(!camera)
         return;
+    auto [tWidth, tHeight] = camera->getCaptureSize();
+    LOGI("onSurface create, camera input size: %dx%d", tWidth, tHeight);
+    camWidth = tWidth;
+    camHeight = tHeight;
     initSurface(texture_id);
     camera->initSurface(env, surface);
 }
@@ -154,6 +160,7 @@ JNIEXPORT void JNICALL
 Java_ie_tcd_cs7cs5_invigilatus_video_CamRenderer_onSurfaceChanged(JNIEnv *env, jobject thiz, jint w, jint h) {
     width = w;
     height = h;
+    LOGI("onSurfaceChanged, size: %dx%d", w, h);
 }
 
 extern "C"

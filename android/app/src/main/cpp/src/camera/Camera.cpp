@@ -1,12 +1,15 @@
 #include <memory>
 #include <stdexcept>
 
+#include "FaceDetector.h"
 #include "Camera.h"
 #include "dlog.h"
 #include "utils.h"
 
+#include <camera/NdkCameraManager.h>
 #include <media/NdkImageReader.h>
 #include <android/native_window_jni.h>
+#include <android/asset_manager_jni.h>
 #include <pthread.h>
 
 #include <opencv2/imgproc/imgproc.hpp>
@@ -30,7 +33,6 @@ Camera::Camera() {
     cameraManager = shared_ptr<ACameraManager>(ACameraManager_create(), deleter_ACameraManager);
     if (!cameraManager)
         throw logic_error("ACameraManager could not be created.");
-    cvCapture = std::make_unique<cv::VideoCapture>();
 }
 
 Camera::~Camera() = default;
@@ -44,15 +46,39 @@ Camera* Camera::convertLongToCamera(JNIEnv* env, jlong handle) {
     return reinterpret_cast<Camera*>(handle);
 }
 
+void Camera::initFaceDetector(JNIEnv* env, jobject ctx) {
+    jclass ApplicationClass = env->GetObjectClass(ctx);
+    jmethodID getContext = env->GetMethodID(ApplicationClass, "getContext", "()Landroid/content/Context;");
+    jobject contextObj = env->CallObjectMethod(ctx, getContext);
+    jclass contextObjCls = env->GetObjectClass(contextObj);
+    jmethodID getAssets = env->GetMethodID(contextObjCls, "getAssets", "()Landroid/content/res/AssetManager;");
+    jobject assetsObj = env->CallObjectMethod(contextObj, getAssets);
+    assetManager = AAssetManager_fromJava(env, assetsObj);
+
+    jmethodID getCacheDir = env->GetMethodID(contextObjCls, "getCacheDir", "()Ljava/io/File;");
+    jobject file = env->CallObjectMethod(contextObj, getCacheDir);
+    jclass fileClass = env->FindClass("java/io/File");
+    jmethodID getAbsolutePath = env->GetMethodID(fileClass, "getAbsolutePath", "()Ljava/lang/String;");
+    auto jpath = (jstring)env->CallObjectMethod(file, getAbsolutePath);
+    auto pPathChar = env->GetStringUTFChars(jpath, nullptr);
+    cacheDirPath = string(pPathChar);
+    env->ReleaseStringUTFChars(jpath, pPathChar);
+    LOGD("App cache dir path: %s", cacheDirPath.c_str());
+    faceDetector = shared_ptr<FaceDetector>(new FaceDetector());
+    faceDetector->loadModels("", "");
+}
+
 bool Camera::start(int index) {
-    if (cvCapture->isOpened()) {
+    if (cvCapture.isOpened()) {
         LOGI("Camera is already opened");
         return false;
     }
-    cvCapture->set(cv::CAP_PROP_FRAME_WIDTH, cacheWidth);
-    cvCapture->set(cv::CAP_PROP_FRAME_HEIGHT, cacheHeight);
-    cvCapture->open(index, cv::CAP_ANDROID);
-    if (!cvCapture->isOpened()) {
+    cvCapture.open(index, cv::CAP_ANDROID, vector<int>({
+        cv::CAP_PROP_FRAME_WIDTH, cacheWidth,
+        cv::CAP_PROP_FRAME_HEIGHT, cacheHeight}));
+    LOGI("CAP_PROP_FRAME_WIDTH: %lf", cvCapture.get(cv::CAP_PROP_FRAME_WIDTH));
+    LOGI("CAP_PROP_FRAME_HEIGHT: %lf", cvCapture.get(cv::CAP_PROP_FRAME_HEIGHT));
+    if (!cvCapture.isOpened()) {
         LOGW("Unable to open camera");
         return false;
     }
@@ -70,13 +96,12 @@ bool Camera::start(int index) {
         }
         cv::Mat frame;
         for(;;){
-            cvCapture->read(frame);
+            cvCapture.read(frame);
             if (frame.empty())
                 continue;
             auto srcWidth = frame.size().width;
             auto srcHeight = frame.size().height;
             ANativeWindow_acquire(textureWindow.get());
-
             ANativeWindow_Buffer buffer;
             ANativeWindow_setBuffersGeometry(textureWindow.get(), srcHeight, srcWidth, 0/* format unchanged */);
 
@@ -88,12 +113,9 @@ bool Camera::start(int index) {
             auto dstLumaPtr = reinterpret_cast<uint8_t *>(buffer.bits);
             cv::Mat dstRgba(buffer.height, buffer.stride, CV_8UC4, dstLumaPtr);
             cv::Mat cvtRgba(srcHeight, srcWidth, CV_8UC4);
-//            cv::Mat rotateRgba(srcHeight, srcWidth, CV_8UC4);
 
             cv::cvtColor(frame, cvtRgba, cv::COLOR_BGR2RGBA);
             cv::rotate(cvtRgba, cvtRgba, cv::ROTATE_90_CLOCKWISE);
-//            cv::transpose(cvtRgba, rotateRgba);
-//            cv::flip(rotateRgba, rotateRgba, 1);
             auto sbuf = cvtRgba.data;
             for (int i = 0; i < cvtRgba.rows; i++) {
                 auto dbuf = dstRgba.data + i * buffer.stride * 4;
@@ -111,23 +133,26 @@ bool Camera::start(int index) {
 }
 
 void Camera::stop() {
-    if (cvCapture->isOpened()) {
+    if (cvCapture.isOpened()) {
         pthread_kill(cptThreadHandle, SIGUSR1);
-        cvCapture.reset();
+        pthread_join(cptThreadHandle, nullptr);
+        cvCapture.release();
         LOGD("Camera closed");
-        cvCapture = std::make_unique<cv::VideoCapture>();
-        cvCapture->set(cv::CAP_PROP_CONVERT_RGB, true);
     }
 }
 
 bool Camera::setCaptureSize(int width, int height) {
-    if (cvCapture->isOpened()) {
+    if (cvCapture.isOpened()) {
         LOGW("Camera is already opened");
         return false;
     }
     cacheWidth = width;
     cacheHeight = height;
     return true;
+}
+
+std::tuple<int, int> Camera::getCaptureSize() {
+    return std::make_tuple(cacheWidth, cacheHeight);
 }
 
 void Camera::initSurface(JNIEnv *env, jobject surface) {
@@ -139,6 +164,7 @@ extern "C"
 JNIEXPORT jlong JNICALL
 Java_ie_tcd_cs7cs5_invigilatus_video_CameraModule_nativeInitCamera(JNIEnv *env, jobject thiz) {
     unique_ptr<Camera> camera(new Camera());
+    camera->initFaceDetector(env, thiz);
     return reinterpret_cast<jlong>(camera.release());
 }
 

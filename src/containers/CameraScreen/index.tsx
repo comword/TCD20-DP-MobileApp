@@ -23,7 +23,7 @@ type Props = ComponentProps &
   ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
 
-const CameraScreen: React.FC<Props> = ({ themeDisplay }) => {
+const CameraScreen: React.FC<Props> = ({ navigation, themeDisplay }) => {
   useLayoutEffect(() => {
     const setupCamera = async () => {
       await CameraGLModule.requestCameraPermissionsAsync();
@@ -32,13 +32,27 @@ const CameraScreen: React.FC<Props> = ({ themeDisplay }) => {
     setupCamera();
   });
 
+  useEffect(() =>
+    navigation.addListener('beforeRemove', () => {
+      return onBack();
+    })
+  );
+
   useEffect(() => {
     const setupCamera = async () => {
-      await CameraGLModule.setCameraSize(768, 1024);
+      await CameraGLModule.setCameraSize(640, 640);
       await CameraGLModule.startCamera();
     };
     setupCamera();
   });
+
+  const onBack = () => {
+    const stopCamera = async () => {
+      await CameraGLModule.stopCamera();
+    };
+    stopCamera();
+    return false;
+  };
 
   return (
     <View style={tailwind('flex h-full w-full')}>

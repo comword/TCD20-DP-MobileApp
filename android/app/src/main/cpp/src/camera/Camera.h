@@ -6,8 +6,12 @@
 #include <memory>
 #include <thread>
 
-#include <camera/NdkCameraManager.h>
 #include <opencv2/videoio.hpp>
+
+class FaceDetector;
+struct ACameraManager;
+struct ANativeWindow;
+struct AAssetManager;
 
 class Camera {
 public:
@@ -16,16 +20,21 @@ public:
     Camera();
     virtual ~Camera();
     static Camera *convertLongToCamera(_JNIEnv *env, long handle);
+    void initFaceDetector(JNIEnv *env, jobject ctx);
     bool start(int index);
     void stop();
     bool setCaptureSize(int width, int height);
     void initSurface(JNIEnv *env, jobject surface);
+    std::tuple<int, int> getCaptureSize();
 private:
     std::shared_ptr<ACameraManager> cameraManager;
     std::shared_ptr<ANativeWindow> textureWindow;
-    std::unique_ptr<cv::VideoCapture> cvCapture;
+    AAssetManager* assetManager;
+    cv::VideoCapture cvCapture;
     int cacheWidth = 0, cacheHeight = 0;
     long cptThreadHandle = 0;
+    std::string cacheDirPath;
+    std::shared_ptr<FaceDetector> faceDetector;
 };
 
 #endif //INVIGILATOR_CAMERA_H

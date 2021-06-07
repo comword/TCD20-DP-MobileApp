@@ -41,6 +41,12 @@ set_target_properties( cv-imgcodecs PROPERTIES IMPORTED_LOCATION
 add_library( cv-videoio SHARED IMPORTED )
 set_target_properties( cv-videoio PROPERTIES IMPORTED_LOCATION
         ${CMAKE_CURRENT_LIST_DIR}/../../../libs/opencv/libs/${ANDROID_ABI}/libopencv_videoio.so )
+add_library( cv-photo SHARED IMPORTED )
+set_target_properties( cv-photo PROPERTIES IMPORTED_LOCATION
+        ${CMAKE_CURRENT_LIST_DIR}/../../../libs/opencv/libs/${ANDROID_ABI}/libopencv_photo.so )
+add_library( cv-face SHARED IMPORTED )
+set_target_properties( cv-face PROPERTIES IMPORTED_LOCATION
+        ${CMAKE_CURRENT_LIST_DIR}/../../../libs/opencv/libs/${ANDROID_ABI}/libopencv_face.so )
 
 file(GLOB CAMERA_SOURCES ${CMAKE_SOURCE_DIR}/src/camera/*.cpp)
 
@@ -54,12 +60,14 @@ find_library(android-lib android)
 find_library(camera-lib camera2ndk)
 find_library(media-lib mediandk)
 find_library(gl-lib GLESv3)
+find_library(egl-lib EGL)
 
-target_link_libraries( mlmodel
+target_link_libraries(mlmodel
         ${log-lib} ${android-lib}
         tflite)
 
-target_link_libraries( camera-view
-        ${log-lib} ${android-lib} ${camera-lib} ${media-lib} ${gl-lib}
+target_link_libraries(camera-view
+        ${log-lib} ${android-lib} ${camera-lib} ${media-lib} ${gl-lib} ${egl-lib}
         cv-core cv-imgproc cv-features2d cv-flann cv-calib3d cv-objdetect cv-imgcodecs cv-videoio
+        cv-photo cv-face
         mlmodel)
