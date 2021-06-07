@@ -9,6 +9,8 @@
 #include <android/native_window_jni.h>
 #include <pthread.h>
 
+#include <opencv2/imgproc/imgproc.hpp>
+
 using namespace std;
 
 static inline void deleter_ACameraManager(ACameraManager *cameraManager) {
@@ -21,7 +23,7 @@ static inline void deleter_ANativeWindow(ANativeWindow *nativeWindow) {
 
 static void thread_exit_handler(int sig)
 {
-    pthread_exit(0);
+    pthread_exit(nullptr);
 }
 
 Camera::Camera() {
@@ -29,7 +31,6 @@ Camera::Camera() {
     if (!cameraManager)
         throw logic_error("ACameraManager could not be created.");
     cvCapture = std::make_unique<cv::VideoCapture>();
-    cvCapture->set(cv::CAP_PROP_CONVERT_RGB, true);
 }
 
 Camera::~Camera() = default;
@@ -72,16 +73,12 @@ bool Camera::start(int index) {
             cvCapture->read(frame);
             if (frame.empty())
                 continue;
-//            if (frame.empty()) {
-//                LOGI("Blank frame grabbed");
-//                break;
-//            }
             auto srcWidth = frame.size().width;
             auto srcHeight = frame.size().height;
             ANativeWindow_acquire(textureWindow.get());
 
             ANativeWindow_Buffer buffer;
-            ANativeWindow_setBuffersGeometry(textureWindow.get(), srcWidth, srcHeight, 0/* format unchanged */);
+            ANativeWindow_setBuffersGeometry(textureWindow.get(), srcHeight, srcWidth, 0/* format unchanged */);
 
             if (int32_t err = ANativeWindow_lock(textureWindow.get(), &buffer, nullptr)) {
                 LOGE("ANativeWindow_lock failed with error code: %d\n", err);
@@ -89,13 +86,19 @@ bool Camera::start(int index) {
                 return;
             }
             auto dstLumaPtr = reinterpret_cast<uint8_t *>(buffer.bits);
-            cv::Mat dstRgba(srcHeight, buffer.stride, CV_8UC4, dstLumaPtr);
-            auto sbuf = frame.data;
-            for (int i = 0; i < frame.rows/2; i++) {
+            cv::Mat dstRgba(buffer.height, buffer.stride, CV_8UC4, dstLumaPtr);
+            cv::Mat cvtRgba(srcHeight, srcWidth, CV_8UC4);
+//            cv::Mat rotateRgba(srcHeight, srcWidth, CV_8UC4);
+
+            cv::cvtColor(frame, cvtRgba, cv::COLOR_BGR2RGBA);
+            cv::rotate(cvtRgba, cvtRgba, cv::ROTATE_90_CLOCKWISE);
+//            cv::transpose(cvtRgba, rotateRgba);
+//            cv::flip(rotateRgba, rotateRgba, 1);
+            auto sbuf = cvtRgba.data;
+            for (int i = 0; i < cvtRgba.rows; i++) {
                 auto dbuf = dstRgba.data + i * buffer.stride * 4;
-                memcpy(dbuf, sbuf, frame.rows * 3);
-                memset(dbuf+buffer.stride * 3, 255, frame.rows);
-                sbuf += frame.rows * 4;
+                memcpy(dbuf, sbuf, cvtRgba.cols * 4);
+                sbuf += cvtRgba.cols * 4;
             }
 
             ANativeWindow_unlockAndPost(textureWindow.get());

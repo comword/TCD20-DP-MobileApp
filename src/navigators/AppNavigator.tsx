@@ -27,11 +27,7 @@ const AppNavigator: React.FC = () => {
         options={{ headerShown: false, ...navOptions }}
         component={WelcomeScreen}
       />
-      <Stack.Screen
-        name={AppScreens.Camera}
-        options={{ headerShown: false, ...navOptions }}
-        component={CameraScreen}
-      />
+      <Stack.Screen name={AppScreens.Camera} component={CameraScreen} />
     </Stack.Navigator>
   );
 };
