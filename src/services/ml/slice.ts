@@ -13,11 +13,7 @@ import {
 const { PostureClassify } = NativeModulesProxy;
 import { ErrorMsg } from 'services/types';
 import { RootState } from 'store/types';
-
-export interface PCState {
-  lastError?: ErrorMsg;
-  status: 'STOP' | 'RUN';
-}
+import { PCState } from './types';
 
 const initialState: PCState = {
   status: 'STOP',
