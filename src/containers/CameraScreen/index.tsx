@@ -81,7 +81,11 @@ const CameraScreen: React.FC<Props> = ({ navigation, themeDisplay }) => {
           results={[
             {
               type: MLActionTypes.Unknown,
-              prob: 1,
+              prob: 0.6,
+            },
+            {
+              type: MLActionTypes.LookScreen,
+              prob: 0.4,
             },
           ]}
         />

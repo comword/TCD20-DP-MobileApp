@@ -22,10 +22,10 @@ export const CameraSlice = createSlice({
   name: 'CameraSrv',
   initialState,
   reducers: {
-    setDetectModel: (state, action: PayloadAction<string> ) => {
+    setDetectModel: (state, action: PayloadAction<string>) => {
       state.detectModel = action.payload;
     },
-    setlandmarkModel: (state, action: PayloadAction<string> ) => {
+    setlandmarkModel: (state, action: PayloadAction<string>) => {
       state.landmarkModel = action.payload;
     },
   },
@@ -36,6 +36,4 @@ export const selectCameraSrv = createSelector(
   CameraSrv => CameraSrv
 );
 
-export const initFaceModels = async (dispatch: Dispatch) => {
-
-};
+export const initFaceModels = async (dispatch: Dispatch) => {};
