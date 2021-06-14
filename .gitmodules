@@ -4,3 +4,6 @@
 [submodule "android/app/src/main/cpp/opencv"]
 	path = android/app/libs/opencv
 	url = git@github.com:comword/opencv-android-bin.git
+[submodule "server"]
+	path = server
+	url = git@github.com:comword/TCD20-DP-Server.git
