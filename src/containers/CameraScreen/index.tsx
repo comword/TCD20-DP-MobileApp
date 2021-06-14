@@ -11,7 +11,7 @@ import { StatusBar } from 'expo-status-bar';
 import { selectDisplay, themeSliceKey, reducer } from 'theme/slice';
 import { RootState } from 'store/types';
 import { injectReducer } from 'redux-injectors';
-import CameraGLView from 'services/camera/CameraGLView';
+import CameraGLView from 'services/ml/CameraGLView';
 import { MLActionTypes } from 'services/ml/types';
 
 import { NativeModulesProxy } from '@unimodules/core';

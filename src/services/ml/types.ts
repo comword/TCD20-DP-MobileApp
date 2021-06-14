@@ -34,5 +34,7 @@ export type InferResult = {
 export interface PCState {
   lastError?: ErrorMsg;
   status: 'STOP' | 'RUN';
+  detectModel: string;
+  landmarkModel: string;
   result?: Array<InferResult>;
 }

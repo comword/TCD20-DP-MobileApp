@@ -1,6 +1,6 @@
 // import { AuthState } from 'services/auth/state';
 import { CameraState } from 'services/camera/slice';
-import { PCState } from 'services/ml/slice';
+import { PCState } from 'services/ml/types';
 import { ThemeState } from 'theme/types';
 
 export interface RootState {

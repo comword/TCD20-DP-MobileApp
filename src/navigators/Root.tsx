@@ -18,8 +18,7 @@ import LoadingIndicator from 'components/LoadingIndicator';
 import { compose, bindActionCreators, Dispatch } from 'redux';
 import { connect, useDispatch } from 'react-redux';
 import { Platform } from 'react-native';
-import { initPCService } from 'services/ml/slice';
-import { initFaceModels } from 'services/camera/slice';
+import { initPCService } from 'services/ml';
 
 export const navigatorRef = React.createRef<NavigationContainerRef>();
 let stack: Array<object> = [];
@@ -75,7 +74,6 @@ const RootNavigator: React.FC<Props> = ({}) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    initFaceModels(dispatch);
     if (Platform.OS === 'android') {
       initPCService(dispatch);
     }

@@ -6,7 +6,7 @@ import { AppScreens } from 'navigators/ScreenDefs';
 import { View } from 'react-native';
 import tailwind from 'tailwind-rn';
 
-import { useTheme } from 'styled-components/native';
+// import { useTheme } from 'styled-components/native';
 import Text from 'components/Text';
 import { Button } from 'react-native-paper';
 import { StatusBar } from 'expo-status-bar';
@@ -25,7 +25,7 @@ type Props = ComponentProps &
   ReturnType<typeof mapDispatchToProps>;
 
 const WelcomeScreen: React.FC<Props> = ({ navigation, themeDisplay }) => {
-  const theme = useTheme();
+  // const theme = useTheme();
 
   return (
     <View style={tailwind('flex h-full w-full')}>
@@ -40,7 +40,7 @@ const WelcomeScreen: React.FC<Props> = ({ navigation, themeDisplay }) => {
           width={tailwind('w-full').width}
           height={tailwind('h-1/4').height}
         />
-        <Button
+        {/* <Button
           mode="contained"
           uppercase={false}
           onPress={() => {
@@ -60,7 +60,7 @@ const WelcomeScreen: React.FC<Props> = ({ navigation, themeDisplay }) => {
           style={tailwind('mt-6')}
         >
           <Text style={tailwind('text-lg')}>Log in</Text>
-        </Button>
+        </Button> */}
         <Button
           mode="outlined"
           uppercase={false}

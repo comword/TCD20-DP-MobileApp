@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { PCSlice } from 'services/ml/slice';
+import { PCSlice } from 'services/ml';
 // import { authSlice } from 'services/auth';
 
 import { InjectedReducersType } from './injector-typings';
