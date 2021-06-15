@@ -47,6 +47,9 @@ set_target_properties( cv-photo PROPERTIES IMPORTED_LOCATION
 add_library( cv-face SHARED IMPORTED )
 set_target_properties( cv-face PROPERTIES IMPORTED_LOCATION
         ${CMAKE_CURRENT_LIST_DIR}/../../../libs/opencv/libs/${ANDROID_ABI}/libopencv_face.so )
+add_library( cv-tbb SHARED IMPORTED )
+set_target_properties( cv-tbb PROPERTIES IMPORTED_LOCATION
+        ${CMAKE_CURRENT_LIST_DIR}/../../../libs/opencv/libs/${ANDROID_ABI}/libtbb.so )
 
 file(GLOB CAMERA_SOURCES ${CMAKE_SOURCE_DIR}/src/camera/*.cpp)
 
@@ -68,6 +71,6 @@ target_link_libraries(mlmodel
 
 target_link_libraries(camera-view
         ${log-lib} ${android-lib} ${camera-lib} ${media-lib} ${gl-lib} ${egl-lib}
-        cv-core cv-imgproc cv-features2d cv-flann cv-calib3d cv-objdetect cv-imgcodecs cv-videoio
-        cv-photo cv-face
+        cv-tbb cv-core cv-imgproc cv-features2d cv-flann cv-calib3d cv-objdetect
+        cv-imgcodecs cv-videoio cv-photo cv-face
         mlmodel)

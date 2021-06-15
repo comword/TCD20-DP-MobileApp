@@ -1,5 +1,5 @@
 import { SagaIterator } from 'redux-saga';
-import { all, takeLatest } from 'redux-saga/effects';
+import { all, takeEvery } from 'redux-saga/effects';
 import { downloadAction, sagaDownload } from './download';
 import { PCSlice, selectPCSrv } from './slice';
 
@@ -13,7 +13,7 @@ import {
 const { PostureClassify } = NativeModulesProxy;
 
 function* rootMLSaga(): SagaIterator {
-  yield all([takeLatest(downloadAction, sagaDownload)]);
+  yield all([takeEvery(downloadAction, sagaDownload)]);
 }
 
 let eventListeners: Subscription[] = [];

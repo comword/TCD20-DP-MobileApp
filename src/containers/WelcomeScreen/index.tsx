@@ -15,6 +15,7 @@ import { RootState } from 'store/types';
 import { injectReducer } from 'redux-injectors';
 
 import IntroIcon from './assets/intro.svg';
+import DownloadModal from 'components/DownloadModal';
 
 type ComponentProps = {
   navigation: StackNavigationProp<any, AppScreens.Welcome>;
@@ -28,51 +29,54 @@ const WelcomeScreen: React.FC<Props> = ({ navigation, themeDisplay }) => {
   // const theme = useTheme();
 
   return (
-    <View style={tailwind('flex h-full w-full')}>
-      <StatusBar
-        backgroundColor="transparent"
-        animated
-        translucent
-        style={themeDisplay === 'dark' ? 'light' : 'dark'}
-      />
-      <View style={tailwind('flex-1 pt-16 px-8')}>
-        <IntroIcon
-          width={tailwind('w-full').width}
-          height={tailwind('h-1/4').height}
+    <>
+      <View style={tailwind('flex h-full w-full')}>
+        <StatusBar
+          backgroundColor="transparent"
+          animated
+          translucent
+          style={themeDisplay === 'dark' ? 'light' : 'dark'}
         />
-        {/* <Button
-          mode="contained"
-          uppercase={false}
-          onPress={() => {
-            navigation.navigate(AppScreens.Register);
-          }}
-          color={theme.colors.primary}
-          style={tailwind('mt-6')}
-        >
-          <Text style={tailwind('text-lg')}>Sign up</Text>
-        </Button>
-        <Button
-          mode="outlined"
-          uppercase={false}
-          onPress={() => {
-            navigation.navigate(AppScreens.Login);
-          }}
-          style={tailwind('mt-6')}
-        >
-          <Text style={tailwind('text-lg')}>Log in</Text>
-        </Button> */}
-        <Button
-          mode="outlined"
-          uppercase={false}
-          onPress={() => {
-            navigation.navigate(AppScreens.Camera);
-          }}
-          style={tailwind('mt-6')}
-        >
-          <Text style={tailwind('text-lg')}>Test Camera</Text>
-        </Button>
+        <View style={tailwind('flex-1 pt-16 px-8')}>
+          <IntroIcon
+            width={tailwind('w-full').width}
+            height={tailwind('h-1/4').height}
+          />
+          {/* <Button
+            mode="contained"
+            uppercase={false}
+            onPress={() => {
+              navigation.navigate(AppScreens.Register);
+            }}
+            color={theme.colors.primary}
+            style={tailwind('mt-6')}
+          >
+            <Text style={tailwind('text-lg')}>Sign up</Text>
+          </Button>
+          <Button
+            mode="outlined"
+            uppercase={false}
+            onPress={() => {
+              navigation.navigate(AppScreens.Login);
+            }}
+            style={tailwind('mt-6')}
+          >
+            <Text style={tailwind('text-lg')}>Log in</Text>
+          </Button> */}
+          <Button
+            mode="outlined"
+            uppercase={false}
+            onPress={() => {
+              navigation.navigate(AppScreens.Camera);
+            }}
+            style={tailwind('mt-6')}
+          >
+            <Text style={tailwind('text-lg')}>Test Camera</Text>
+          </Button>
+        </View>
       </View>
-    </View>
+      <DownloadModal />
+    </>
   );
 };
 

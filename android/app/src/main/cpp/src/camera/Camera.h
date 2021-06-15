@@ -6,12 +6,13 @@
 #include <memory>
 #include <thread>
 
-#include <opencv2/videoio.hpp>
-
 class FaceDetector;
 struct ACameraManager;
 struct ANativeWindow;
-struct AAssetManager;
+
+namespace cv {
+    class VideoCapture;
+}
 
 class Camera {
 public:
@@ -29,12 +30,11 @@ public:
 private:
     std::shared_ptr<ACameraManager> cameraManager;
     std::shared_ptr<ANativeWindow> textureWindow;
-    AAssetManager* assetManager;
-    cv::VideoCapture cvCapture;
+    std::shared_ptr<cv::VideoCapture> cvCapture;
     int cacheWidth = 0, cacheHeight = 0;
-    long cptThreadHandle = 0;
     std::string cacheDirPath;
     std::shared_ptr<FaceDetector> faceDetector;
+    volatile bool renderStop = false;
 };
 
 #endif //INVIGILATOR_CAMERA_H

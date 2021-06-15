@@ -31,10 +31,22 @@ export type InferResult = {
   prob: number;
 };
 
+export type ModelPath = {
+  name: string;
+  path: string;
+};
+
+export type ProgressMap = {
+  name: string;
+  totalBytesWritten?: number;
+  totalBytesExpectedToWrite?: number;
+  percent?: number;
+};
+
 export interface PCState {
   lastError?: ErrorMsg;
   status: 'STOP' | 'RUN';
-  detectModel: string;
-  landmarkModel: string;
+  modelPaths: Array<ModelPath>;
+  downloadProg: Array<ProgressMap>;
   result?: Array<InferResult>;
 }

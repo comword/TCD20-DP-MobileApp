@@ -1,12 +1,12 @@
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ErrorMsg } from 'services/types';
 import { RootState } from 'store/types';
-import { PCState } from './types';
+import { InferResult, ModelPath, PCState, ProgressMap } from './types';
 
 const initialState: PCState = {
   status: 'STOP',
-  detectModel: '',
-  landmarkModel: '',
+  modelPaths: [],
+  downloadProg: [],
 };
 
 export const PCSlice = createSlice({
@@ -18,6 +18,20 @@ export const PCSlice = createSlice({
     },
     setStatus: (state, action: PayloadAction<'STOP' | 'RUN'>) => {
       state.status = action.payload;
+    },
+    setModelPaths: (state, action: PayloadAction<Array<ModelPath>>) => {
+      state.modelPaths = action.payload;
+    },
+    setDownloadProg: (state, action: PayloadAction<ProgressMap>) => {
+      if (!state.downloadProg.find(it => it.name === action.payload.name))
+        state.downloadProg = [...state.downloadProg, action.payload];
+      else
+        state.downloadProg = state.downloadProg.map(it =>
+          it.name === action.payload.name ? action.payload : it
+        );
+    },
+    setResult: (state, action: PayloadAction<Array<InferResult>>) => {
+      state.result = action.payload;
     },
   },
 });

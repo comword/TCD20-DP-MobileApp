@@ -9,9 +9,8 @@
 #include <camera/NdkCameraManager.h>
 #include <media/NdkImageReader.h>
 #include <android/native_window_jni.h>
-#include <android/asset_manager_jni.h>
-#include <pthread.h>
 
+#include <opencv2/videoio.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
 using namespace std;
@@ -24,12 +23,8 @@ static inline void deleter_ANativeWindow(ANativeWindow *nativeWindow) {
     ANativeWindow_release(nativeWindow);
 }
 
-static void thread_exit_handler(int sig)
-{
-    pthread_exit(nullptr);
-}
-
 Camera::Camera() {
+    cvCapture = shared_ptr<cv::VideoCapture>(new cv::VideoCapture());
     cameraManager = shared_ptr<ACameraManager>(ACameraManager_create(), deleter_ACameraManager);
     if (!cameraManager)
         throw logic_error("ACameraManager could not be created.");
@@ -51,9 +46,6 @@ void Camera::initFaceDetector(JNIEnv* env, jobject ctx) {
     jmethodID getContext = env->GetMethodID(ApplicationClass, "getContext", "()Landroid/content/Context;");
     jobject contextObj = env->CallObjectMethod(ctx, getContext);
     jclass contextObjCls = env->GetObjectClass(contextObj);
-    jmethodID getAssets = env->GetMethodID(contextObjCls, "getAssets", "()Landroid/content/res/AssetManager;");
-    jobject assetsObj = env->CallObjectMethod(contextObj, getAssets);
-    assetManager = AAssetManager_fromJava(env, assetsObj);
 
     jmethodID getCacheDir = env->GetMethodID(contextObjCls, "getCacheDir", "()Ljava/io/File;");
     jobject file = env->CallObjectMethod(contextObj, getCacheDir);
@@ -64,47 +56,61 @@ void Camera::initFaceDetector(JNIEnv* env, jobject ctx) {
     cacheDirPath = string(pPathChar);
     env->ReleaseStringUTFChars(jpath, pPathChar);
     LOGD("App cache dir path: %s", cacheDirPath.c_str());
+
     faceDetector = shared_ptr<FaceDetector>(new FaceDetector());
-    faceDetector->loadModels("", "");
+
+    jfieldID idHaarCascadePath = env->GetFieldID(ApplicationClass, "haarCascadePath", "Ljava/lang/String;");
+    jfieldID idModelLBFPath = env->GetFieldID(ApplicationClass, "modelLBFPath", "Ljava/lang/String;");
+
+    auto jStrHaarCascadePath = (jstring)env->GetObjectField(ctx, idHaarCascadePath);
+    auto jStrModelLBFPath = (jstring)env->GetObjectField(ctx, idModelLBFPath);
+    if(jStrHaarCascadePath == nullptr || jStrModelLBFPath == nullptr) {
+        LOGW("Face detector model is not initialised due to missing HaarCascade or landmark LBF model");
+        return;
+    }
+    auto pHaarCascadePath = env->GetStringUTFChars(jStrHaarCascadePath, nullptr);
+    auto pModelLBFPath = env->GetStringUTFChars(jStrHaarCascadePath, nullptr);
+
+    string haarCascadePath(pHaarCascadePath);
+    string modelLBFPath(pModelLBFPath);
+    env->ReleaseStringUTFChars(jStrHaarCascadePath, pHaarCascadePath);
+    env->ReleaseStringUTFChars(jStrModelLBFPath, pModelLBFPath);
+
+    LOGI("Loading HaarCascade from %s, and landmark LBF from %s", haarCascadePath.c_str(), modelLBFPath.c_str());
+    faceDetector->loadModels(haarCascadePath.c_str(), modelLBFPath.c_str());
 }
 
 bool Camera::start(int index) {
-    if (cvCapture.isOpened()) {
+    if (cvCapture->isOpened()) {
         LOGI("Camera is already opened");
         return false;
     }
-    cvCapture.open(index, cv::CAP_ANDROID, vector<int>({
+    cvCapture->open(index, cv::CAP_ANDROID, vector<int>({
         cv::CAP_PROP_FRAME_WIDTH, cacheWidth,
         cv::CAP_PROP_FRAME_HEIGHT, cacheHeight}));
-    LOGI("CAP_PROP_FRAME_WIDTH: %lf", cvCapture.get(cv::CAP_PROP_FRAME_WIDTH));
-    LOGI("CAP_PROP_FRAME_HEIGHT: %lf", cvCapture.get(cv::CAP_PROP_FRAME_HEIGHT));
-    if (!cvCapture.isOpened()) {
+    if (!cvCapture->isOpened()) {
         LOGW("Unable to open camera");
         return false;
     }
-    // start capture thread
-    auto cptThread = thread([this](){
-        struct sigaction actions{};
-        sigemptyset(&actions.sa_mask);
-        actions.sa_flags = 0;
-        actions.sa_handler = thread_exit_handler;
-        sigaction(SIGUSR1, &actions,nullptr);
-
+    renderStop = false;
+    auto cptThread = thread([=](){
         if(!textureWindow) {
             LOGW("Camera output did not bind to target surface.");
             return;
         }
-        cv::Mat frame;
-        for(;;){
-            cvCapture.read(frame);
-            if (frame.empty())
+        tbb::concurrent_bounded_queue<FaceDetector::ProcessingChainData *> procQueue;
+        procQueue.set_capacity(2);
+        auto pipelineRunner = faceDetector->startThread(*cvCapture, procQueue);
+        FaceDetector::ProcessingChainData *recvData = nullptr;
+        for(;!renderStop && !faceDetector->isPipelineStop();) {
+            procQueue.pop(recvData);
+            if(recvData == nullptr)
                 continue;
-            auto srcWidth = frame.size().width;
-            auto srcHeight = frame.size().height;
+            auto srcWidth = recvData->img.size().width;
+            auto srcHeight = recvData->img.size().height;
             ANativeWindow_acquire(textureWindow.get());
             ANativeWindow_Buffer buffer;
             ANativeWindow_setBuffersGeometry(textureWindow.get(), srcHeight, srcWidth, 0/* format unchanged */);
-
             if (int32_t err = ANativeWindow_lock(textureWindow.get(), &buffer, nullptr)) {
                 LOGE("ANativeWindow_lock failed with error code: %d\n", err);
                 ANativeWindow_release(textureWindow.get());
@@ -112,37 +118,40 @@ bool Camera::start(int index) {
             }
             auto dstLumaPtr = reinterpret_cast<uint8_t *>(buffer.bits);
             cv::Mat dstRgba(buffer.height, buffer.stride, CV_8UC4, dstLumaPtr);
-            cv::Mat cvtRgba(srcHeight, srcWidth, CV_8UC4);
-
-            cv::cvtColor(frame, cvtRgba, cv::COLOR_BGR2RGBA);
-            cv::rotate(cvtRgba, cvtRgba, cv::ROTATE_90_CLOCKWISE);
-            auto sbuf = cvtRgba.data;
-            for (int i = 0; i < cvtRgba.rows; i++) {
+            auto sbuf = recvData->img.data;
+            for (int i = 0; i < recvData->img.rows; i++) {
                 auto dbuf = dstRgba.data + i * buffer.stride * 4;
-                memcpy(dbuf, sbuf, cvtRgba.cols * 4);
-                sbuf += cvtRgba.cols * 4;
+                memcpy(dbuf, sbuf, recvData->img.cols * 4);
+                sbuf += recvData->img.cols * 4;
             }
 
             ANativeWindow_unlockAndPost(textureWindow.get());
             ANativeWindow_release(textureWindow.get());
+            delete recvData;
+            recvData = nullptr;
         }
+        LOGI("Camera render thread stopping");
+        if(!faceDetector->isPipelineStop())
+            faceDetector->stopPipeline();
+        do {
+            delete recvData;
+        } while (procQueue.try_pop(recvData));
+        pipelineRunner->join();
     });
-    cptThreadHandle = cptThread.native_handle();
     cptThread.detach();
     return true;
 }
 
 void Camera::stop() {
-    if (cvCapture.isOpened()) {
-        pthread_kill(cptThreadHandle, SIGUSR1);
-        pthread_join(cptThreadHandle, nullptr);
-        cvCapture.release();
+    if (cvCapture->isOpened()) {
+        renderStop = true;
+        cvCapture->release();
         LOGD("Camera closed");
     }
 }
 
 bool Camera::setCaptureSize(int width, int height) {
-    if (cvCapture.isOpened()) {
+    if (cvCapture->isOpened()) {
         LOGW("Camera is already opened");
         return false;
     }

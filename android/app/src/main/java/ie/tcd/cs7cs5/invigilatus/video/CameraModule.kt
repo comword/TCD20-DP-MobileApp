@@ -18,6 +18,10 @@ class CameraModule(context: Context): ExportedModule(context) {
         private set
     var mCameraRunning: Boolean = false
         private set
+    lateinit var haarCascadePath: String
+        private set
+    lateinit var modelLBFPath: String
+        private set
 
     init {
         System.loadLibrary("camera-view")
@@ -161,6 +165,13 @@ class CameraModule(context: Context): ExportedModule(context) {
             return
         }
         nativeCameraSize(cameraHandle, width, height)
+        promise.resolve(true)
+    }
+
+    @ExpoMethod
+    fun setFaceModels(haarCascade: String, modelLBF: String, promise: Promise) {
+        haarCascadePath = haarCascade
+        modelLBFPath = modelLBF
         promise.resolve(true)
     }
 
