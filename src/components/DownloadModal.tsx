@@ -1,27 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, FlatList } from 'react-native';
+import { StyleSheet, FlatList, View, Text } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import {
-  Button,
   ProgressBar,
   Dialog,
   List,
   useTheme,
+  ActivityIndicator,
 } from 'react-native-paper';
 import tailwind from 'tailwind-rn';
 import { compose, bindActionCreators, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 
 import AppDialog from './AppDialog';
-import { rootMLSaga, selectPCSrv, PCSlice } from 'services/ml';
-import { DownloadTask, downloadAction } from 'services/ml/download';
-import { RootState } from 'store/types';
-import { injectReducer, injectSaga } from 'redux-injectors';
-import { select } from 'redux-saga/effects';
+import {
+  selectPCSrv,
+  PCSlice,
+  downloadAction,
+  modelInitAction,
+} from 'services/ml';
+import { DownloadTask } from 'services/ml/download';
 import { PCState, ProgressMap } from 'services/ml/types';
-
-import { NativeModulesProxy, Platform } from '@unimodules/core';
-const { CameraGLModule } = NativeModulesProxy;
+import { RootState } from 'store/types';
+import { injectReducer } from 'redux-injectors';
+import { select } from 'redux-saga/effects';
 
 type ComponentProps = {};
 
@@ -32,12 +34,15 @@ type Props = ComponentProps &
 const DownloadModal: React.FC<Props> = ({
   progress,
   modelPaths,
+  loadStatus,
   downloadAction,
+  modelInitAction,
   setModelPaths,
   setDownloadProg,
 }) => {
-  const [showDiag, setShowDiag] = useState(false);
-  const [finished, setFinished] = useState(false);
+  const theme = useTheme();
+  const [showDiag, setShowDiag] = useState(loadStatus === 'UNLOAD');
+  const [step, setStep] = useState(0); //0 for download, 1 for loading
 
   const modelsDir = FileSystem.cacheDirectory + 'models/';
   const downloadTasks: Array<DownloadTask> = [
@@ -72,7 +77,8 @@ const DownloadModal: React.FC<Props> = ({
           ...((yield select(selectPCSrv)) as PCState).modelPaths,
           {
             name: t1.name,
-            path: uri,
+            path: uri.replace(/(^\w+:|^)\/\//, ''),
+            loaded: false,
           },
         ]);
       },
@@ -102,57 +108,71 @@ const DownloadModal: React.FC<Props> = ({
     });
     console.log('Download?', check);
     if (check) {
-      setShowDiag(true);
       startDownload();
     } else {
       setModelPaths(
-        downloadTasks.map(it => ({ name: it.name, path: getPathByTask(it) }))
+        downloadTasks.map(it => ({
+          name: it.name,
+          path: getPathByTask(it).replace(/(^\w+:|^)\/\//, ''),
+          loaded: false,
+        }))
       );
     }
   };
 
   useEffect(() => {
-    checkExisting();
+    if (loadStatus === 'UNLOAD') checkExisting();
+    else if (loadStatus === 'LOAD') setShowDiag(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [loadStatus]);
 
   useEffect(() => {
-    if (downloadTasks.every(t1 => modelPaths.find(t2 => t1.name === t2.name))) {
-      console.log('Download finished');
-      // init native camera module
-      if (Platform.OS === 'android') {
-        CameraGLModule.initCamera(
-          modelPaths
-            .find(it => it.name === 'Face detect')
-            ?.path.replace(/(^\w+:|^)\/\//, ''),
-          modelPaths
-            .find(it => it.name === 'Face landmark')
-            ?.path.replace(/(^\w+:|^)\/\//, '')
-        );
+    if (step === 0 && loadStatus === 'UNLOAD')
+      if (
+        downloadTasks.every(t1 => modelPaths.find(t2 => t1.name === t2.name))
+      ) {
+        console.log('Download finished');
+        setStep(1);
+        modelInitAction({
+          haarCascade: modelPaths.find(it => it.name === 'Face detect')?.path,
+          modelLBF: modelPaths.find(it => it.name === 'Face landmark')?.path,
+        });
       }
-      setFinished(true);
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modelPaths]);
 
   return (
-    <AppDialog visible={showDiag}>
-      <Dialog.Title>Download models</Dialog.Title>
+    <AppDialog visible={showDiag} dismissable={false}>
+      <Dialog.Title>
+        {step === 0 && 'Downloading models'}
+        {step === 1 && 'Loading models'}
+      </Dialog.Title>
       <Dialog.Content>
-        <FlatList
-          data={downloadTasks.map(t1 => ({
-            ...t1,
-            ...progress.find(t2 => t2.name === t1.name),
-          }))}
-          renderItem={it => <Item item={it.item} />}
-          keyExtractor={it => it.name}
-        />
+        {step === 0 && (
+          <FlatList
+            data={downloadTasks.map(t1 => ({
+              ...t1,
+              ...progress.find(t2 => t2.name === t1.name),
+            }))}
+            renderItem={it => <Item item={it.item} />}
+            keyExtractor={it => it.name}
+          />
+        )}
+        {step === 1 && (
+          <View
+            style={tailwind(
+              'flex flex-col overflow-hidden text-center justify-center items-center'
+            )}
+          >
+            <ActivityIndicator
+              size="large"
+              animating
+              color={theme.colors.primary}
+            />
+            <Text style={{ color: theme.colors.text }}>Loading...</Text>
+          </View>
+        )}
       </Dialog.Content>
-      {finished && (
-        <Dialog.Actions>
-          <Button onPress={() => setShowDiag(false)}>Done</Button>
-        </Dialog.Actions>
-      )}
     </AppDialog>
   );
 };
@@ -174,11 +194,6 @@ function Item({ item }: { item: DownloadTask & ProgressMap }) {
           color={theme.colors.primary}
         />
       )}
-      // right={props => (
-      //   <Text {...props}>
-      //     {item?.totalBytesWritten}/{item?.totalBytesExpectedToWrite}
-      //   </Text>
-      // )}
       style={styles.listItemContainer}
     />
   );
@@ -189,6 +204,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     progress: PCSrv.downloadProg,
     modelPaths: PCSrv.modelPaths,
+    loadStatus: PCSrv.status,
   };
 };
 
@@ -197,6 +213,7 @@ function mapDispatchToProps(dispatch: Dispatch) {
     {
       ...PCSlice.actions,
       downloadAction,
+      modelInitAction,
     },
     dispatch
   );
@@ -207,10 +224,10 @@ const withReducer = injectReducer({
   key: PCSlice.name,
   reducer: PCSlice.reducer,
 });
-const withSaga = injectSaga({ key: PCSlice.name, saga: rootMLSaga });
+// const withSaga = injectSaga({ key: PCSlice.name, saga: rootMLSaga });
 
 export default compose(
   withConnect,
-  withReducer,
-  withSaga
+  withReducer
+  // withSaga
 )(DownloadModal) as React.ComponentType<ComponentProps>;

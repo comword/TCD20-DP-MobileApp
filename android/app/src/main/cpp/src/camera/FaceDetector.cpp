@@ -97,9 +97,9 @@ void FaceDetector::pipeline( cv::VideoCapture &cpt,
 {
     using namespace cv;
     const static cv::Scalar colors[] = {
-        Scalar( 255, 0, 0 ),
+        Scalar( 0, 0, 255 ), //BGR
         Scalar( 0, 255, 0 ),
-        Scalar( 0, 0, 255 ),
+        Scalar( 255, 0, 0 ),
     };
     parallel_pipeline( 5,
                        make_filter<void, ProcessingChainData *>( tbb::filter::serial_in_order, [&](
@@ -152,7 +152,7 @@ void FaceDetector::pipeline( cv::VideoCapture &cpt,
             if( 0.75 < aspect_ratio && aspect_ratio < 1.3 ) {
                 center.x = cvRound( ( r.x + r.width * 0.5 ) * scale );
                 center.y = cvRound( ( r.y + r.height * 0.5 ) * scale );
-                radius = cvRound( ( r.width + r.height ) * 0.25 * scale );
+                radius = cvRound( ( r.width + r.height ) * 0.27 * scale );
                 circle( pData->img, center, radius, Scalar( 0, 0, 0 ), -1 );
             } else
                 rectangle( pData->img, cvPoint( cvRound( r.x * scale ), cvRound( r.y * scale ) ),

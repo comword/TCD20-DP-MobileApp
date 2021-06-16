@@ -1,7 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import { ActivityIndicator } from 'react-native-paper';
-import { useTheme } from 'styled-components/native';
+import { ActivityIndicator, useTheme } from 'react-native-paper';
 import tailwind from 'tailwind-rn';
 
 const LoadingIndicator = () => {

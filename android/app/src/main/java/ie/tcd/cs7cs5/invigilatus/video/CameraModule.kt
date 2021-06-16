@@ -3,12 +3,15 @@ package ie.tcd.cs7cs5.invigilatus.video
 import android.Manifest
 import android.content.Context
 import android.util.Log
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.unimodules.core.ExportedModule
 import org.unimodules.core.Promise
 import org.unimodules.core.interfaces.ExpoMethod
 import org.unimodules.interfaces.permissions.Permissions
 import org.unimodules.core.ModuleRegistry
-import java.lang.Exception
+import org.unimodules.core.interfaces.services.EventEmitter
+import android.os.Bundle
 
 class CameraModule(context: Context): ExportedModule(context) {
     private lateinit var mModuleRegistry: ModuleRegistry
@@ -170,9 +173,20 @@ class CameraModule(context: Context): ExportedModule(context) {
     fun initCamera(haarCascade: String, modelLBF: String, promise: Promise) {
         haarCascadePath = haarCascade
         modelLBFPath = modelLBF
-        cameraHandle = nativeInitCamera()
-        Log.i("CameraModule", "cameraHandle: $cameraHandle")
+        GlobalScope.launch {
+            cameraHandle = nativeInitCamera()
+            Log.i("CameraModule", "cameraHandle: $cameraHandle")
+            emitModelLoaded(haarCascadePath)
+            emitModelLoaded(modelLBFPath)
+        }
         promise.resolve(true)
+    }
+
+    fun emitModelLoaded(path: String) {
+        val eventEmitter = mModuleRegistry.getModule(EventEmitter::class.java)
+        val bundle = Bundle()
+        bundle.putString("path", path)
+        eventEmitter.emit("OnModelLoaded", bundle)
     }
 
     private external fun nativeInitCamera(): Long

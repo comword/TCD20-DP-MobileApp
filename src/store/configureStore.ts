@@ -18,6 +18,7 @@ import {
   PURGE,
   REGISTER,
 } from 'redux-persist';
+import { rootMLSaga } from 'services/ml';
 
 declare global {
   interface Window {
@@ -75,6 +76,7 @@ const store = configureStore({
           PURGE,
           REGISTER,
           'downloadAction',
+          'modelInitAction',
         ],
       },
     }),
@@ -89,5 +91,7 @@ const store = configureStore({
 const persister = persistStore(store);
 //@ts-ignore
 store.persister = persister;
+
+runSaga(rootMLSaga, store.dispatch);
 
 export { store, persister };

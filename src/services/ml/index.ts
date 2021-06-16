@@ -1,43 +1,23 @@
+import { Dispatch } from 'redux';
 import { SagaIterator } from 'redux-saga';
-import { all, takeEvery } from 'redux-saga/effects';
+import { all, call, take, takeEvery } from 'redux-saga/effects';
 import { downloadAction, sagaDownload } from './download';
+import { modelInitAction, sagaLoadModel } from './modelLoad';
 import { PCSlice, selectPCSrv } from './slice';
 
-import { Dispatch } from '@reduxjs/toolkit';
-import {
-  NativeModulesProxy,
-  EventEmitter,
-  Platform,
-  Subscription,
-} from '@unimodules/core';
-const { PostureClassify } = NativeModulesProxy;
-
-function* rootMLSaga(): SagaIterator {
-  yield all([takeEvery(downloadAction, sagaDownload)]);
+function* sagaLoadModelWatcher(dispatch: Dispatch) {
+  const action = (yield take(modelInitAction)) as ReturnType<
+    typeof modelInitAction
+  >;
+  yield call(sagaLoadModel, dispatch, action);
 }
 
-let eventListeners: Subscription[] = [];
-
-export const initPCService = async (dispatch: Dispatch) => {
-  if (!(await PostureClassify.getTFLiteInitialised()))
-    if (Platform.OS === 'android') {
-      const eventEmitter = new EventEmitter(PostureClassify);
-      eventListeners.push(
-        eventEmitter.addListener(
-          'OnPostureClassifyMsg',
-          (event: { code: number; msg: string }) =>
-            dispatch(
-              PCSlice.actions.setError({
-                code: event.code,
-                msg: event.msg,
-                show: event.code < 0,
-              })
-            )
-        )
-      );
-      await PostureClassify.initTFLite('');
-    }
-};
+function* rootMLSaga(dispatch: Dispatch): SagaIterator {
+  yield all([
+    takeEvery(downloadAction, sagaDownload),
+    call(sagaLoadModelWatcher, dispatch),
+  ]);
+}
 
 export { rootMLSaga, selectPCSrv, PCSlice };
-export { downloadAction };
+export { downloadAction, modelInitAction };

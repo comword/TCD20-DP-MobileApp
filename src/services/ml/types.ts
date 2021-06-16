@@ -34,6 +34,7 @@ export type InferResult = {
 export type ModelPath = {
   name: string;
   path: string;
+  loaded: boolean;
 };
 
 export type ProgressMap = {
@@ -45,7 +46,7 @@ export type ProgressMap = {
 
 export interface PCState {
   lastError?: ErrorMsg;
-  status: 'STOP' | 'RUN';
+  status: 'UNLOAD' | 'LOAD' | 'RUNNING';
   modelPaths: Array<ModelPath>;
   downloadProg: Array<ProgressMap>;
   result?: Array<InferResult>;

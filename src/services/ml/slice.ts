@@ -4,7 +4,7 @@ import { RootState } from 'store/types';
 import { InferResult, ModelPath, PCState, ProgressMap } from './types';
 
 const initialState: PCState = {
-  status: 'STOP',
+  status: 'UNLOAD',
   modelPaths: [],
   downloadProg: [],
 };
@@ -16,7 +16,10 @@ export const PCSlice = createSlice({
     setError: (state, action: PayloadAction<ErrorMsg | undefined>) => {
       state.lastError = action.payload;
     },
-    setStatus: (state, action: PayloadAction<'STOP' | 'RUN'>) => {
+    setStatus: (
+      state,
+      action: PayloadAction<'UNLOAD' | 'LOAD' | 'RUNNING'>
+    ) => {
       state.status = action.payload;
     },
     setModelPaths: (state, action: PayloadAction<Array<ModelPath>>) => {
@@ -32,6 +35,13 @@ export const PCSlice = createSlice({
     },
     setResult: (state, action: PayloadAction<Array<InferResult>>) => {
       state.result = action.payload;
+    },
+    setModelLoaded: (state, action: PayloadAction<string>) => {
+      const newModelPaths = state.modelPaths.map(it =>
+        it.path === action.payload ? { ...it, loaded: true } : it
+      );
+      state.modelPaths = newModelPaths;
+      if (newModelPaths.every(it => it.loaded)) state.status = 'LOAD';
     },
   },
 });

@@ -75,19 +75,3 @@ export function* sagaDownload(
     );
   }
 }
-
-// export async function downloadFaceDetect(
-//   callback?: (data: FileSystem.DownloadProgressData) => void
-// ): Promise<string> {
-//   const url =
-//     'https://raw.githubusercontent.com/opencv/opencv/master/data/haarcascades/haarcascade_frontalface_alt2.xml';
-//   return downloadFile(modelsDir, url, callback);
-// }
-
-// export async function downloadFaceLandmark(
-//   callback?: (data: FileSystem.DownloadProgressData) => void
-// ): Promise<string> {
-//   const url =
-//     'https://github.com/kurnianggoro/GSOC2017/raw/master/data/lbfmodel.yaml';
-//   return downloadFile(modelsDir, url, callback);
-// }
