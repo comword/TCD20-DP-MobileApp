@@ -32,7 +32,7 @@ public:
     bool isPipelineStop() const;
     void stopPipeline();
     std::shared_ptr<std::thread>startThread(cv::VideoCapture &cpt, tbb::concurrent_bounded_queue<ProcessingChainData *> &queue);
-private:
+public:
     std::shared_ptr<cv::CascadeClassifier> cvFaceCascade;
     std::shared_ptr<cv::face::FacemarkLBF> cvFaceMark;
     volatile bool pipelineStop = false;

@@ -65,11 +65,10 @@ bool FaceDetector::detect(cv::InputArray image, cv::OutputArray faces, FaceDetec
     std::vector<std::vector<cv::Point2f>> landmarks;
     cls->cvFaceCascade->detectMultiScale(image, faces_,
                                     1.3, 3, 0
-                                    |cv::CASCADE_FIND_BIGGEST_OBJECT
+//                                    |cv::CASCADE_FIND_BIGGEST_OBJECT
                                     //|CASCADE_DO_ROUGH_SEARCH
                                     |cv::CASCADE_SCALE_IMAGE,
                                  cv::Size(30, 30));
-//    cls->cvFaceMark->fit(image, faces_, landmarks);
     cv::Mat(faces_).copyTo(faces);
     return true;
 }
@@ -87,13 +86,8 @@ void FaceDetector::pipeline(cv::VideoCapture &cpt,
     using namespace cv;
     const static cv::Scalar colors[] = {
         Scalar(255,0,0),
-        Scalar(255,128,0),
-        Scalar(255,255,0),
         Scalar(0,255,0),
-        Scalar(0,128,255),
-        Scalar(0,255,255),
         Scalar(0,0,255),
-        Scalar(255,0,255)
     };
     parallel_pipeline(5,
         make_filter<void,ProcessingChainData*>(tbb::filter::serial_in_order, [&](tbb::flow_control& fc)->ProcessingChainData* {
@@ -123,8 +117,8 @@ void FaceDetector::pipeline(cv::VideoCapture &cpt,
                 return nullptr;
             if(cvFaceMark->empty())
                 return pData;
-            cvFaceMark->getFaces(pData->img, pData->faces);
-            cvFaceMark->fit(pData->img, pData->faces, pData->landmarks);
+            cvFaceMark->getFaces(pData->scaleHalf, pData->faces);
+            cvFaceMark->fit(pData->scaleHalf, pData->faces, pData->landmarks);
             return pData;
             }) & tbb::make_filter<ProcessingChainData*,ProcessingChainData*>(tbb::filter::serial_in_order,
                                                                              [&](ProcessingChainData *pData)->ProcessingChainData* {
@@ -134,12 +128,20 @@ void FaceDetector::pipeline(cv::VideoCapture &cpt,
                 Rect r = pData->faces[i];
                 Mat smallImgROI;
                 vector<Rect> nestedObjects;
-                Scalar color = colors[i%8];
-                int scale = 2;
+                Point center;
+                Scalar color = colors[i%3];
+                float scale = 2.0f;
 
                 rectangle( pData->img, cvPoint(cvRound(r.x*scale), cvRound(r.y*scale)),
                            cvPoint(cvRound((r.x + r.width-1)*scale), cvRound((r.y + r.height-1)*scale)),
-                           color, 3, 8, 0);
+                           Scalar(0,0,0), -1);
+
+                vector<Point2f> pts = pData->landmarks[i];
+                for(const auto& it: pts) {
+                    center.x = cvRound(it.x * scale);
+                    center.y = cvRound(it.y * scale);
+                    circle(pData->img, center, 2, color,-1);
+                }
             }
             return pData;
             }) & tbb::make_filter<ProcessingChainData*,void>(tbb::filter::serial_in_order,

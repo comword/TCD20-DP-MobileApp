@@ -69,7 +69,7 @@ void Camera::initFaceDetector(JNIEnv* env, jobject ctx) {
         return;
     }
     auto pHaarCascadePath = env->GetStringUTFChars(jStrHaarCascadePath, nullptr);
-    auto pModelLBFPath = env->GetStringUTFChars(jStrHaarCascadePath, nullptr);
+    auto pModelLBFPath = env->GetStringUTFChars(jStrModelLBFPath, nullptr);
 
     string haarCascadePath(pHaarCascadePath);
     string modelLBFPath(pModelLBFPath);
