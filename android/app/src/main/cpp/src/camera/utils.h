@@ -2,6 +2,7 @@
 #define INVIGILATOR_UTILS_H
 
 #include <jni.h>
+#include <ostream>
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 
@@ -22,5 +23,6 @@ namespace utils {
     extern const char kUnsupportedOperationException[];
 
     void ThrowException(JNIEnv* env, const char* clazz, const char* fmt, ...);
+    void debugBacktrace( std::ostream &out );
 }
 #endif //INVIGILATOR_UTILS_H

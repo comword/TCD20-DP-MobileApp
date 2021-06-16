@@ -22,14 +22,12 @@ struct ProcessingChainData
 {
     cv::Mat img, gray, scaleHalf;
     std::vector<cv::Rect> faces;
+    std::vector<std::vector<cv::Point2f>> landmarks;
 };
 public:
     FaceDetector();
     virtual ~FaceDetector();
     bool loadModels(const char* haarCascade, const char* modelLBF);
-    void detect(cv::InputArray image,
-                std::vector<cv::Rect>& objects,
-                std::vector<std::vector<cv::Point2f>>& landmarks);
     void pipeline(cv::VideoCapture &cpt, tbb::concurrent_bounded_queue<ProcessingChainData *> &queue);
     bool isPipelineStop() const;
     void stopPipeline();
@@ -38,6 +36,8 @@ private:
     std::shared_ptr<cv::CascadeClassifier> cvFaceCascade;
     std::shared_ptr<cv::face::FacemarkLBF> cvFaceMark;
     volatile bool pipelineStop = false;
+private:
+    static bool detect(cv::InputArray image, cv::OutputArray faces, FaceDetector *cls);
 };
 
 

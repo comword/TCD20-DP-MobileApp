@@ -1,9 +1,13 @@
 #include "dlog.h"
+#include "utils.h"
 #include "FaceDetector.h"
 
 #include <thread>
 #include <memory>
+#include <iterator>
+#include <vector>
 #include <sys/stat.h>
+#include <opencv2/core/types_c.h>
 #include <opencv2/videoio.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/objdetect.hpp>
@@ -11,12 +15,11 @@
 #include <tbb/pipeline.h>
 
 using namespace std;
-using namespace cv;
 using namespace cv::face;
 using namespace tbb;
 
 FaceDetector::FaceDetector() {
-    cvFaceCascade = shared_ptr<CascadeClassifier>(new CascadeClassifier());
+    cvFaceCascade = shared_ptr<cv::CascadeClassifier>(new cv::CascadeClassifier());
 }
 
 FaceDetector::~FaceDetector() {
@@ -40,23 +43,35 @@ bool FaceDetector::loadModels(const char *haarCascade, const char *modelLBF) {
         LOGW("HaarCascade model not found");
     auto modelLBFPath = string(modelLBF);
     if(isFileExist(modelLBFPath)) {
-        cvFaceMark = FacemarkLBF::create();
+        FacemarkLBF::Params params;
+        params.model_filename = modelLBFPath;
+        params.cascade_face = cascadePath;
+        cvFaceMark = FacemarkLBF::create(params);
         cvFaceMark->loadModel(modelLBFPath);
         auto loadedFacemarkLBF = !cvFaceMark->empty();
-        if(loadedFacemarkLBF)
+        if(loadedFacemarkLBF) {
+            cvFaceMark->setFaceDetector(reinterpret_cast<FN_FaceDetector>(&FaceDetector::detect), this);
             LOGI("FacemarkLBF model found and loaded");
-        else
+        } else
             LOGW("FacemarkLBF model load failed");
     } else
         LOGW("FacemarkLBF model not found");
     return true;
 }
 
-void FaceDetector::detect(InputArray image,
-                          std::vector<Rect>& objects,
-                          std::vector<std::vector<Point2f>>& landmarks) {
-    cvFaceCascade->detectMultiScale(image, objects);
-    cvFaceMark->fit(image, objects, landmarks);
+bool FaceDetector::detect(cv::InputArray image, cv::OutputArray faces, FaceDetector *cls) {
+
+    std::vector<cv::Rect> faces_;
+    std::vector<std::vector<cv::Point2f>> landmarks;
+    cls->cvFaceCascade->detectMultiScale(image, faces_,
+                                    1.3, 3, 0
+                                    |cv::CASCADE_FIND_BIGGEST_OBJECT
+                                    //|CASCADE_DO_ROUGH_SEARCH
+                                    |cv::CASCADE_SCALE_IMAGE,
+                                 cv::Size(30, 30));
+//    cls->cvFaceMark->fit(image, faces_, landmarks);
+    cv::Mat(faces_).copyTo(faces);
+    return true;
 }
 
 bool FaceDetector::isPipelineStop() const {
@@ -67,8 +82,19 @@ void FaceDetector::stopPipeline() {
     pipelineStop = true;
 }
 
-void FaceDetector::pipeline(VideoCapture &cpt,
+void FaceDetector::pipeline(cv::VideoCapture &cpt,
                             tbb::concurrent_bounded_queue<ProcessingChainData *> &queue) {
+    using namespace cv;
+    const static cv::Scalar colors[] = {
+        Scalar(255,0,0),
+        Scalar(255,128,0),
+        Scalar(255,255,0),
+        Scalar(0,255,0),
+        Scalar(0,128,255),
+        Scalar(0,255,255),
+        Scalar(0,0,255),
+        Scalar(255,0,255)
+    };
     parallel_pipeline(5,
         make_filter<void,ProcessingChainData*>(tbb::filter::serial_in_order, [&](tbb::flow_control& fc)->ProcessingChainData* {
             if(pipelineStop) {
@@ -80,35 +106,49 @@ void FaceDetector::pipeline(VideoCapture &cpt,
             if (frame.empty())
                 return nullptr;
             auto pData = new ProcessingChainData;
+            rotate(frame, frame, ROTATE_90_CLOCKWISE);
             pData->img = frame.clone();
-            return pData;
-        }) & tbb::make_filter<ProcessingChainData*,ProcessingChainData*>(tbb::filter::serial_in_order,
-                                                                       [&](ProcessingChainData *pData)->ProcessingChainData* {
-            if(pData == nullptr)
-                return nullptr;
-            Mat cvtRgba;
-            cvtColor(pData->img, cvtRgba, COLOR_BGR2RGBA);
-            rotate(cvtRgba, cvtRgba, ROTATE_90_CLOCKWISE);
-            pData->img = cvtRgba.clone();
             return pData;
         }) & tbb::make_filter<ProcessingChainData*,ProcessingChainData*>(tbb::filter::serial_in_order,
                                                                     [&](ProcessingChainData *pData)->ProcessingChainData* {
             if(pData == nullptr)
                 return nullptr;
-            cvtColor(pData->img, pData->gray, COLOR_RGBA2GRAY);
+            cvtColor(pData->img, pData->gray, COLOR_BGR2GRAY);
             resize(pData->gray, pData->scaleHalf, Size(), .5f, .5f, INTER_LINEAR);
+            equalizeHist(pData->scaleHalf, pData->scaleHalf);
             return pData;
         }) & tbb::make_filter<ProcessingChainData*,ProcessingChainData*>(tbb::filter::serial_in_order,
                                                                          [&](ProcessingChainData *pData)->ProcessingChainData* {
             if(pData == nullptr)
                 return nullptr;
-            if(cvFaceCascade->empty())
+            if(cvFaceMark->empty())
                 return pData;
+            cvFaceMark->getFaces(pData->img, pData->faces);
+            cvFaceMark->fit(pData->img, pData->faces, pData->landmarks);
             return pData;
-        }) & tbb::make_filter<ProcessingChainData*,void>(tbb::filter::serial_in_order,
+            }) & tbb::make_filter<ProcessingChainData*,ProcessingChainData*>(tbb::filter::serial_in_order,
+                                                                             [&](ProcessingChainData *pData)->ProcessingChainData* {
+            if(pData == nullptr)
+                return nullptr;
+            for ( size_t i = 0; i < pData->faces.size(); i++ ) {
+                Rect r = pData->faces[i];
+                Mat smallImgROI;
+                vector<Rect> nestedObjects;
+                Scalar color = colors[i%8];
+                int scale = 2;
+
+                rectangle( pData->img, cvPoint(cvRound(r.x*scale), cvRound(r.y*scale)),
+                           cvPoint(cvRound((r.x + r.width-1)*scale), cvRound((r.y + r.height-1)*scale)),
+                           color, 3, 8, 0);
+            }
+            return pData;
+            }) & tbb::make_filter<ProcessingChainData*,void>(tbb::filter::serial_in_order,
                                                        [&](ProcessingChainData *pData) {
             if(pData != nullptr && !pipelineStop) {
                 try {
+                    Mat cvtRgba;
+                    cvtColor(pData->img, cvtRgba, COLOR_BGR2RGBA);
+                    pData->img = cvtRgba.clone();
                     queue.push(pData);
                 } catch (...) {
                     LOGW("Pipeline caught an exception on the queue");
@@ -119,7 +159,7 @@ void FaceDetector::pipeline(VideoCapture &cpt,
     );
 }
 
-shared_ptr<thread> FaceDetector::startThread(VideoCapture &cpt,
+shared_ptr<thread> FaceDetector::startThread(cv::VideoCapture &cpt,
                                                        concurrent_bounded_queue<ProcessingChainData *> &queue) {
     pipelineStop = false;
     return make_shared<thread>(&FaceDetector::pipeline, this, ref(cpt), ref(queue));
