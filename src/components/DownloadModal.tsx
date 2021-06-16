@@ -20,6 +20,9 @@ import { injectReducer, injectSaga } from 'redux-injectors';
 import { select } from 'redux-saga/effects';
 import { PCState, ProgressMap } from 'services/ml/types';
 
+import { NativeModulesProxy, Platform } from '@unimodules/core';
+const { CameraGLModule } = NativeModulesProxy;
+
 type ComponentProps = {};
 
 type Props = ComponentProps &
@@ -87,29 +90,46 @@ const DownloadModal: React.FC<Props> = ({
     return false;
   };
 
-  const checkAct = async () => {
+  const getPathByTask = (task: DownloadTask) => {
+    const urlSplit = task.url.split('/');
+    return task.dir + urlSplit[urlSplit.length - 1];
+  };
+
+  const checkExisting = async () => {
     const check = await asyncSome(downloadTasks, async it => {
-      const urlSplit = it.url.split('/');
-      const info = await FileSystem.getInfoAsync(
-        it.dir + urlSplit[urlSplit.length - 1]
-      );
+      const info = await FileSystem.getInfoAsync(getPathByTask(it));
       return !info.exists;
     });
     console.log('Download?', check);
     if (check) {
       setShowDiag(true);
       startDownload();
+    } else {
+      setModelPaths(
+        downloadTasks.map(it => ({ name: it.name, path: getPathByTask(it) }))
+      );
     }
   };
 
   useEffect(() => {
-    checkAct();
+    checkExisting();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (downloadTasks.every(t1 => modelPaths.find(t2 => t1.name === t2.name))) {
       console.log('Download finished');
+      // init native camera module
+      if (Platform.OS === 'android') {
+        CameraGLModule.initCamera(
+          modelPaths
+            .find(it => it.name === 'Face detect')
+            ?.path.replace(/(^\w+:|^)\/\//, ''),
+          modelPaths
+            .find(it => it.name === 'Face landmark')
+            ?.path.replace(/(^\w+:|^)\/\//, '')
+        );
+      }
       setFinished(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

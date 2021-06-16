@@ -19,11 +19,12 @@ export type ICameraGLModule = {
   startCamera: () => Promise<boolean>;
   stopCamera: () => Promise<boolean>;
   setCameraSize: (width: number, height: number) => Promise<boolean>;
+  initCamera: (haarCascade: string, modelLBF: string) => Promise<boolean>;
 };
 
 declare module '@unimodules/core' {
   declare const NativeModulesProxy: {
-    PostureClassify: NativeModule | IPostureClassify;
-    CameraGLModule: NativeModule | ICameraGLModule;
+    PostureClassify: NativeModule & IPostureClassify;
+    CameraGLModule: NativeModule & ICameraGLModule;
   };
 }

@@ -75,7 +75,10 @@ void Camera::initFaceDetector(JNIEnv* env, jobject ctx) {
     string modelLBFPath(pModelLBFPath);
     env->ReleaseStringUTFChars(jStrHaarCascadePath, pHaarCascadePath);
     env->ReleaseStringUTFChars(jStrModelLBFPath, pModelLBFPath);
-
+    if(haarCascadePath.empty() || modelLBFPath.empty()) {
+        LOGW("Face detector model is not initialised due to missing HaarCascade or landmark LBF model");
+        return;
+    }
     LOGI("Loading HaarCascade from %s, and landmark LBF from %s", haarCascadePath.c_str(), modelLBFPath.c_str());
     faceDetector->loadModels(haarCascadePath.c_str(), modelLBFPath.c_str());
 }

@@ -25,8 +25,6 @@ class CameraModule(context: Context): ExportedModule(context) {
 
     init {
         System.loadLibrary("camera-view")
-        cameraHandle = nativeInitCamera()
-        Log.i("CameraModule", "cameraHandle: $cameraHandle")
     }
 
     override fun onDestroy() {
@@ -169,9 +167,11 @@ class CameraModule(context: Context): ExportedModule(context) {
     }
 
     @ExpoMethod
-    fun setFaceModels(haarCascade: String, modelLBF: String, promise: Promise) {
+    fun initCamera(haarCascade: String, modelLBF: String, promise: Promise) {
         haarCascadePath = haarCascade
         modelLBFPath = modelLBF
+        cameraHandle = nativeInitCamera()
+        Log.i("CameraModule", "cameraHandle: $cameraHandle")
         promise.resolve(true)
     }
 
