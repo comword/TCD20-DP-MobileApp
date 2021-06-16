@@ -3,17 +3,18 @@
 
 #include <memory>
 
-class PostureClassify {
-public:
-    PostureClassify(const void *model_data, size_t model_size, bool use_gpu);
+class PostureClassify
+{
+    public:
+        PostureClassify( const void *model_data, size_t model_size, bool use_gpu );
 
-    virtual ~PostureClassify();
+        virtual ~PostureClassify();
 
-    bool IsInterpreterCreated();
+        bool IsInterpreterCreated();
 
-    std::unique_ptr<int[]> DoInfer(int* img_rgb);
+        std::unique_ptr<int[]> DoInfer( int *img_rgb );
 
-private:
+    private:
 
 };
 

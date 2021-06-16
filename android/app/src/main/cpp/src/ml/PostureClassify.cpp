@@ -14,20 +14,23 @@
 
 #include "PostureClassify.h"
 
-PostureClassify::PostureClassify(const void *model_data, size_t model_size, bool use_gpu)
+PostureClassify::PostureClassify( const void *model_data, size_t model_size, bool use_gpu )
 {
 
 }
 
-PostureClassify::~PostureClassify() {
+PostureClassify::~PostureClassify()
+{
 
 }
 
-bool PostureClassify::IsInterpreterCreated() {
+bool PostureClassify::IsInterpreterCreated()
+{
     return false;
 }
 
-std::unique_ptr<int[]> PostureClassify::DoInfer(int *img_rgb) {
+std::unique_ptr<int[]> PostureClassify::DoInfer( int *img_rgb )
+{
     return std::unique_ptr<int[]>();
 }
 
