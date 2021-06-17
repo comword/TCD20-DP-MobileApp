@@ -13,28 +13,31 @@ const { CameraGLModule, PostureClassify } = NativeModulesProxy;
 
 let eventListeners: Subscription[] = [];
 
-export const initPCService = async (dispatch: Dispatch, model?: string) => {
-  if (!(await PostureClassify.getTFLiteInitialised()))
-    if (Platform.OS === 'android') {
-      const eventEmitter = new EventEmitter(PostureClassify);
-      eventListeners.push(
-        eventEmitter.addListener(
-          'OnPostureClassifyErr',
-          (event: { code: number; msg: string }) =>
-            dispatch(
-              PCSlice.actions.setError({
-                code: event.code,
-                msg: event.msg,
-                show: event.code < 0,
-              })
-            )
-        ),
-        eventEmitter.addListener('OnModelLoaded', (event: { path: string }) =>
-          dispatch(PCSlice.actions.setModelLoaded(event.path))
-        )
-      );
-      await PostureClassify.initTFLite(model ? model : '');
-    }
+const initEvents = (dispatch: Dispatch) => {
+  if (Platform.OS === 'android') {
+    const eventEmitter = new EventEmitter(PostureClassify);
+    eventListeners.push(
+      eventEmitter.addListener(
+        'OnPostureClassifyErr',
+        (event: { code: number; msg: string; show: boolean }) =>
+          dispatch(
+            PCSlice.actions.setError({
+              code: event.code,
+              msg: event.msg,
+              show: event.show,
+            })
+          )
+      ),
+      eventEmitter.addListener('OnModelLoaded', (event: { path: string }) =>
+        dispatch(PCSlice.actions.setModelLoaded(event.path))
+      )
+    );
+  }
+};
+
+const initPCService = async (model: string) => {
+  if (!(await PostureClassify.getInitialised()))
+    if (Platform.OS === 'android') await PostureClassify.initTFLite(model);
 };
 
 interface ModelPaths {
@@ -51,13 +54,15 @@ export function* sagaLoadModel(
 ): SagaIterator {
   try {
     if (Platform.OS === 'android') {
-      yield call(
-        CameraGLModule.initCamera,
-        action.payload.haarCascade,
-        action.payload.modelLBF
-      );
-      yield call(initPCService, dispatch, action.payload.posture);
-      // yield put(PCSlice.actions.setStatus('LOAD'));
+      yield call(initEvents, dispatch);
+      if (action.payload.haarCascade && action.payload.modelLBF)
+        yield call(
+          CameraGLModule.initCamera,
+          action.payload.haarCascade,
+          action.payload.modelLBF
+        );
+      if (action.payload.posture)
+        yield call(initPCService, action.payload.posture);
     }
   } catch (e) {
     console.log(e);

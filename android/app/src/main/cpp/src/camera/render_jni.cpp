@@ -2,7 +2,7 @@
 #include <cstdlib>
 
 #include "dlog.h"
-#include "utils.h"
+#include "glUtils.h"
 #include "Camera.h"
 
 using namespace utils;

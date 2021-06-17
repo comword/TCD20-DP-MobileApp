@@ -67,7 +67,7 @@ find_library(egl-lib EGL)
 
 target_link_libraries(mlmodel
         ${log-lib} ${android-lib}
-        tflite)
+        tflite cv-tbb cv-core cv-imgproc)
 
 target_link_libraries(camera-view
         ${log-lib} ${android-lib} ${camera-lib} ${media-lib} ${gl-lib} ${egl-lib}

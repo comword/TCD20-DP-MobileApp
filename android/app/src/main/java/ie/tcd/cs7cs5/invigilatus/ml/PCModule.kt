@@ -8,23 +8,44 @@ import org.tensorflow.lite.nnapi.NnApiDelegate
 import org.tensorflow.lite.TensorFlowLite
 
 import android.os.Build
+import android.os.Bundle
 import android.util.Log
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.unimodules.core.ExportedModule
+import org.unimodules.core.ModuleRegistry
 import org.unimodules.core.Promise
 import org.unimodules.core.interfaces.ExpoMethod
+import org.unimodules.core.interfaces.services.EventEmitter
 import java.io.FileInputStream
 import java.lang.RuntimeException
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 
 class PCModule(context: Context) : ExportedModule(context) {
+    private lateinit var mModuleRegistry: ModuleRegistry
     var interpreter: Interpreter? = null
         private set
     private var gpuDelegate: GpuDelegate? = null
     private var nnApiDelegate: NnApiDelegate? = null
+    var mPCHandle: Long = 0
+        private set
 
     companion object {
         val TAG = PCModule::class.simpleName
+    }
+
+    init {
+        System.loadLibrary("mlmodel")
+    }
+
+    override fun onDestroy() {
+        if(mPCHandle != 0L)
+            nativeDeInit(mPCHandle)
+    }
+
+    override fun onCreate(moduleRegistry: ModuleRegistry) {
+        mModuleRegistry = moduleRegistry
     }
 
     override fun getName(): String {
@@ -64,10 +85,26 @@ class PCModule(context: Context) : ExportedModule(context) {
                     }
                 }
             }
-//            interpreter = Interpreter(loadModelFile(path, context), options)
+            GlobalScope.launch {
+                val eventEmitter = mModuleRegistry.getModule(EventEmitter::class.java)
+                val bundle = Bundle()
+                try {
+                    interpreter = Interpreter(loadModelFile(path, context), options)
+                    mPCHandle = nativeInit(interpreter!!)
+                    bundle.putString("path", path)
+                    eventEmitter.emit("OnModelLoaded", bundle)
+                } catch (err: RuntimeException) {
+                    val msg = "Error in initialising TFLite interpreter: ${err.message}"
+                    Log.w(TAG, msg)
+                    bundle.putInt("code", -1)
+                    bundle.putString("msg", msg)
+                    bundle.putBoolean("show", true)
+                    eventEmitter.emit("OnPostureClassifyErr", bundle)
+                }
+            }
             result.resolve(true)
         } catch (err: RuntimeException) {
-            val msg = "Error in initiatio TFLite interpreter: ${err.message}"
+            val msg = "Error in initialising TFLite interpreter: ${err.message}"
             Log.w(TAG, msg)
             result.reject(TAG, msg)
         }
@@ -75,6 +112,8 @@ class PCModule(context: Context) : ExportedModule(context) {
 
     @ExpoMethod
     fun deInitTFLite(promise: Promise) {
+        if(mPCHandle != 0L)
+            nativeDeInit(mPCHandle)
         interpreter?.close()
         interpreter = null
         gpuDelegate?.close()
@@ -85,11 +124,13 @@ class PCModule(context: Context) : ExportedModule(context) {
     }
 
     @ExpoMethod
-    fun getTFLiteInitialised(promise: Promise) {
-        if(interpreter == null)
+    fun getInitialised(promise: Promise) {
+        if(mPCHandle == 0L)
             promise.resolve(false)
         else
             promise.resolve(true)
     }
 
+    private external fun nativeInit(interpreter: Interpreter): Long
+    private external fun nativeDeInit(pcHandle: Long)
 }

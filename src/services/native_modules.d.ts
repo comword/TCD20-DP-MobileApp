@@ -5,7 +5,7 @@ import { PermissionResponse } from 'expo-permissions';
 export type IPostureClassify = {
   initTFLite: (path: string) => Promise<boolean>;
   deInitTFLite: () => Promise<boolean>;
-  getTFLiteInitialised: () => Promise<boolean>;
+  getInitialised: () => Promise<boolean>;
 };
 
 export type ICameraGLModule = {

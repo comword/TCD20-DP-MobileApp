@@ -1,5 +1,4 @@
 #include "dlog.h"
-#include "utils.h"
 #include "FaceDetector.h"
 
 #include <thread>
@@ -15,8 +14,6 @@
 #include <tbb/pipeline.h>
 
 using namespace std;
-using namespace cv::face;
-using namespace tbb;
 
 FaceDetector::FaceDetector()
 {
@@ -36,6 +33,7 @@ inline bool isFileExist( const std::string &name )
 
 bool FaceDetector::loadModels( const char *haarCascade, const char *modelLBF )
 {
+    using namespace cv::face;
     auto cascadePath = string( haarCascade );
     if( isFileExist( cascadePath ) ) {
         auto loadedHaarCascade = cvFaceCascade->load( cascadePath );
@@ -96,14 +94,15 @@ void FaceDetector::pipeline( cv::VideoCapture &cpt,
                              tbb::concurrent_bounded_queue<ProcessingChainData *> &queue )
 {
     using namespace cv;
+    using namespace tbb;
     const static cv::Scalar colors[] = {
         Scalar( 0, 0, 255 ), //BGR
         Scalar( 0, 255, 0 ),
         Scalar( 255, 0, 0 ),
     };
     parallel_pipeline( 5,
-                       make_filter<void, ProcessingChainData *>( tbb::filter::serial_in_order, [&](
-    tbb::flow_control & fc )->ProcessingChainData* {
+                       make_filter<void, ProcessingChainData *>( filter::serial_in_order, [&](
+    flow_control & fc )->ProcessingChainData* {
         if( pipelineStop )
         {
             fc.stop();
@@ -117,7 +116,7 @@ void FaceDetector::pipeline( cv::VideoCapture &cpt,
         rotate( frame, frame, ROTATE_90_CLOCKWISE );
         pData->img = frame.clone();
         return pData;
-    } ) & tbb::make_filter<ProcessingChainData *, ProcessingChainData *>( tbb::filter::serial_in_order,
+    } ) & make_filter<ProcessingChainData *, ProcessingChainData *>( filter::serial_in_order,
     [&]( ProcessingChainData * pData )->ProcessingChainData* {
         if( pData == nullptr )
             return nullptr;
@@ -125,7 +124,7 @@ void FaceDetector::pipeline( cv::VideoCapture &cpt,
         resize( pData->gray, pData->scaleHalf, Size(), .5f, .5f, INTER_LINEAR );
         equalizeHist( pData->scaleHalf, pData->scaleHalf );
         return pData;
-    } ) & tbb::make_filter<ProcessingChainData *, ProcessingChainData *>( tbb::filter::serial_in_order,
+    } ) & make_filter<ProcessingChainData *, ProcessingChainData *>( filter::serial_in_order,
     [&]( ProcessingChainData * pData )->ProcessingChainData* {
         if( pData == nullptr )
             return nullptr;
@@ -134,15 +133,13 @@ void FaceDetector::pipeline( cv::VideoCapture &cpt,
         cvFaceMark->getFaces( pData->scaleHalf, pData->faces );
         cvFaceMark->fit( pData->scaleHalf, pData->faces, pData->landmarks );
         return pData;
-    } ) & tbb::make_filter<ProcessingChainData *, ProcessingChainData *>( tbb::filter::serial_in_order,
+    } ) & make_filter<ProcessingChainData *, ProcessingChainData *>( filter::serial_in_order,
     [&]( ProcessingChainData * pData )->ProcessingChainData* {
         if( pData == nullptr )
             return nullptr;
         for( size_t i = 0; i < pData->faces.size(); i++ )
         {
             Rect r = pData->faces[i];
-            Mat smallImgROI;
-            vector<Rect> nestedObjects;
             Point center;
             Scalar color = colors[i % 3];
             float scale = 2.0f;
@@ -150,24 +147,38 @@ void FaceDetector::pipeline( cv::VideoCapture &cpt,
 
             double aspect_ratio = ( double )r.width / r.height;
             if( 0.75 < aspect_ratio && aspect_ratio < 1.3 ) {
+                center.x = cvRound( ( r.x + r.width * 0.5 ) );
+                center.y = cvRound( ( r.y + r.height * 0.5 ) );
+                radius = cvRound( ( r.width + r.height ) * 0.27 );
+                circle( pData->scaleHalf, center, radius, Scalar( 0 ), -1 );
+
                 center.x = cvRound( ( r.x + r.width * 0.5 ) * scale );
                 center.y = cvRound( ( r.y + r.height * 0.5 ) * scale );
                 radius = cvRound( ( r.width + r.height ) * 0.27 * scale );
                 circle( pData->img, center, radius, Scalar( 0, 0, 0 ), -1 );
-            } else
+            } else {
+                rectangle( pData->scaleHalf, cvPoint( cvRound( r.x ), cvRound( r.y ) ),
+                           cvPoint( cvRound( ( r.x + r.width - 1 ) ), cvRound( ( r.y + r.height - 1 ) ) ),
+                           Scalar( 0 ), -1 );
+
                 rectangle( pData->img, cvPoint( cvRound( r.x * scale ), cvRound( r.y * scale ) ),
                            cvPoint( cvRound( ( r.x + r.width - 1 ) * scale ), cvRound( ( r.y + r.height - 1 ) * scale ) ),
                            Scalar( 0, 0, 0 ), -1 );
+            }
 
             vector<Point2f> pts = pData->landmarks[i];
             for( const auto &it : pts ) {
+                center.x = cvRound( it.x );
+                center.y = cvRound( it.y );
+                circle( pData->scaleHalf, center, 2, Scalar( 255 ), -1 );
+
                 center.x = cvRound( it.x * scale );
                 center.y = cvRound( it.y * scale );
                 circle( pData->img, center, 2, color, -1 );
             }
         }
         return pData;
-    } ) & tbb::make_filter<ProcessingChainData *, void>( tbb::filter::serial_in_order,
+    } ) & make_filter<ProcessingChainData *, void>( filter::serial_in_order,
     [&]( ProcessingChainData * pData ) {
         if( pData != nullptr && !pipelineStop ) {
             try {
@@ -185,7 +196,7 @@ void FaceDetector::pipeline( cv::VideoCapture &cpt,
 }
 
 shared_ptr<thread> FaceDetector::startThread( cv::VideoCapture &cpt,
-        concurrent_bounded_queue<ProcessingChainData *> &queue )
+        tbb::concurrent_bounded_queue<ProcessingChainData *> &queue )
 {
     pipelineStop = false;
     return make_shared<thread>( &FaceDetector::pipeline, this, ref( cpt ), ref( queue ) );

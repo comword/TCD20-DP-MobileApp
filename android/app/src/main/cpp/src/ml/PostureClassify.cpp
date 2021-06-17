@@ -1,5 +1,6 @@
-#include <android/log.h>
-#include <math.h>
+#include "PostureClassify.h"
+#include "utils.h"
+#include <jni.h>
 
 #include <fstream>
 #include <iostream>
@@ -12,21 +13,19 @@
 #include "tensorflow/lite/model.h"
 #include "tensorflow/lite/optional_debug_tools.h"
 
-#include "PostureClassify.h"
+PostureClassify::PostureClassify( tflite::FlatBufferModel *mHandle,
+                                  tflite::Interpreter *iHandle ) : model( mHandle ), interpreter( iHandle ) {}
 
-PostureClassify::PostureClassify( const void *model_data, size_t model_size, bool use_gpu )
+PostureClassify::~PostureClassify() = default;
+
+PostureClassify *PostureClassify::convertLongToCls( JNIEnv *env, jlong handle )
 {
-
-}
-
-PostureClassify::~PostureClassify()
-{
-
-}
-
-bool PostureClassify::IsInterpreterCreated()
-{
-    return false;
+    if( handle == 0 ) {
+        utils::ThrowException( env, utils::kIllegalArgumentException,
+                               "Internal error: Invalid handle to PostureClassify." );
+        return nullptr;
+    }
+    return reinterpret_cast<PostureClassify *>( handle );
 }
 
 std::unique_ptr<int[]> PostureClassify::DoInfer( int *img_rgb )

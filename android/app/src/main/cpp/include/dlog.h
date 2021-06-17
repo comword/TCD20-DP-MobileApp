@@ -17,10 +17,10 @@
 
 #else
 
-#define LOGI(...) (__android_log_print(ANDROID_LOG_INFO, "LOGI: " __FILE__ " | " S__LINE__, __VA_ARGS__))
-#define LOGD(...) (__android_log_print(ANDROID_LOG_DEBUG, "LOGD: " __FILE__ " | " S__LINE__, __VA_ARGS__))
-#define LOGW(...) (__android_log_print(ANDROID_LOG_WARN, "LOGW: " __FILE__ " | " S__LINE__, __VA_ARGS__))
-#define LOGE(...) (__android_log_print(ANDROID_LOG_ERROR, "LOGE: " __FILE__ " | " S__LINE__, __VA_ARGS__))
+#define LOGI(...) (__android_log_print(ANDROID_LOG_INFO, __func__, __VA_ARGS__))
+#define LOGD(...) (__android_log_print(ANDROID_LOG_DEBUG, __func__, __VA_ARGS__))
+#define LOGW(...) (__android_log_print(ANDROID_LOG_WARN, __func__, __VA_ARGS__))
+#define LOGE(...) (__android_log_print(ANDROID_LOG_ERROR, __func__, __VA_ARGS__))
 
 #endif
 #endif
