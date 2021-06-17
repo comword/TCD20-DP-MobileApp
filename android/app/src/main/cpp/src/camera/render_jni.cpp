@@ -1,8 +1,10 @@
 #include <jni.h>
 #include <cstdlib>
+#include <android/native_window_jni.h>
 
 #include "dlog.h"
 #include "glUtils.h"
+#include "utils.h"
 #include "Camera.h"
 
 using namespace utils;
@@ -144,7 +146,7 @@ static void drawFrame(JNIEnv* env, jfloatArray texMatArray)
 extern "C"
 JNIEXPORT void JNICALL
 Java_ie_tcd_cs7cs5_invigilatus_video_CamRenderer_onSurfaceCreated(JNIEnv *env, jobject thiz, jlong camera_handle, jint texture_id, jobject surface) {
-    auto camera = Camera::convertLongToCamera(env, camera_handle);
+    auto camera = utils::convertLongToCls<Camera>(env, camera_handle);
     if(!camera)
         return;
     auto [tWidth, tHeight] = camera->getCaptureSize();
@@ -152,7 +154,7 @@ Java_ie_tcd_cs7cs5_invigilatus_video_CamRenderer_onSurfaceCreated(JNIEnv *env, j
     camWidth = tWidth;
     camHeight = tHeight;
     initSurface(texture_id);
-    camera->initSurface(env, surface);
+    camera->initSurface(ANativeWindow_fromSurface( env, surface ));
 }
 
 extern "C"

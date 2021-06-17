@@ -2,7 +2,7 @@
 #define NATIVE_LIBS_POSTURECLASSIFY_H
 
 #include <memory>
-#include <jni.h>
+#include "IClassifier.h"
 
 namespace tflite
 {
@@ -10,16 +10,18 @@ class FlatBufferModel;
 class Interpreter;
 }
 
-class PostureClassify
+namespace cv
+{
+class Mat;
+}
+
+class PostureClassify: public IClassifier
 {
     public:
         PostureClassify( tflite::FlatBufferModel *mHandle, tflite::Interpreter *iHandle );
-
         virtual ~PostureClassify();
 
-        std::unique_ptr<int[]> DoInfer( int *img_rgb );
-
-        static PostureClassify *convertLongToCls( _JNIEnv *env, long handle );
+        std::unique_ptr<std::vector<float>> classify( const cv::Mat &imgs );
 
     private:
         tflite::FlatBufferModel *model;

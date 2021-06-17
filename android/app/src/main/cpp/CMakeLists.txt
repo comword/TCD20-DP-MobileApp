@@ -72,5 +72,4 @@ target_link_libraries(mlmodel
 target_link_libraries(camera-view
         ${log-lib} ${android-lib} ${camera-lib} ${media-lib} ${gl-lib} ${egl-lib}
         cv-tbb cv-core cv-imgproc cv-features2d cv-flann cv-calib3d cv-objdetect
-        cv-imgcodecs cv-videoio cv-photo cv-face
-        mlmodel)
+        cv-imgcodecs cv-videoio cv-photo cv-face mlmodel)

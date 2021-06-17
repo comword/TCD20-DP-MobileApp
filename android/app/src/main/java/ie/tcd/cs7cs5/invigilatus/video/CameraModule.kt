@@ -12,6 +12,7 @@ import org.unimodules.interfaces.permissions.Permissions
 import org.unimodules.core.ModuleRegistry
 import org.unimodules.core.interfaces.services.EventEmitter
 import android.os.Bundle
+import ie.tcd.cs7cs5.invigilatus.ml.PCModule
 
 class CameraModule(context: Context): ExportedModule(context) {
     private lateinit var mModuleRegistry: ModuleRegistry
@@ -160,6 +161,20 @@ class CameraModule(context: Context): ExportedModule(context) {
     }
 
     @ExpoMethod
+    fun startInvigilate(promise: Promise) {
+        var classifierModule = mModuleRegistry.getExportedModule("PostureClassify") as PCModule?
+        if (classifierModule == null) {
+            promise.reject(
+                "E_NO_CLASSIFIER",
+                "Posture classifier module is null."
+            )
+            return
+        }
+        //basic check
+        classifierModule.mPCHandle
+    }
+
+    @ExpoMethod
     fun setCameraSize(width: Int, height: Int, promise: Promise) {
         if(cameraHandle == 0L) {
             promise.reject("E_NOT_INIT", "Native cameraHandle is empty, please call initCamera first.")
@@ -194,4 +209,5 @@ class CameraModule(context: Context): ExportedModule(context) {
     private external fun nativeCameraStart(camHandle: Long, camIdx: Int): Boolean
     private external fun nativeCameraStop(camHandle: Long)
     private external fun nativeCameraSize(camHandle: Long, width: Int, height: Int): Boolean
+    private external fun nativeConnectClassifier(camHandle: Long, clfHandle: Long): Boolean
 }

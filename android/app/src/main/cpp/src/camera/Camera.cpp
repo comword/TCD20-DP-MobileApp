@@ -8,7 +8,6 @@
 
 #include <camera/NdkCameraManager.h>
 #include <media/NdkImageReader.h>
-#include <android/native_window_jni.h>
 
 #include <opencv2/videoio.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -36,54 +35,9 @@ Camera::Camera()
 
 Camera::~Camera() = default;
 
-Camera *Camera::convertLongToCamera( JNIEnv *env, jlong handle )
+void Camera::initFaceDetector( const string &haarCascadePath, const string &modelLBFPath )
 {
-    if( handle == 0 ) {
-        utils::ThrowException( env, utils::kIllegalArgumentException,
-                               "Internal error: Invalid handle to Camera." );
-        return nullptr;
-    }
-    return reinterpret_cast<Camera *>( handle );
-}
-
-void Camera::initFaceDetector( JNIEnv *env, jobject ctx )
-{
-    jclass ApplicationClass = env->GetObjectClass( ctx );
-    jmethodID getContext = env->GetMethodID( ApplicationClass, "getContext",
-                           "()Landroid/content/Context;" );
-    jobject contextObj = env->CallObjectMethod( ctx, getContext );
-    jclass contextObjCls = env->GetObjectClass( contextObj );
-
-    jmethodID getCacheDir = env->GetMethodID( contextObjCls, "getCacheDir", "()Ljava/io/File;" );
-    jobject file = env->CallObjectMethod( contextObj, getCacheDir );
-    jclass fileClass = env->FindClass( "java/io/File" );
-    jmethodID getAbsolutePath = env->GetMethodID( fileClass, "getAbsolutePath",
-                                "()Ljava/lang/String;" );
-    auto jpath = ( jstring )env->CallObjectMethod( file, getAbsolutePath );
-    auto pPathChar = env->GetStringUTFChars( jpath, nullptr );
-    cacheDirPath = string( pPathChar );
-    env->ReleaseStringUTFChars( jpath, pPathChar );
-    LOGD( "App cache dir path: %s", cacheDirPath.c_str() );
-
     faceDetector = shared_ptr<FaceDetector>( new FaceDetector() );
-
-    jfieldID idHaarCascadePath = env->GetFieldID( ApplicationClass, "haarCascadePath",
-                                 "Ljava/lang/String;" );
-    jfieldID idModelLBFPath = env->GetFieldID( ApplicationClass, "modelLBFPath", "Ljava/lang/String;" );
-
-    auto jStrHaarCascadePath = ( jstring )env->GetObjectField( ctx, idHaarCascadePath );
-    auto jStrModelLBFPath = ( jstring )env->GetObjectField( ctx, idModelLBFPath );
-    if( jStrHaarCascadePath == nullptr || jStrModelLBFPath == nullptr ) {
-        LOGW( "Face detector model is not initialised due to missing HaarCascade or landmark LBF model" );
-        return;
-    }
-    auto pHaarCascadePath = env->GetStringUTFChars( jStrHaarCascadePath, nullptr );
-    auto pModelLBFPath = env->GetStringUTFChars( jStrModelLBFPath, nullptr );
-
-    string haarCascadePath( pHaarCascadePath );
-    string modelLBFPath( pModelLBFPath );
-    env->ReleaseStringUTFChars( jStrHaarCascadePath, pHaarCascadePath );
-    env->ReleaseStringUTFChars( jStrModelLBFPath, pModelLBFPath );
     if( haarCascadePath.empty() || modelLBFPath.empty() ) {
         LOGW( "Face detector model is not initialised due to missing HaarCascade or landmark LBF model" );
         return;
@@ -184,61 +138,7 @@ std::tuple<int, int> Camera::getCaptureSize()
     return std::make_tuple( cacheWidth, cacheHeight );
 }
 
-void Camera::initSurface( JNIEnv *env, jobject surface )
+void Camera::initSurface( ANativeWindow *window )
 {
-    auto ptr = ANativeWindow_fromSurface( env, surface );
-    textureWindow = shared_ptr<ANativeWindow>( ptr, deleter_ANativeWindow );
-}
-
-extern "C"
-JNIEXPORT jlong JNICALL
-Java_ie_tcd_cs7cs5_invigilatus_video_CameraModule_nativeInitCamera( JNIEnv *env, jobject thiz )
-{
-    unique_ptr<Camera> camera( new Camera() );
-    camera->initFaceDetector( env, thiz );
-    return reinterpret_cast<jlong>( camera.release() );
-}
-
-extern "C"
-JNIEXPORT void JNICALL
-Java_ie_tcd_cs7cs5_invigilatus_video_CameraModule_nativeDeInitCamera( JNIEnv *env, jobject thiz,
-        jlong cam_handle )
-{
-    delete Camera::convertLongToCamera( env, cam_handle );
-}
-
-extern "C"
-JNIEXPORT jboolean JNICALL
-Java_ie_tcd_cs7cs5_invigilatus_video_CameraModule_nativeCameraStart( JNIEnv *env, jobject thiz,
-        jlong cam_handle, jint cam_idx )
-{
-    auto camera = Camera::convertLongToCamera( env, cam_handle );
-    if( !camera ) {
-        return false;
-    }
-    return camera->start( cam_idx );
-}
-
-extern "C"
-JNIEXPORT void JNICALL
-Java_ie_tcd_cs7cs5_invigilatus_video_CameraModule_nativeCameraStop( JNIEnv *env, jobject thiz,
-        jlong cam_handle )
-{
-    auto camera = Camera::convertLongToCamera( env, cam_handle );
-    if( !camera ) {
-        return;
-    }
-    camera->stop();
-}
-
-extern "C"
-JNIEXPORT jboolean JNICALL
-Java_ie_tcd_cs7cs5_invigilatus_video_CameraModule_nativeCameraSize( JNIEnv *env, jobject thiz,
-        jlong cam_handle, jint width, jint height )
-{
-    auto camera = Camera::convertLongToCamera( env, cam_handle );
-    if( !camera ) {
-        return false;
-    }
-    return camera->setCaptureSize( width, height );
+    textureWindow = shared_ptr<ANativeWindow>( window, deleter_ANativeWindow );
 }

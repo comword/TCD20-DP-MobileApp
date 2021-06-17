@@ -2,6 +2,7 @@
 
 #include "PostureClassify.h"
 #include "dlog.h"
+#include "utils.h"
 
 #include <memory>
 
@@ -34,5 +35,5 @@ JNIEXPORT void JNICALL
 Java_ie_tcd_cs7cs5_invigilatus_ml_PCModule_nativeDeInit( JNIEnv *env, jobject thiz,
         jlong pc_handle )
 {
-    delete PostureClassify::convertLongToCls( env, pc_handle );
+    delete utils::convertLongToCls<PostureClassify>( env, pc_handle );
 }
