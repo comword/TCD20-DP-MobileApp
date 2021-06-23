@@ -2,5 +2,16 @@
     "typescript.tsdk": "node_modules/typescript/lib",
     "files.associations": {
         "string": "cpp"
-    }
+    },
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": true
+    },
+    "eslint.run": "onType",
+    "eslint.options": {
+      "rules": {
+        "no-debugger": "off"
+      }
+    },
+    "eslint.format.enable": true,
+    "eslint.lintTask.enable": true,
 }

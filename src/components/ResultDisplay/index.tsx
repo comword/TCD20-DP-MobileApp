@@ -4,8 +4,7 @@ import tailwind from 'tailwind-rn';
 import { List } from 'react-native-paper';
 import { DefaultTheme, useTheme } from 'styled-components/native';
 import { DefaultAlertMap, InferResult, MLActionTypes } from 'services/ml/types';
-
-import { AntDesign } from '@expo/vector-icons';
+import UnknownIcon from './assets/unknown.svg';
 
 type Props = {
   results: Array<InferResult>;
@@ -24,6 +23,10 @@ const ResultDisplay: React.FC<Props> = ({ results, alertMap }) => {
       ...tailwind('text-4xl ml-2'),
       color: topColor,
     },
+    iconContainer: {
+      height: 64,
+      width: 64,
+    },
   });
 
   return (
@@ -33,9 +36,9 @@ const ResultDisplay: React.FC<Props> = ({ results, alertMap }) => {
           'flex flex-row items-center w-full justify-center my-2'
         )}
       >
-        <View>
+        <View style={styles.iconContainer}>
           {topResult.type === MLActionTypes.Unknown && (
-            <AntDesign name="questioncircleo" size={64} color={topColor} />
+            <UnknownIcon height="100%" width="100%" color={topColor} />
           )}
         </View>
         <View>

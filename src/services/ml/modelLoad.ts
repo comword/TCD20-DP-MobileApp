@@ -1,43 +1,19 @@
-import { createAction, Dispatch } from '@reduxjs/toolkit';
-import { SagaIterator } from 'redux-saga';
-import { call, put } from 'redux-saga/effects';
+import { createAction } from '@reduxjs/toolkit';
+import { SagaIterator, eventChannel } from 'redux-saga';
+import { call, put, fork } from 'redux-saga/effects';
 import { PCSlice } from './slice';
 
 import {
   NativeModulesProxy,
-  Platform,
   EventEmitter,
   Subscription,
 } from '@unimodules/core';
+import { sagaNativeEventHandler } from './nativeEvent';
 const { CameraGLModule, PostureClassify } = NativeModulesProxy;
-
-let eventListeners: Subscription[] = [];
-
-const initEvents = (dispatch: Dispatch) => {
-  if (Platform.OS === 'android') {
-    const eventEmitter = new EventEmitter(PostureClassify);
-    eventListeners.push(
-      eventEmitter.addListener(
-        'OnPostureClassifyErr',
-        (event: { code: number; msg: string; show: boolean }) =>
-          dispatch(
-            PCSlice.actions.setError({
-              code: event.code,
-              msg: event.msg,
-              show: event.show,
-            })
-          )
-      ),
-      eventEmitter.addListener('OnModelLoaded', (event: { path: string }) =>
-        dispatch(PCSlice.actions.setModelLoaded(event.path))
-      )
-    );
-  }
-};
 
 const initPCService = async (model: string) => {
   if (!(await PostureClassify.getInitialised()))
-    if (Platform.OS === 'android') await PostureClassify.initTFLite(model);
+    await PostureClassify.initTFLite(model);
 };
 
 interface ModelPaths {
@@ -49,21 +25,35 @@ interface ModelPaths {
 export const modelInitAction = createAction<ModelPaths>('modelInitAction');
 
 export function* sagaLoadModel(
-  dispatch: Dispatch,
   action: ReturnType<typeof modelInitAction>
 ): SagaIterator {
   try {
-    if (Platform.OS === 'android') {
-      yield call(initEvents, dispatch);
-      if (action.payload.haarCascade && action.payload.modelLBF)
-        yield call(
-          CameraGLModule.initCamera,
-          action.payload.haarCascade,
-          action.payload.modelLBF
-        );
-      if (action.payload.posture)
-        yield call(initPCService, action.payload.posture);
-    }
+    const channel = eventChannel<{ eventName: string; event: any }>(emitter => {
+      let eventListeners: Subscription[] = [];
+      const eventEmitter = new EventEmitter(PostureClassify);
+      eventListeners.push(
+        eventEmitter.addListener(
+          'OnPostureClassifyErr',
+          (event: { code: number; msg: string; show: boolean }) =>
+            emitter({ eventName: 'OnPostureClassifyErr', event: event })
+        ),
+        eventEmitter.addListener('OnModelLoaded', (event: { path: string }) =>
+          emitter({ eventName: 'OnModelLoaded', event: event })
+        )
+      );
+      return () => {
+        eventListeners.forEach(it => it.remove());
+      };
+    });
+    yield fork(sagaNativeEventHandler, channel);
+    if (action.payload.haarCascade && action.payload.modelLBF)
+      yield call(
+        CameraGLModule.initCamera,
+        action.payload.haarCascade,
+        action.payload.modelLBF
+      );
+    if (action.payload.posture)
+      yield call(initPCService, action.payload.posture);
   } catch (e) {
     console.log(e);
     yield put(

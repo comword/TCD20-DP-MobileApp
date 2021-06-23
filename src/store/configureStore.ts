@@ -92,6 +92,6 @@ const persister = persistStore(store);
 //@ts-ignore
 store.persister = persister;
 
-runSaga(rootMLSaga, store.dispatch);
+runSaga(rootMLSaga);
 
 export { store, persister };
