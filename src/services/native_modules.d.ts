@@ -18,6 +18,8 @@ export type ICameraGLModule = {
   setCameraIndex: (camIdx: number) => Promise<boolean>;
   startCamera: () => Promise<boolean>;
   stopCamera: () => Promise<boolean>;
+  startInvigilate: () => Promise<boolean>;
+  stopInvigilate: () => Promise<boolean>;
   setCameraSize: (width: number, height: number) => Promise<boolean>;
   initCamera: (haarCascade: string, modelLBF: string) => Promise<boolean>;
 };

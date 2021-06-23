@@ -1,6 +1,7 @@
+#include "glUtils.h"
+
 #include <cstdlib>
 
-#include "glUtils.h"
 #include "dlog.h"
 
 namespace utils

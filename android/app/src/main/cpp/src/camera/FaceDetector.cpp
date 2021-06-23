@@ -1,10 +1,13 @@
-#include "dlog.h"
 #include "FaceDetector.h"
 
 #include <thread>
 #include <memory>
 #include <iterator>
 #include <vector>
+
+#include "TripleBuffer.hpp"
+#include "dlog.h"
+
 #include <sys/stat.h>
 #include <opencv2/core/types_c.h>
 #include <opencv2/videoio.hpp>
@@ -108,13 +111,11 @@ void FaceDetector::pipeline( cv::VideoCapture &cpt,
             fc.stop();
             return nullptr;
         }
-        Mat frame;
-        cpt >> frame;
-        if( frame.empty() )
-            return nullptr;
         auto pData = new ProcessingChainData;
-        rotate( frame, frame, ROTATE_90_CLOCKWISE );
-        pData->img = frame.clone();
+        cpt >> pData->img;
+        if( pData->img.empty() )
+            return nullptr;
+        rotate( pData->img, pData->img, ROTATE_90_CLOCKWISE );
         return pData;
     } ) & make_filter<ProcessingChainData *, ProcessingChainData *>( filter::serial_in_order,
     [&]( ProcessingChainData * pData )->ProcessingChainData* {
@@ -147,20 +148,11 @@ void FaceDetector::pipeline( cv::VideoCapture &cpt,
 
             double aspect_ratio = ( double )r.width / r.height;
             if( 0.75 < aspect_ratio && aspect_ratio < 1.3 ) {
-                center.x = cvRound( ( r.x + r.width * 0.5 ) );
-                center.y = cvRound( ( r.y + r.height * 0.5 ) );
-                radius = cvRound( ( r.width + r.height ) * 0.27 );
-                circle( pData->scaleHalf, center, radius, Scalar( 0 ), -1 );
-
                 center.x = cvRound( ( r.x + r.width * 0.5 ) * scale );
                 center.y = cvRound( ( r.y + r.height * 0.5 ) * scale );
                 radius = cvRound( ( r.width + r.height ) * 0.27 * scale );
                 circle( pData->img, center, radius, Scalar( 0, 0, 0 ), -1 );
             } else {
-                rectangle( pData->scaleHalf, cvPoint( cvRound( r.x ), cvRound( r.y ) ),
-                           cvPoint( cvRound( ( r.x + r.width - 1 ) ), cvRound( ( r.y + r.height - 1 ) ) ),
-                           Scalar( 0 ), -1 );
-
                 rectangle( pData->img, cvPoint( cvRound( r.x * scale ), cvRound( r.y * scale ) ),
                            cvPoint( cvRound( ( r.x + r.width - 1 ) * scale ), cvRound( ( r.y + r.height - 1 ) * scale ) ),
                            Scalar( 0, 0, 0 ), -1 );
@@ -168,10 +160,6 @@ void FaceDetector::pipeline( cv::VideoCapture &cpt,
 
             vector<Point2f> pts = pData->landmarks[i];
             for( const auto &it : pts ) {
-                center.x = cvRound( it.x );
-                center.y = cvRound( it.y );
-                circle( pData->scaleHalf, center, 2, Scalar( 255 ), -1 );
-
                 center.x = cvRound( it.x * scale );
                 center.y = cvRound( it.y * scale );
                 circle( pData->img, center, 2, color, -1 );
@@ -184,6 +172,10 @@ void FaceDetector::pipeline( cv::VideoCapture &cpt,
             try {
                 Mat cvtRgba;
                 cvtColor( pData->img, cvtRgba, COLOR_BGR2RGBA );
+                if( classifier && mlBuffer ) {
+                    mlBuffer->write( move( pData->img ) );
+                    mlBuffer->flipWriter();
+                }
                 pData->img = cvtRgba.clone();
                 queue.push( pData );
             } catch( ... ) {
@@ -200,5 +192,21 @@ shared_ptr<thread> FaceDetector::startThread( cv::VideoCapture &cpt,
 {
     pipelineStop = false;
     return make_shared<thread>( &FaceDetector::pipeline, this, ref( cpt ), ref( queue ) );
+}
+
+bool FaceDetector::registerClassifier( IClassifier *ml )
+{
+    classifier = ml;
+    mlBuffer = make_shared<TripleBuffer<cv::Mat>>();
+    return false;
+}
+
+bool FaceDetector::unloadClassifier()
+{
+    if( classifier ) {
+        classifier = nullptr;
+        mlBuffer.reset();
+    }
+    return true;
 }
 

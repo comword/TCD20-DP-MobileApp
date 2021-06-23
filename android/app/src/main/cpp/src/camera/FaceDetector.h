@@ -6,6 +6,9 @@
 
 #include <tbb/concurrent_queue.h>
 
+class IClassifier;
+template <typename T> class TripleBuffer;
+
 namespace cv
 {
 class CascadeClassifier;
@@ -35,10 +38,14 @@ class FaceDetector
         void stopPipeline();
         std::shared_ptr<std::thread>startThread( cv::VideoCapture &cpt,
                 tbb::concurrent_bounded_queue<ProcessingChainData *> &queue );
-    public:
+        bool registerClassifier( IClassifier *ml );
+        bool unloadClassifier();
+    private:
         std::shared_ptr<cv::CascadeClassifier> cvFaceCascade;
         std::shared_ptr<cv::face::FacemarkLBF> cvFaceMark;
         volatile bool pipelineStop = false;
+        std::shared_ptr<TripleBuffer<cv::Mat>> mlBuffer;
+        IClassifier *classifier = nullptr;
     private:
         static bool detect( cv::InputArray image, cv::OutputArray faces, FaceDetector *cls );
 };

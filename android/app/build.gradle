@@ -1,7 +1,6 @@
 apply plugin: "com.android.application"
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'com.google.protobuf'
 
 import com.android.build.OutputFile
 
@@ -177,14 +176,6 @@ android {
         }
     }
 
-    sourceSets {
-        main {
-            proto {
-                srcDir 'src/main/proto'
-            }
-        }
-    }
-
     splits {
         abi {
             reset()
@@ -264,11 +255,6 @@ dependencies {
     implementation "androidx.appcompat:appcompat:${appcompat_version}"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3'
-
-    implementation "io.grpc:grpc-protobuf-lite:$grpc_version"
-    implementation "com.google.protobuf:protobuf-javalite:$protobuf_version"
-    implementation "io.grpc:grpc-kotlin-stub:$grpc_kotlin_version"
-    runtimeOnly "io.grpc:grpc-okhttp:$grpc_version"
     
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
       exclude group:'com.facebook.fbjni'
@@ -288,30 +274,6 @@ dependencies {
         releaseImplementation files(hermesPath + "hermes-release.aar")
     } else {
         implementation jscFlavor
-    }
-}
-
-protobuf {
-    protoc { artifact = "com.google.protobuf:protoc:$protobuf_version" }
-    plugins {
-        java {
-            artifact = "io.grpc:protoc-gen-grpc-java:$grpc_version"
-        }
-        grpc {
-            artifact = "io.grpc:protoc-gen-grpc-java:$grpc_version"
-        }
-        grpckt {
-            artifact = "io.grpc:protoc-gen-grpc-kotlin:$grpc_kotlin_version:jdk7@jar"
-        }
-    }
-    generateProtoTasks {
-        all().each { task ->
-            task.plugins {
-                java { option("lite") }
-                grpc { option("lite") }
-                grpckt { option("lite") }
-            }
-        }
     }
 }
 

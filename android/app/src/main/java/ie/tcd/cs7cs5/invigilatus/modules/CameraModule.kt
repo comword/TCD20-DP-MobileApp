@@ -1,4 +1,4 @@
-package ie.tcd.cs7cs5.invigilatus.video
+package ie.tcd.cs7cs5.invigilatus.modules
 
 import android.Manifest
 import android.content.Context
@@ -12,7 +12,6 @@ import org.unimodules.interfaces.permissions.Permissions
 import org.unimodules.core.ModuleRegistry
 import org.unimodules.core.interfaces.services.EventEmitter
 import android.os.Bundle
-import ie.tcd.cs7cs5.invigilatus.ml.PCModule
 
 class CameraModule(context: Context): ExportedModule(context) {
     private lateinit var mModuleRegistry: ModuleRegistry
@@ -29,6 +28,7 @@ class CameraModule(context: Context): ExportedModule(context) {
 
     init {
         System.loadLibrary("camera-view")
+        nativeInit()
     }
 
     override fun onDestroy() {
@@ -132,10 +132,9 @@ class CameraModule(context: Context): ExportedModule(context) {
             mCameraIdx = camIdx
             if(mCameraRunning) {
                 nativeCameraStop(cameraHandle)
-                nativeCameraStart(cameraHandle, camIdx)
+                promise.resolve(nativeCameraStart(cameraHandle, camIdx))
             }
         }
-        promise.resolve(true)
     }
 
     @ExpoMethod
@@ -144,9 +143,8 @@ class CameraModule(context: Context): ExportedModule(context) {
             promise.reject("E_RUNNING", "The camera is running")
             return
         }
-        nativeCameraStart(cameraHandle, mCameraIdx)
-        mCameraRunning = true
-        promise.resolve(true)
+        mCameraRunning = nativeCameraStart(cameraHandle, mCameraIdx)
+        promise.resolve(mCameraRunning)
     }
 
     @ExpoMethod
@@ -162,7 +160,11 @@ class CameraModule(context: Context): ExportedModule(context) {
 
     @ExpoMethod
     fun startInvigilate(promise: Promise) {
-        var classifierModule = mModuleRegistry.getExportedModule("PostureClassify") as PCModule?
+        if(cameraHandle == 0L) {
+            promise.reject("E_NOT_INIT", "Native cameraHandle is empty, please call initCamera first.")
+            return
+        }
+        val classifierModule = mModuleRegistry.getExportedModule("PostureClassify") as MLModule?
         if (classifierModule == null) {
             promise.reject(
                 "E_NO_CLASSIFIER",
@@ -170,8 +172,23 @@ class CameraModule(context: Context): ExportedModule(context) {
             )
             return
         }
-        //basic check
-        classifierModule.mPCHandle
+        if(classifierModule.mPCHandle == 0L) {
+            promise.reject(
+                "E_CLASSIFIER",
+                "Posture classifier module has null native handle."
+            )
+            return
+        }
+        promise.resolve(nativeConnectClassifier(cameraHandle, classifierModule.mPCHandle))
+    }
+
+    @ExpoMethod
+    fun stopInvigilate(promise: Promise) {
+        if(cameraHandle == 0L) {
+            promise.reject("E_NOT_INIT", "Native cameraHandle is empty, please call initCamera first.")
+            return
+        }
+        promise.resolve(nativeDisconnectClassifier(cameraHandle))
     }
 
     @ExpoMethod
@@ -180,8 +197,7 @@ class CameraModule(context: Context): ExportedModule(context) {
             promise.reject("E_NOT_INIT", "Native cameraHandle is empty, please call initCamera first.")
             return
         }
-        nativeCameraSize(cameraHandle, width, height)
-        promise.resolve(true)
+        promise.resolve(nativeCameraSize(cameraHandle, width, height))
     }
 
     @ExpoMethod
@@ -204,10 +220,12 @@ class CameraModule(context: Context): ExportedModule(context) {
         eventEmitter.emit("OnModelLoaded", bundle)
     }
 
+    private external fun nativeInit()
     private external fun nativeInitCamera(): Long
     private external fun nativeDeInitCamera(camHandle: Long)
     private external fun nativeCameraStart(camHandle: Long, camIdx: Int): Boolean
     private external fun nativeCameraStop(camHandle: Long)
     private external fun nativeCameraSize(camHandle: Long, width: Int, height: Int): Boolean
     private external fun nativeConnectClassifier(camHandle: Long, clfHandle: Long): Boolean
+    private external fun nativeDisconnectClassifier(camHandle: Long): Boolean
 }

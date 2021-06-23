@@ -5,12 +5,14 @@
 #include <memory>
 #include <thread>
 
-class FaceDetector;
 struct ACameraManager;
 struct ANativeWindow;
+class FaceDetector;
+class IClassifier;
 
 namespace cv
 {
+class Mat;
 class VideoCapture;
 }
 
@@ -27,7 +29,8 @@ class Camera
         bool setCaptureSize( int width, int height );
         void initSurface( ANativeWindow *window );
         std::tuple<int, int> getCaptureSize();
-        bool registerClassifier();
+        bool registerClassifier( IClassifier *ml );
+        bool unloadClassifier();
     private:
         std::shared_ptr<ACameraManager> cameraManager;
         std::shared_ptr<ANativeWindow> textureWindow;

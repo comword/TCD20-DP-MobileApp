@@ -2,6 +2,7 @@
 #define NATIVE_LIBS_POSTURECLASSIFY_H
 
 #include <memory>
+
 #include "IClassifier.h"
 
 namespace tflite

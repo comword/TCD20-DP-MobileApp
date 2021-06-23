@@ -1,4 +1,4 @@
-package ie.tcd.cs7cs5.invigilatus.video
+package ie.tcd.cs7cs5.invigilatus.modules
 
 import android.graphics.SurfaceTexture
 import android.opengl.GLES11Ext.GL_TEXTURE_EXTERNAL_OES

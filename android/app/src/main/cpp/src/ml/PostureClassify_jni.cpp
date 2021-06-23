@@ -10,7 +10,7 @@ using namespace std;
 
 extern "C"
 JNIEXPORT jlong JNICALL
-Java_ie_tcd_cs7cs5_invigilatus_ml_PCModule_nativeInit( JNIEnv *env, jobject thiz,
+Java_ie_tcd_cs7cs5_invigilatus_modules_MLModule_nativeModelInit( JNIEnv *env, jobject thiz,
         jobject interpreter )
 {
     auto interpClass = env->GetObjectClass( interpreter );
@@ -32,7 +32,7 @@ Java_ie_tcd_cs7cs5_invigilatus_ml_PCModule_nativeInit( JNIEnv *env, jobject thiz
 }
 extern "C"
 JNIEXPORT void JNICALL
-Java_ie_tcd_cs7cs5_invigilatus_ml_PCModule_nativeDeInit( JNIEnv *env, jobject thiz,
+Java_ie_tcd_cs7cs5_invigilatus_modules_MLModule_nativeDeInit( JNIEnv *env, jobject thiz,
         jlong pc_handle )
 {
     delete utils::convertLongToCls<PostureClassify>( env, pc_handle );

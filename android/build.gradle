@@ -5,9 +5,6 @@ buildscript {
         kotlin_version = "1.5.10"
         appcompat_version = "1.3.0"
         buildToolsVersion = "29.0.3"
-        grpc_version = "1.37.0"
-        grpc_kotlin_version = "1.1.0"
-        protobuf_version = "3.17.0"
         minSdkVersion = 24
         compileSdkVersion = 30
         targetSdkVersion = 30
@@ -20,7 +17,6 @@ buildscript {
     dependencies {
         classpath("com.android.tools.build:gradle:4.1.0")
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.16'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }

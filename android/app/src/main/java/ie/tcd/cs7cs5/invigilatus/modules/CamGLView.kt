@@ -1,4 +1,4 @@
-package ie.tcd.cs7cs5.invigilatus.video
+package ie.tcd.cs7cs5.invigilatus.modules
 
 import android.content.Context
 import android.opengl.GLSurfaceView

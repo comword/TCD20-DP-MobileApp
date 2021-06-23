@@ -1,8 +1,10 @@
+#include "Camera.h"
+
 #include <memory>
 #include <stdexcept>
 
 #include "FaceDetector.h"
-#include "Camera.h"
+#include "IClassifier.h"
 #include "dlog.h"
 #include "utils.h"
 
@@ -135,10 +137,26 @@ bool Camera::setCaptureSize( int width, int height )
 
 std::tuple<int, int> Camera::getCaptureSize()
 {
-    return std::make_tuple( cacheWidth, cacheHeight );
+    return make_tuple( cacheWidth, cacheHeight );
 }
 
 void Camera::initSurface( ANativeWindow *window )
 {
     textureWindow = shared_ptr<ANativeWindow>( window, deleter_ANativeWindow );
+}
+
+bool Camera::registerClassifier( IClassifier *ml )
+{
+    if( faceDetector ) {
+        return faceDetector->registerClassifier( ml );
+    }
+    return false;
+}
+
+bool Camera::unloadClassifier()
+{
+    if( faceDetector ) {
+        return faceDetector->unloadClassifier();
+    }
+    return false;
 }

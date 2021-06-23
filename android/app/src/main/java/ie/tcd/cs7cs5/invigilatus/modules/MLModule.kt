@@ -1,4 +1,4 @@
-package ie.tcd.cs7cs5.invigilatus.ml
+package ie.tcd.cs7cs5.invigilatus.modules
 
 import android.content.Context
 import org.tensorflow.lite.Interpreter
@@ -22,7 +22,7 @@ import java.lang.RuntimeException
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 
-class PCModule(context: Context) : ExportedModule(context) {
+class MLModule(context: Context) : ExportedModule(context) {
     private lateinit var mModuleRegistry: ModuleRegistry
     var interpreter: Interpreter? = null
         private set
@@ -32,7 +32,7 @@ class PCModule(context: Context) : ExportedModule(context) {
         private set
 
     companion object {
-        val TAG = PCModule::class.simpleName
+        val TAG = MLModule::class.simpleName
     }
 
     init {
@@ -90,7 +90,7 @@ class PCModule(context: Context) : ExportedModule(context) {
                 val bundle = Bundle()
                 try {
                     interpreter = Interpreter(loadModelFile(path, context), options)
-                    mPCHandle = nativeInit(interpreter!!)
+                    mPCHandle = nativeModelInit(interpreter!!)
                     bundle.putString("path", path)
                     eventEmitter.emit("OnModelLoaded", bundle)
                 } catch (err: RuntimeException) {
@@ -131,6 +131,6 @@ class PCModule(context: Context) : ExportedModule(context) {
             promise.resolve(true)
     }
 
-    private external fun nativeInit(interpreter: Interpreter): Long
+    private external fun nativeModelInit(interpreter: Interpreter): Long
     private external fun nativeDeInit(pcHandle: Long)
 }

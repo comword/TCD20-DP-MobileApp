@@ -1,11 +1,12 @@
 #include "PostureClassify.h"
-#include "utils.h"
 
 #include <fstream>
 #include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
+
+#include "utils.h"
 
 #include "tensorflow/lite/interpreter.h"
 #include "tensorflow/lite/kernels/register.h"

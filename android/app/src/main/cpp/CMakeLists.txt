@@ -2,8 +2,13 @@ cmake_minimum_required(VERSION 3.10.2)
 
 project("invigilatus")
 
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++17")
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH}
+        ${CMAKE_SOURCE_DIR}/../../../libs/tf-lite/libs/${ANDROID_ABI}
+        ${CMAKE_CURRENT_LIST_DIR}/../../../libs/opencv/libs/${ANDROID_ABI}
+        ${CMAKE_CURRENT_LIST_DIR}/../../../libs/grpc/libs/${ANDROID_ABI})
 
 add_library( tflite SHARED IMPORTED )
 set_target_properties( tflite PROPERTIES IMPORTED_LOCATION
@@ -51,11 +56,32 @@ add_library( cv-tbb SHARED IMPORTED )
 set_target_properties( cv-tbb PROPERTIES IMPORTED_LOCATION
         ${CMAKE_CURRENT_LIST_DIR}/../../../libs/opencv/libs/${ANDROID_ABI}/libtbb.so )
 
+find_library(protobuf-lite protobuf-lite)
+find_library(absl absl)
+find_library(gpr gpr)
+find_library(crypto crypto)
+find_library(ssl ssl)
+find_library(grpc grpc)
+find_library(address_sorting address_sorting)
+find_library(re2 re2)
+find_library(upb upb)
+find_library(cares cares)
+find_library(grpc-libz z PATHS ${CMAKE_CURRENT_LIST_DIR}/../../../libs/grpc/libs/${ANDROID_ABI} NO_DEFAULT_PATH)
+find_library(grpc++ grpc++)
+
 file(GLOB CAMERA_SOURCES ${CMAKE_SOURCE_DIR}/src/camera/*.cpp)
 
 add_library( camera-view SHARED ${CAMERA_SOURCES} )
 target_include_directories( camera-view PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}/../../../libs/opencv/include
+        ${CMAKE_CURRENT_LIST_DIR}/include)
+
+file(GLOB RESULT_REPORT_SOURCES ${CMAKE_SOURCE_DIR}/src/reporter/*.cpp)
+file(GLOB GRPCPB_SOURCES ${CMAKE_SOURCE_DIR}/src/reporter/*.cc)
+
+add_library( result-report SHARED ${RESULT_REPORT_SOURCES} ${GRPCPB_SOURCES})
+target_include_directories( result-report PRIVATE
+        ${CMAKE_CURRENT_LIST_DIR}/../../../libs/grpc/include
         ${CMAKE_CURRENT_LIST_DIR}/include)
 
 find_library(log-lib log)
@@ -69,7 +95,11 @@ target_link_libraries(mlmodel
         ${log-lib} ${android-lib}
         tflite cv-tbb cv-core cv-imgproc)
 
+target_link_libraries(result-report
+        ${log-lib} ${android-lib} ${protobuf-lite} ${absl} ${gpr} ${crypto} ${ssl} ${grpc}
+        ${address_sorting} ${re2} ${upb} ${cares} ${grpc-libz} ${grpc++})
+
 target_link_libraries(camera-view
         ${log-lib} ${android-lib} ${camera-lib} ${media-lib} ${gl-lib} ${egl-lib}
         cv-tbb cv-core cv-imgproc cv-features2d cv-flann cv-calib3d cv-objdetect
-        cv-imgcodecs cv-videoio cv-photo cv-face mlmodel)
+        cv-imgcodecs cv-videoio cv-photo cv-face result-report mlmodel)

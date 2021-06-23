@@ -1,3 +1,4 @@
 libs/tensorflow-lite.jar
 libs/opencv-release.jar
 src/main/assets/index.android.bundle
+src/main/res/**/node_modules_**

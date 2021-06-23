@@ -1,12 +1,13 @@
 #include <jni.h>
-#include "dlog.h"
-#include "utils.h"
+
 #include "Camera.h"
 #include "IClassifier.h"
+#include "dlog.h"
+#include "utils.h"
 
 extern "C"
 JNIEXPORT jlong JNICALL
-Java_ie_tcd_cs7cs5_invigilatus_video_CameraModule_nativeInitCamera( JNIEnv *env, jobject thiz )
+Java_ie_tcd_cs7cs5_invigilatus_modules_CameraModule_nativeInitCamera( JNIEnv *env, jobject thiz )
 {
     std::unique_ptr<Camera> camera( new Camera() );
 
@@ -32,7 +33,7 @@ Java_ie_tcd_cs7cs5_invigilatus_video_CameraModule_nativeInitCamera( JNIEnv *env,
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_ie_tcd_cs7cs5_invigilatus_video_CameraModule_nativeDeInitCamera( JNIEnv *env, jobject thiz,
+Java_ie_tcd_cs7cs5_invigilatus_modules_CameraModule_nativeDeInitCamera( JNIEnv *env, jobject thiz,
         jlong cam_handle )
 {
     delete utils::convertLongToCls<Camera>( env, cam_handle );
@@ -40,7 +41,7 @@ Java_ie_tcd_cs7cs5_invigilatus_video_CameraModule_nativeDeInitCamera( JNIEnv *en
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_ie_tcd_cs7cs5_invigilatus_video_CameraModule_nativeCameraStart( JNIEnv *env, jobject thiz,
+Java_ie_tcd_cs7cs5_invigilatus_modules_CameraModule_nativeCameraStart( JNIEnv *env, jobject thiz,
         jlong cam_handle, jint cam_idx )
 {
     auto camera = utils::convertLongToCls<Camera>( env, cam_handle );
@@ -52,7 +53,7 @@ Java_ie_tcd_cs7cs5_invigilatus_video_CameraModule_nativeCameraStart( JNIEnv *env
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_ie_tcd_cs7cs5_invigilatus_video_CameraModule_nativeCameraStop( JNIEnv *env, jobject thiz,
+Java_ie_tcd_cs7cs5_invigilatus_modules_CameraModule_nativeCameraStop( JNIEnv *env, jobject thiz,
         jlong cam_handle )
 {
     auto camera = utils::convertLongToCls<Camera>( env, cam_handle );
@@ -64,7 +65,7 @@ Java_ie_tcd_cs7cs5_invigilatus_video_CameraModule_nativeCameraStop( JNIEnv *env,
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_ie_tcd_cs7cs5_invigilatus_video_CameraModule_nativeCameraSize( JNIEnv *env, jobject thiz,
+Java_ie_tcd_cs7cs5_invigilatus_modules_CameraModule_nativeCameraSize( JNIEnv *env, jobject thiz,
         jlong cam_handle, jint width, jint height )
 {
     auto camera = utils::convertLongToCls<Camera>( env, cam_handle );
@@ -76,7 +77,7 @@ Java_ie_tcd_cs7cs5_invigilatus_video_CameraModule_nativeCameraSize( JNIEnv *env,
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_ie_tcd_cs7cs5_invigilatus_video_CameraModule_nativeConnectClassifier( JNIEnv *env,
+Java_ie_tcd_cs7cs5_invigilatus_modules_CameraModule_nativeConnectClassifier( JNIEnv *env,
         jobject thiz,
         jlong cam_handle, jlong clf_handle )
 {
@@ -85,5 +86,25 @@ Java_ie_tcd_cs7cs5_invigilatus_video_CameraModule_nativeConnectClassifier( JNIEn
     if( !camera || !classifier ) {
         return false;
     }
-    return true;
+    return camera->registerClassifier( classifier );
+}
+
+extern "C"
+JNIEXPORT jboolean JNICALL
+Java_ie_tcd_cs7cs5_invigilatus_modules_CameraModule_nativeDisconnectClassifier( JNIEnv *env,
+        jobject thiz,
+        jlong cam_handle )
+{
+    auto camera = utils::convertLongToCls<Camera>( env, cam_handle );
+    if( !camera ) {
+        return false;
+    }
+    return camera->unloadClassifier();
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_ie_tcd_cs7cs5_invigilatus_modules_CameraModule_nativeInit( JNIEnv *env, jobject thiz )
+{
+    JavaVM *jvm;
 }

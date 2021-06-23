@@ -1,11 +1,13 @@
 #include <jni.h>
-#include <cstdlib>
-#include <android/native_window_jni.h>
 
+#include <cstdlib>
+
+#include "Camera.h"
 #include "dlog.h"
 #include "glUtils.h"
 #include "utils.h"
-#include "Camera.h"
+
+#include <android/native_window_jni.h>
 
 using namespace utils;
 
@@ -145,7 +147,7 @@ static void drawFrame(JNIEnv* env, jfloatArray texMatArray)
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_ie_tcd_cs7cs5_invigilatus_video_CamRenderer_onSurfaceCreated(JNIEnv *env, jobject thiz, jlong camera_handle, jint texture_id, jobject surface) {
+Java_ie_tcd_cs7cs5_invigilatus_modules_CamRenderer_onSurfaceCreated(JNIEnv *env, jobject thiz, jlong camera_handle, jint texture_id, jobject surface) {
     auto camera = utils::convertLongToCls<Camera>(env, camera_handle);
     if(!camera)
         return;
@@ -159,7 +161,7 @@ Java_ie_tcd_cs7cs5_invigilatus_video_CamRenderer_onSurfaceCreated(JNIEnv *env, j
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_ie_tcd_cs7cs5_invigilatus_video_CamRenderer_onSurfaceChanged(JNIEnv *env, jobject thiz, jint w, jint h) {
+Java_ie_tcd_cs7cs5_invigilatus_modules_CamRenderer_onSurfaceChanged(JNIEnv *env, jobject thiz, jint w, jint h) {
     width = w;
     height = h;
     LOGI("onSurfaceChanged, size: %dx%d", w, h);
@@ -167,6 +169,6 @@ Java_ie_tcd_cs7cs5_invigilatus_video_CamRenderer_onSurfaceChanged(JNIEnv *env, j
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_ie_tcd_cs7cs5_invigilatus_video_CamRenderer_onDrawFrame(JNIEnv *env, jobject thiz, jfloatArray texMatArray) {
+Java_ie_tcd_cs7cs5_invigilatus_modules_CamRenderer_onDrawFrame(JNIEnv *env, jobject thiz, jfloatArray texMatArray) {
     drawFrame(env, texMatArray);
 }

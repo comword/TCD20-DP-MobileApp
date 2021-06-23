@@ -1,9 +1,12 @@
-[submodule "android/app/src/main/cpp/tf-lite"]
-	path = android/app/libs/tf-lite
-	url = git@github.com:comword/tflite-bin.git
-[submodule "android/app/src/main/cpp/opencv"]
-	path = android/app/libs/opencv
-	url = git@github.com:comword/opencv-android-bin.git
 [submodule "server"]
 	path = server
 	url = git@github.com:comword/TCD20-DP-Server.git
+[submodule "android/app/libs/grpc"]
+	path = android/app/libs/grpc
+	url = git@github.com:comword/grpc-android-bin.git
+[submodule "android/app/libs/opencv"]
+	path = android/app/libs/opencv
+	url = git@github.com:comword/opencv-android-bin.git
+[submodule "android/app/libs/tf-lite"]
+	path = android/app/libs/tf-lite
+	url = git@github.com:comword/tflite-bin.git
