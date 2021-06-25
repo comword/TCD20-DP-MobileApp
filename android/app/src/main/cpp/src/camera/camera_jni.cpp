@@ -28,6 +28,8 @@ Java_ie_tcd_cs7cs5_invigilatus_modules_CameraModule_nativeInitCamera( JNIEnv *en
     std::string haarCascadePath( pHaarCascadePath );
     std::string modelLBFPath( pModelLBFPath );
     camera->initFaceDetector( haarCascadePath, modelLBFPath );
+    env->ReleaseStringUTFChars( jStrHaarCascadePath, pHaarCascadePath );
+    env->ReleaseStringUTFChars( jStrModelLBFPath, pModelLBFPath );
     return reinterpret_cast<jlong>( camera.release() );
 }
 

@@ -9,6 +9,7 @@ set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH}
         ${CMAKE_SOURCE_DIR}/../../../libs/tf-lite/libs/${ANDROID_ABI}
         ${CMAKE_CURRENT_LIST_DIR}/../../../libs/opencv/libs/${ANDROID_ABI}
         ${CMAKE_CURRENT_LIST_DIR}/../../../libs/grpc/libs/${ANDROID_ABI})
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
 add_library( tflite SHARED IMPORTED )
 set_target_properties( tflite PROPERTIES IMPORTED_LOCATION
@@ -20,7 +21,8 @@ add_library( mlmodel SHARED ${MLMODEL_SOURCES} )
 target_include_directories(mlmodel PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}/include
         ${CMAKE_CURRENT_LIST_DIR}/../../../libs/tf-lite/include
-        ${CMAKE_CURRENT_LIST_DIR}/../../../libs/tf-lite/include/flatbuffers)
+        ${CMAKE_CURRENT_LIST_DIR}/../../../libs/tf-lite/include/flatbuffers
+        ${CMAKE_CURRENT_LIST_DIR}/../../../libs/opencv/include)
 
 add_library( cv-core SHARED IMPORTED )
 set_target_properties( cv-core PROPERTIES IMPORTED_LOCATION
@@ -57,6 +59,7 @@ set_target_properties( cv-tbb PROPERTIES IMPORTED_LOCATION
         ${CMAKE_CURRENT_LIST_DIR}/../../../libs/opencv/libs/${ANDROID_ABI}/libtbb.so )
 
 find_library(protobuf-lite protobuf-lite)
+find_library(absl_strings_internal absl_strings_internal)
 find_library(absl absl)
 find_library(gpr gpr)
 find_library(crypto crypto)
@@ -73,16 +76,17 @@ file(GLOB CAMERA_SOURCES ${CMAKE_SOURCE_DIR}/src/camera/*.cpp)
 
 add_library( camera-view SHARED ${CAMERA_SOURCES} )
 target_include_directories( camera-view PRIVATE
-        ${CMAKE_CURRENT_LIST_DIR}/../../../libs/opencv/include
-        ${CMAKE_CURRENT_LIST_DIR}/include)
+        ${CMAKE_CURRENT_LIST_DIR}/include
+        ${CMAKE_CURRENT_LIST_DIR}/../../../libs/opencv/include)
 
 file(GLOB RESULT_REPORT_SOURCES ${CMAKE_SOURCE_DIR}/src/reporter/*.cpp)
 file(GLOB GRPCPB_SOURCES ${CMAKE_SOURCE_DIR}/src/reporter/*.cc)
 
 add_library( result-report SHARED ${RESULT_REPORT_SOURCES} ${GRPCPB_SOURCES})
 target_include_directories( result-report PRIVATE
-        ${CMAKE_CURRENT_LIST_DIR}/../../../libs/grpc/include
-        ${CMAKE_CURRENT_LIST_DIR}/include)
+        ${CMAKE_CURRENT_LIST_DIR}/include
+        ${CMAKE_CURRENT_LIST_DIR}/../../../libs/opencv/include
+        ${CMAKE_CURRENT_LIST_DIR}/../../../libs/grpc/include)
 
 find_library(log-lib log)
 find_library(android-lib android)
@@ -91,15 +95,16 @@ find_library(media-lib mediandk)
 find_library(gl-lib GLESv3)
 find_library(egl-lib EGL)
 
-target_link_libraries(mlmodel
-        ${log-lib} ${android-lib}
-        tflite cv-tbb cv-core cv-imgproc)
-
 target_link_libraries(result-report
-        ${log-lib} ${android-lib} ${protobuf-lite} ${absl} ${gpr} ${crypto} ${ssl} ${grpc}
-        ${address_sorting} ${re2} ${upb} ${cares} ${grpc-libz} ${grpc++})
+        ${log-lib} ${android-lib} ${grpc++} ${grpc} ${cares} ${upb} ${re2} ${address_sorting}
+        ${grpc-libz} ${ssl} ${crypto} ${gpr} ${absl} ${absl_strings_internal} ${protobuf-lite}
+        cv-tbb cv-core cv-imgproc)
+
+target_link_libraries(mlmodel
+        ${log-lib} ${android-lib} ${gl-lib} ${egl-lib}
+        tflite cv-tbb cv-core cv-imgproc result-report)
 
 target_link_libraries(camera-view
         ${log-lib} ${android-lib} ${camera-lib} ${media-lib} ${gl-lib} ${egl-lib}
         cv-tbb cv-core cv-imgproc cv-features2d cv-flann cv-calib3d cv-objdetect
-        cv-imgcodecs cv-videoio cv-photo cv-face result-report mlmodel)
+        cv-imgcodecs cv-videoio cv-photo cv-face mlmodel)

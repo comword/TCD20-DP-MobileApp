@@ -4,15 +4,18 @@
 #include <jni.h>
 #include <ostream>
 
+#include "export.h"
+
 namespace utils
 {
-extern const char kIllegalArgumentException[];
-extern const char kIllegalStateException[];
-extern const char kNullPointerException[];
-extern const char kUnsupportedOperationException[];
+DLL_PUBLIC extern const char kIllegalArgumentException[];
+DLL_PUBLIC extern const char kIllegalStateException[];
+DLL_PUBLIC extern const char kNullPointerException[];
+DLL_PUBLIC extern const char kUnsupportedOperationException[];
 
-void ThrowException( JNIEnv *env, const char *clazz, const char *fmt, ... );
-void debugBacktrace( std::ostream &out );
+DLL_PUBLIC void ThrowException( JNIEnv *env, const char *clazz, const char *fmt, ... );
+DLL_PUBLIC void debugBacktrace( std::ostream &out );
+
 template<class T>
 T *convertLongToCls( JNIEnv *env, jlong handle )
 {

@@ -19,6 +19,7 @@ import {
   REGISTER,
 } from 'redux-persist';
 import { rootMLSaga } from 'services/ml';
+import { rootAuthSaga } from 'services/auth';
 
 declare global {
   interface Window {
@@ -32,7 +33,7 @@ declare global {
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  whitelist: ['theme'],
+  whitelist: ['theme', 'auth'],
   version: 1,
 };
 
@@ -93,5 +94,6 @@ const persister = persistStore(store);
 store.persister = persister;
 
 runSaga(rootMLSaga);
+runSaga(rootAuthSaga);
 
 export { store, persister };

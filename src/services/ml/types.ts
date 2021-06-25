@@ -47,6 +47,7 @@ export type ProgressMap = {
 export interface PCState {
   lastError?: ErrorMsg;
   status: 'UNLOAD' | 'LOAD' | 'RUNNING';
+  netStatus: 'UNLOAD' | 'LOAD';
   modelPaths: Array<ModelPath>;
   downloadProg: Array<ProgressMap>;
   result?: Array<InferResult>;

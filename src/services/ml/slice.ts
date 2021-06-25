@@ -5,6 +5,7 @@ import { InferResult, ModelPath, PCState, ProgressMap } from './types';
 
 const initialState: PCState = {
   status: 'UNLOAD',
+  netStatus: 'UNLOAD',
   modelPaths: [],
   downloadProg: [],
 };
@@ -21,6 +22,9 @@ export const PCSlice = createSlice({
       action: PayloadAction<'UNLOAD' | 'LOAD' | 'RUNNING'>
     ) => {
       state.status = action.payload;
+    },
+    setNetStatus: (state, action: PayloadAction<'UNLOAD' | 'LOAD'>) => {
+      state.netStatus = action.payload;
     },
     setModelPaths: (state, action: PayloadAction<Array<ModelPath>>) => {
       state.modelPaths = action.payload;

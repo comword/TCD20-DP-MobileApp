@@ -3,6 +3,11 @@
 
 #include <vector>
 
+namespace cv
+{
+class Mat;
+}
+
 class IResultReporter
 {
     protected:
@@ -10,8 +15,8 @@ class IResultReporter
         virtual ~IResultReporter() = default;
     public:
         virtual bool init( void *userData ) = 0;
-        virtual void deInit() = 0;
-        virtual void onResult( const std::vector<float> &result ) = 0;
+        virtual void onMLResult( const std::vector<float> &result ) = 0;
+        virtual void onVideoFrame( const cv::Mat &result ) = 0;
 };
 
 #endif //INVIGILATOR_IRESULTREPORTER_H
