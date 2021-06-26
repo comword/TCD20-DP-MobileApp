@@ -12,7 +12,7 @@ import {
   selectDisplay,
   selectThemeKey,
 } from './slice';
-import { StatusBar } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { RootState } from 'store/types';
 
@@ -44,7 +44,7 @@ const ThemeProvider: React.FC<Props> = ({
           backgroundColor="transparent"
           animated
           translucent
-          barStyle={themeDisplay === 'dark' ? 'dark-content' : 'light-content'}
+          style={themeDisplay === 'dark' ? 'light' : 'dark'}
         />
         {React.Children.only(children)}
       </SCThemeProvider>

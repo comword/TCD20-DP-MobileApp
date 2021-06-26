@@ -40,12 +40,32 @@ type StudentAppStreamVideo = {
   readonly responseType: typeof student_pb.CommonGetResponse;
 };
 
+type StudentAppGetUserDetail = {
+  readonly methodName: string;
+  readonly service: typeof StudentApp;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof student_pb.CommonGetRequest;
+  readonly responseType: typeof student_pb.CommonGetResponse;
+};
+
+type StudentAppPutUserDetail = {
+  readonly methodName: string;
+  readonly service: typeof StudentApp;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof student_pb.CommonGetRequest;
+  readonly responseType: typeof student_pb.CommonGetResponse;
+};
+
 export class StudentApp {
   static readonly serviceName: string;
   static readonly UpPredictResult: StudentAppUpPredictResult;
   static readonly GetExams: StudentAppGetExams;
   static readonly GetPredicts: StudentAppGetPredicts;
   static readonly StreamVideo: StudentAppStreamVideo;
+  static readonly GetUserDetail: StudentAppGetUserDetail;
+  static readonly PutUserDetail: StudentAppPutUserDetail;
 }
 
 export type ServiceError = { message: string, code: number; metadata: grpc.Metadata }
@@ -108,5 +128,23 @@ export class StudentAppClient {
     callback: (error: ServiceError|null, responseMessage: student_pb.GetPredictResponse|null) => void
   ): UnaryResponse;
   streamVideo(metadata?: grpc.Metadata): BidirectionalStream<student_pb.StreamVideoRequest, student_pb.CommonGetResponse>;
+  getUserDetail(
+    requestMessage: student_pb.CommonGetRequest,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: student_pb.CommonGetResponse|null) => void
+  ): UnaryResponse;
+  getUserDetail(
+    requestMessage: student_pb.CommonGetRequest,
+    callback: (error: ServiceError|null, responseMessage: student_pb.CommonGetResponse|null) => void
+  ): UnaryResponse;
+  putUserDetail(
+    requestMessage: student_pb.CommonGetRequest,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: student_pb.CommonGetResponse|null) => void
+  ): UnaryResponse;
+  putUserDetail(
+    requestMessage: student_pb.CommonGetRequest,
+    callback: (error: ServiceError|null, responseMessage: student_pb.CommonGetResponse|null) => void
+  ): UnaryResponse;
 }
 

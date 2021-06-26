@@ -46,6 +46,24 @@ StudentApp.StreamVideo = {
   responseType: student_pb.CommonGetResponse
 };
 
+StudentApp.GetUserDetail = {
+  methodName: "GetUserDetail",
+  service: StudentApp,
+  requestStream: false,
+  responseStream: false,
+  requestType: student_pb.CommonGetRequest,
+  responseType: student_pb.CommonGetResponse
+};
+
+StudentApp.PutUserDetail = {
+  methodName: "PutUserDetail",
+  service: StudentApp,
+  requestStream: false,
+  responseStream: false,
+  requestType: student_pb.CommonGetRequest,
+  responseType: student_pb.CommonGetResponse
+};
+
 exports.StudentApp = StudentApp;
 
 function StudentAppClient(serviceHost, options) {
@@ -186,6 +204,68 @@ StudentAppClient.prototype.streamVideo = function streamVideo(metadata) {
     },
     cancel: function () {
       listeners = null;
+      client.close();
+    }
+  };
+};
+
+StudentAppClient.prototype.getUserDetail = function getUserDetail(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(StudentApp.GetUserDetail, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+StudentAppClient.prototype.putUserDetail = function putUserDetail(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(StudentApp.PutUserDetail, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
       client.close();
     }
   };

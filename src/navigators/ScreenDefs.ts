@@ -4,4 +4,5 @@ export enum AppScreens {
   Login = 'Login',
   Camera = 'Camera',
   Home = 'Home',
+  Profile = 'Profile',
 }

@@ -7,8 +7,6 @@ import { View, StyleSheet } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import tailwind from 'tailwind-rn';
 
-import { StatusBar } from 'expo-status-bar';
-import { selectDisplay, themeSliceKey, reducer } from 'theme/slice';
 import { RootState } from 'store/types';
 import { injectReducer } from 'redux-injectors';
 import CameraGLView from 'services/ml/CameraGLView';
@@ -26,7 +24,7 @@ type Props = ComponentProps &
   ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
 
-const CameraScreen: React.FC<Props> = ({ navigation, themeDisplay }) => {
+const CameraScreen: React.FC<Props> = ({ navigation }) => {
   useLayoutEffect(() => {
     const setupCamera = async () => {
       await CameraGLModule.requestCameraPermissionsAsync();
@@ -67,12 +65,6 @@ const CameraScreen: React.FC<Props> = ({ navigation, themeDisplay }) => {
 
   return (
     <View style={tailwind('flex h-full w-full')}>
-      <StatusBar
-        backgroundColor="transparent"
-        animated
-        translucent
-        style={themeDisplay === 'dark' ? 'light' : 'dark'}
-      />
       <View style={styles.container}>
         <CameraGLView style={tailwind('flex h-full w-full')} />
       </View>
@@ -95,9 +87,7 @@ const CameraScreen: React.FC<Props> = ({ navigation, themeDisplay }) => {
 };
 
 const mapStateToProps = (state: RootState) => {
-  return {
-    themeDisplay: selectDisplay(state),
-  };
+  return {};
 };
 
 function mapDispatchToProps(dispatch: Dispatch) {
@@ -105,9 +95,7 @@ function mapDispatchToProps(dispatch: Dispatch) {
 }
 
 const withConnect = connect(mapStateToProps, mapDispatchToProps);
-const withReducer = injectReducer({ key: themeSliceKey, reducer: reducer });
 
-export default compose(
-  withConnect,
-  withReducer
-)(CameraScreen) as React.ComponentType<ComponentProps>;
+export default compose(withConnect)(
+  CameraScreen
+) as React.ComponentType<ComponentProps>;

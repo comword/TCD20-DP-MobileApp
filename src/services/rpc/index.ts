@@ -8,6 +8,8 @@ class TypeStudentApp {
   upPredictResult: Fn = undefined;
   getExams: Fn = undefined;
   getPredicts: Fn = undefined;
+  getUserDetail: Fn = undefined;
+  putUserDetail: Fn = undefined;
 }
 
 class TypeSignUpInClient {
