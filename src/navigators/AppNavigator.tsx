@@ -7,6 +7,8 @@ import { AppScreens } from './ScreenDefs';
 import { ThemeContext } from 'styled-components/native';
 import WelcomeScreen from 'containers/WelcomeScreen';
 import CameraScreen from 'containers/CameraScreen';
+import RegisterScreen from 'containers/RegisterScreen';
+import LoginScreen from 'containers/LoginScreen';
 
 const TransitionScreenOptions = {
   ...TransitionPresets.SlideFromRightIOS,
@@ -28,6 +30,16 @@ const AppNavigator: React.FC = () => {
         component={WelcomeScreen}
       />
       <Stack.Screen name={AppScreens.Camera} component={CameraScreen} />
+      <Stack.Screen
+        name={AppScreens.Register}
+        options={navOptions}
+        component={RegisterScreen}
+      />
+      <Stack.Screen
+        name={AppScreens.Login}
+        options={navOptions}
+        component={LoginScreen}
+      />
     </Stack.Navigator>
   );
 };
