@@ -5,11 +5,10 @@ import { injectReducer, injectSaga } from 'redux-injectors';
 import { View, ScrollView } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useTheme } from 'styled-components/native';
-import { Button, ProgressBar, TextInput } from 'react-native-paper';
+import { Button, ProgressBar, TextInput, Text } from 'react-native-paper';
 import { useFormField } from 'utils/FormFields';
 import tailwind from 'tailwind-rn';
 
-import Text from 'components/Text';
 import { AppScreens } from 'navigators/ScreenDefs';
 import PassMeter, { PASS_LABELS, MAX_LEN, MIN_LEN } from 'components/PassMeter';
 import InfoBanner, { getInfoLevel } from 'components/InfoBanner';

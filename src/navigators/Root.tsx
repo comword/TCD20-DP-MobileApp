@@ -12,11 +12,15 @@ import {
   ParamListBase,
   StackActions,
 } from '@react-navigation/native';
-import AppNavigator from './AppNavigator';
-import { ThemeContext } from 'styled-components/native';
+import PreLoginNavigator from './PreLoginNavigator';
+import PostLoginNavigator from './PostLoginNavigator';
 import LoadingIndicator from 'components/LoadingIndicator';
-import { compose, bindActionCreators, Dispatch } from 'redux';
+import { authSlice, selectAuth } from 'services/auth';
+import { RootState } from 'store/types';
+import { compose } from 'redux';
+import { injectReducer } from 'redux-injectors';
 import { connect } from 'react-redux';
+import { ThemeContext } from 'styled-components/native';
 
 export const navigatorRef = React.createRef<NavigationContainerRef>();
 let stack: Array<object> = [];
@@ -65,24 +69,35 @@ export const RouterActions = {
   },
 };
 
-type Props = ReturnType<typeof mapDispatchToProps>;
+type Props = {} & ReturnType<typeof mapStateToProps>;
 
-const RootNavigator: React.FC<Props> = ({}) => {
+const RootNavigator: React.FC<Props> = ({ authKey }) => {
   const themeContext = useContext(ThemeContext);
 
   return (
     <Suspense fallback={<LoadingIndicator />}>
       <NavigationContainer ref={navigatorRef} theme={themeContext}>
-        <AppNavigator />
+        {!authKey && <PreLoginNavigator />}
+        {authKey.length !== 0 && <PostLoginNavigator />}
+        {/* <PostLoginNavigator /> */}
       </NavigationContainer>
     </Suspense>
   );
 };
 
-function mapDispatchToProps(dispatch: Dispatch) {
-  return bindActionCreators({}, dispatch);
-}
+const mapStateToProps = (state: RootState) => {
+  return {
+    authKey: selectAuth(state).authKey,
+  };
+};
 
-const withConnect = connect(null, mapDispatchToProps);
+const withConnect = connect(mapStateToProps, null);
+const withReducer = injectReducer({
+  key: authSlice.name,
+  reducer: authSlice.reducer,
+});
 
-export default compose(withConnect)(RootNavigator);
+export default compose(
+  withConnect,
+  withReducer
+)(RootNavigator) as React.ComponentType<{}>;

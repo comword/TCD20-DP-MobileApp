@@ -2,12 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { compose, bindActionCreators, Dispatch } from 'redux';
 import { ScrollView, View } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { Button, ProgressBar, TextInput } from 'react-native-paper';
+import { Button, ProgressBar, Text, TextInput } from 'react-native-paper';
 import { useFormField } from 'utils/FormFields';
 import tailwind from 'tailwind-rn';
 import { MAX_LEN } from 'components/PassMeter';
 
-import Text from 'components/Text';
 import { AppScreens } from 'navigators/ScreenDefs';
 import { connect } from 'react-redux';
 import {

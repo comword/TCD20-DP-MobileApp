@@ -1,5 +1,6 @@
 import React, { useEffect, useLayoutEffect } from 'react';
 import { compose, bindActionCreators, Dispatch } from 'redux';
+import { Platform } from '@unimodules/react-native-adapter';
 import { connect } from 'react-redux';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AppScreens } from 'navigators/ScreenDefs';
@@ -8,12 +9,12 @@ import { useTheme } from 'react-native-paper';
 import tailwind from 'tailwind-rn';
 
 import { RootState } from 'store/types';
-import { injectReducer } from 'redux-injectors';
+// import { injectReducer } from 'redux-injectors';
 import CameraGLView from 'services/ml/CameraGLView';
 import { MLActionTypes } from 'services/ml/types';
 
 import { NativeModulesProxy } from '@unimodules/core';
-import ResultDisplay from 'components/ResultDisplay';
+import ResultDisplay from 'components/BottomControl/ResultDisplay';
 const { CameraGLModule } = NativeModulesProxy;
 
 type ComponentProps = {
@@ -30,7 +31,7 @@ const CameraScreen: React.FC<Props> = ({ navigation }) => {
       await CameraGLModule.requestCameraPermissionsAsync();
       await CameraGLModule.requestMicrophonePermissionsAsync();
     };
-    setupCamera();
+    if (Platform.OS !== 'web') setupCamera();
   });
 
   useEffect(() =>
@@ -44,14 +45,14 @@ const CameraScreen: React.FC<Props> = ({ navigation }) => {
       await CameraGLModule.setCameraSize(640, 640);
       await CameraGLModule.startCamera();
     };
-    setupCamera();
+    if (Platform.OS !== 'web') setupCamera();
   });
 
   const onBack = () => {
     const stopCamera = async () => {
       await CameraGLModule.stopCamera();
     };
-    stopCamera();
+    if (Platform.OS !== 'web') stopCamera();
     return false;
   };
 

@@ -1,12 +1,11 @@
 import React from 'react';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AppScreens } from 'navigators/ScreenDefs';
-import { View } from 'react-native';
+import { View, Text as RNText } from 'react-native';
 import tailwind from 'tailwind-rn';
 
 import { useTheme } from 'styled-components/native';
-import Text from 'components/Text';
-import { Button } from 'react-native-paper';
+import { Button, Text } from 'react-native-paper';
 
 import IntroIcon from './assets/intro.svg';
 import DownloadModal from 'components/DownloadModal';
@@ -22,6 +21,11 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
     <>
       <View style={tailwind('flex h-full w-full')}>
         <View style={tailwind('flex-1 pt-16 px-8')}>
+          <Text style={tailwind('text-left text-2xl')}>Invigilator</Text>
+          <Text style={tailwind('text-center text-4xl mt-3')}>
+            <RNText style={{ color: theme.colors.accent }}>Veritas</RNText>{' '}
+            Exams
+          </Text>
           <IntroIcon
             width={tailwind('w-full').width}
             height={tailwind('h-1/4').height}

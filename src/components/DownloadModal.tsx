@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, FlatList, View, Text } from 'react-native';
+import { Platform } from '@unimodules/react-native-adapter';
 import * as FileSystem from 'expo-file-system';
 import {
   ProgressBar,
@@ -121,8 +122,8 @@ const DownloadModal: React.FC<Props> = ({
   };
 
   useEffect(() => {
-    if (loadStatus === 'UNLOAD') checkExisting();
-    else if (loadStatus === 'LOAD') setShowDiag(false);
+    if (Platform.OS === 'web' || loadStatus === 'LOAD') setShowDiag(false);
+    else if (loadStatus === 'UNLOAD') checkExisting();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadStatus]);
 
