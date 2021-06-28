@@ -12,17 +12,17 @@ import { injectReducer } from 'redux-injectors';
 import { useEffect } from 'react';
 
 type ComponentProps = {
-  navigation: DrawerNavigationProp<any, AppScreens.Home>;
+  navigation: DrawerNavigationProp<any, AppScreens.Exams>;
 };
 
 type Props = ComponentProps &
   ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
 
-const HomeScreen: React.FC<Props> = ({ navigation }) => {
-  useEffect(() => {
-    navigation.openDrawer();
-  });
+const ExamsScreen: React.FC<Props> = ({ navigation }) => {
+  // useEffect(() => {
+  //   navigation.openDrawer();
+  // });
   return <View />;
 };
 
@@ -37,5 +37,5 @@ function mapDispatchToProps(dispatch: Dispatch) {
 const withConnect = connect(mapStateToProps, mapDispatchToProps);
 
 export default compose(withConnect)(
-  HomeScreen
+  ExamsScreen
 ) as React.ComponentType<ComponentProps>;

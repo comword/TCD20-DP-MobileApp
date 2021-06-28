@@ -3,5 +3,5 @@ export interface UserDetailState {
   lastName: string;
   studentId: string;
   birthday: string;
-  class: string;
+  email: string;
 }

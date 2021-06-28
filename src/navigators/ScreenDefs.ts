@@ -3,6 +3,6 @@ export enum AppScreens {
   Register = 'Register',
   Login = 'Login',
   Camera = 'Camera',
-  Home = 'Home',
+  Exams = 'Exams',
   Profile = 'Profile',
 }

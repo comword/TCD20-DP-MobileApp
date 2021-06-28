@@ -9,15 +9,10 @@ import { MAX_LEN } from 'components/PassMeter';
 
 import { AppScreens } from 'navigators/ScreenDefs';
 import { connect } from 'react-redux';
-import {
-  authSlice,
-  rootAuthSaga,
-  selectAuth,
-  signInAction,
-} from 'services/auth';
-import { injectReducer, injectSaga } from 'redux-injectors';
+import { authSlice, selectAuth, signInAction } from 'services/auth';
 import { useTheme } from 'styled-components/native';
 import InfoBanner, { getInfoLevel } from 'components/InfoBanner';
+import { RootState } from 'store/types';
 
 type ComponentProps = {
   navigation: StackNavigationProp<any, AppScreens.Login>;
@@ -137,7 +132,7 @@ const LoginScreen: React.FC<Props> = ({
   );
 };
 
-const mapStateToProps = (state: any) => {
+const mapStateToProps = (state: RootState) => {
   return {
     lastError: selectAuth(state).lastError,
     authKey: selectAuth(state).authKey,
@@ -155,14 +150,7 @@ function mapDispatchToProps(dispatch: Dispatch) {
 }
 
 const withConnect = connect(mapStateToProps, mapDispatchToProps);
-const withReducer = injectReducer({
-  key: authSlice.name,
-  reducer: authSlice.reducer,
-});
-const withSaga = injectSaga({ key: authSlice.name, saga: rootAuthSaga });
 
-export default compose(
-  withConnect,
-  withReducer,
-  withSaga
-)(LoginScreen) as React.ComponentType<ComponentProps>;
+export default compose(withConnect)(
+  LoginScreen
+) as React.ComponentType<ComponentProps>;
