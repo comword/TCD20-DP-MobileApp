@@ -1680,6 +1680,77 @@
     workbox-webpack-plugin "^3.6.3"
     worker-loader "^2.0.0"
 
+"@formatjs/ecma402-abstract@1.9.4":
+  version "1.9.4"
+  resolved "https://registry.nlark.com/@formatjs/ecma402-abstract/download/@formatjs/ecma402-abstract-1.9.4.tgz#797ae6c407fb5a0d09023a60c86f19aca1958c5e"
+  integrity sha1-eXrmxAf7Wg0JAjpgyG8ZrKGVjF4=
+  dependencies:
+    tslib "^2.1.0"
+
+"@formatjs/intl-datetimeformat@^4.1.6":
+  version "4.1.6"
+  resolved "https://registry.nlark.com/@formatjs/intl-datetimeformat/download/@formatjs/intl-datetimeformat-4.1.6.tgz#ce30d3907dfb229c79e023c03171da09b2611e36"
+  integrity sha1-zjDTkH37Ipx54CPAMXHaCbJhHjY=
+  dependencies:
+    "@formatjs/ecma402-abstract" "1.9.4"
+    tslib "^2.1.0"
+
+"@formatjs/intl-displaynames@^5.1.6":
+  version "5.1.6"
+  resolved "https://registry.nlark.com/@formatjs/intl-displaynames/download/@formatjs/intl-displaynames-5.1.6.tgz#b2905cff3802c4a703cf0ce1da10083e37652716"
+  integrity sha1-spBc/zgCxKcDzwzh2hAIPjdlJxY=
+  dependencies:
+    "@formatjs/ecma402-abstract" "1.9.4"
+    tslib "^2.1.0"
+
+"@formatjs/intl-getcanonicallocales@1.7.1", "@formatjs/intl-getcanonicallocales@^1.7.1":
+  version "1.7.1"
+  resolved "https://registry.nlark.com/@formatjs/intl-getcanonicallocales/download/@formatjs/intl-getcanonicallocales-1.7.1.tgz#dc3b353fa5ece03053320346f238be83d240d5f6"
+  integrity sha1-3Ds1P6Xs4DBTMgNG8ji+g9JA1fY=
+  dependencies:
+    tslib "^2.1.0"
+
+"@formatjs/intl-listformat@^6.2.6":
+  version "6.2.6"
+  resolved "https://registry.nlark.com/@formatjs/intl-listformat/download/@formatjs/intl-listformat-6.2.6.tgz#4e3d6580df3b6ef737e5d7ce85bae7e065518ff9"
+  integrity sha1-Tj1lgN87bvc35dfOhbrn4GVRj/k=
+  dependencies:
+    "@formatjs/ecma402-abstract" "1.9.4"
+    tslib "^2.1.0"
+
+"@formatjs/intl-locale@^2.4.33":
+  version "2.4.33"
+  resolved "https://registry.nlark.com/@formatjs/intl-locale/download/@formatjs/intl-locale-2.4.33.tgz#09a9e474dd68c7e0c6c8ef0b685676217c0379af"
+  integrity sha1-CankdN1ox+DGyO8LaFZ2IXwDea8=
+  dependencies:
+    "@formatjs/ecma402-abstract" "1.9.4"
+    "@formatjs/intl-getcanonicallocales" "1.7.1"
+    tslib "^2.1.0"
+
+"@formatjs/intl-numberformat@^7.1.5":
+  version "7.1.5"
+  resolved "https://registry.nlark.com/@formatjs/intl-numberformat/download/@formatjs/intl-numberformat-7.1.5.tgz#8d1df875f7dfbd2ed8e1326fddb5f4dad3c66d11"
+  integrity sha1-jR34dfffvS7Y4TJv3bX02tPGbRE=
+  dependencies:
+    "@formatjs/ecma402-abstract" "1.9.4"
+    tslib "^2.1.0"
+
+"@formatjs/intl-pluralrules@^4.0.28":
+  version "4.0.28"
+  resolved "https://registry.nlark.com/@formatjs/intl-pluralrules/download/@formatjs/intl-pluralrules-4.0.28.tgz#9d7a4a5b760b909abd4f92ee311c1188e976c627"
+  integrity sha1-nXpKW3YLkJq9T5LuMRwRiOl2xic=
+  dependencies:
+    "@formatjs/ecma402-abstract" "1.9.4"
+    tslib "^2.1.0"
+
+"@formatjs/intl-relativetimeformat@^9.1.7":
+  version "9.1.7"
+  resolved "https://registry.nlark.com/@formatjs/intl-relativetimeformat/download/@formatjs/intl-relativetimeformat-9.1.7.tgz#9c5481b4d4ac39de3162c836cedef52feeae8a05"
+  integrity sha1-nFSBtNSsOd4xYsg2zt71L+6uigU=
+  dependencies:
+    "@formatjs/ecma402-abstract" "1.9.4"
+    tslib "^2.1.0"
+
 "@hapi/address@2.x.x":
   version "2.1.4"
   resolved "https://registry.npm.taobao.org/@hapi/address/download/@hapi/address-2.1.4.tgz?cache=0&sync_timestamp=1603524710662&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40hapi%2Faddress%2Fdownload%2F%40hapi%2Faddress-2.1.4.tgz#5d67ed43f3fd41a69d4b9ff7b56e7c0d1d0a81e5"
@@ -2495,6 +2566,13 @@
   dependencies:
     color "^3.1.3"
     react-native-iphone-x-helper "^1.3.0"
+
+"@react-navigation/material-top-tabs@^5.3.15":
+  version "5.3.15"
+  resolved "https://registry.nlark.com/@react-navigation/material-top-tabs/download/@react-navigation/material-top-tabs-5.3.15.tgz#d2719db5f6af4bb372371619ea84fac402295784"
+  integrity sha1-0nGdtfavS7NyNxYZ6oT6xAIpV4Q=
+  dependencies:
+    color "^3.1.3"
 
 "@react-navigation/native@^5.9.4":
   version "5.9.4"
@@ -6451,6 +6529,13 @@ expo-keep-awake@~9.1.2:
   resolved "https://registry.npm.taobao.org/expo-keep-awake/download/expo-keep-awake-9.1.2.tgz#b3e52c7bef0ade975ae88637a2bf980f6b573368"
   integrity sha1-s+Use+8K3pda6IY3or+YD2tXM2g=
 
+expo-localization@~10.1.0:
+  version "10.1.0"
+  resolved "https://registry.nlark.com/expo-localization/download/expo-localization-10.1.0.tgz#4371fa6c092c4e86edfabff504313710d99b28ef"
+  integrity sha1-Q3H6bAksTobt+r/1BDE3ENmbKO8=
+  dependencies:
+    rtl-detect "^1.0.2"
+
 expo-permissions@~12.0.1:
   version "12.0.1"
   resolved "https://registry.npm.taobao.org/expo-permissions/download/expo-permissions-12.0.1.tgz#5163c00d991bf565bf987354611628c298ddd0c4"
@@ -9867,6 +9952,11 @@ mockdate@^3.0.2:
   resolved "https://registry.npm.taobao.org/mockdate/download/mockdate-3.0.5.tgz#789be686deb3149e7df2b663d2bc4392bc3284fb"
   integrity sha1-eJvmht6zFJ598rZj0rxDkrwyhPs=
 
+moment@^2.29.1:
+  version "2.29.1"
+  resolved "https://registry.npm.taobao.org/moment/download/moment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
+  integrity sha1-sr52n6MZQL6e7qZGnAdeNQBvo9M=
+
 move-concurrently@^1.0.1:
   version "1.0.1"
   resolved "https://registry.npm.taobao.org/move-concurrently/download/move-concurrently-1.0.1.tgz#be2c005fda32e0b29af1f05d7c4b33214c701f92"
@@ -11466,6 +11556,16 @@ react-native-iphone-x-helper@^1.3.0, react-native-iphone-x-helper@^1.3.1:
   resolved "https://registry.npm.taobao.org/react-native-iphone-x-helper/download/react-native-iphone-x-helper-1.3.1.tgz#20c603e9a0e765fd6f97396638bdeb0e5a60b010"
   integrity sha1-IMYD6aDnZf1vlzlmOL3rDlpgsBA=
 
+react-native-localize@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.nlark.com/react-native-localize/download/react-native-localize-2.1.1.tgz#da8f8776991d2b748708c408db05152602cefb38"
+  integrity sha1-2o+HdpkdK3SHCMQI2wUVJgLO+zg=
+
+react-native-paper-dates@^0.4.6:
+  version "0.4.6"
+  resolved "https://registry.nlark.com/react-native-paper-dates/download/react-native-paper-dates-0.4.6.tgz#e81006528694b3796bdbfd7202bc3ebb0759f2d1"
+  integrity sha1-6BAGUoaUs3lr2/1yArw+uwdZ8tE=
+
 react-native-paper@^4.9.1:
   version "4.9.1"
   resolved "https://registry.nlark.com/react-native-paper/download/react-native-paper-4.9.1.tgz#9b2aadcb1bd48ff6825641df60821e20e0cc8276"
@@ -11516,6 +11616,11 @@ react-native-svg@12.1.0:
   dependencies:
     css-select "^2.1.0"
     css-tree "^1.0.0-alpha.39"
+
+react-native-tab-view@^2.16.0:
+  version "2.16.0"
+  resolved "https://registry.npm.taobao.org/react-native-tab-view/download/react-native-tab-view-2.16.0.tgz#cae72c7084394bd328fac5fefb86cd966df37a86"
+  integrity sha1-yucscIQ5S9Mo+sX++4bNlm3zeoY=
 
 react-native-unimodules@~0.13.3:
   version "0.13.3"
@@ -12117,6 +12222,11 @@ rsvp@^4.8.4:
   version "4.8.5"
   resolved "https://registry.npm.taobao.org/rsvp/download/rsvp-4.8.5.tgz#c8f155311d167f68f21e168df71ec5b083113734"
   integrity sha1-yPFVMR0Wf2jyHhaN9x7FsIMRNzQ=
+
+rtl-detect@^1.0.2:
+  version "1.0.3"
+  resolved "https://registry.nlark.com/rtl-detect/download/rtl-detect-1.0.3.tgz#42145b9a4f9cf0b94c4542aba90d57f0d18559bf"
+  integrity sha1-QhRbmk+c8LlMRUKrqQ1X8NGFWb8=
 
 run-async@^2.2.0:
   version "2.4.1"
@@ -13294,7 +13404,7 @@ tslib@^1.8.1:
   resolved "https://registry.nlark.com/tslib/download/tslib-1.14.1.tgz?cache=0&sync_timestamp=1623450814531&other_urls=https%3A%2F%2Fregistry.nlark.com%2Ftslib%2Fdownload%2Ftslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
   integrity sha1-zy04vcNKE0vK8QkcQfZhni9nLQA=
 
-tslib@^2.0.3:
+tslib@^2.0.3, tslib@^2.1.0:
   version "2.3.0"
   resolved "https://registry.nlark.com/tslib/download/tslib-2.3.0.tgz?cache=0&sync_timestamp=1623450814531&other_urls=https%3A%2F%2Fregistry.nlark.com%2Ftslib%2Fdownload%2Ftslib-2.3.0.tgz#803b8cdab3e12ba581a4ca41c8839bbb0dacb09e"
   integrity sha1-gDuM2rPhK6WBpMpByIObuw2ssJ4=

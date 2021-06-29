@@ -5,4 +5,8 @@ export enum AppScreens {
   Camera = 'Camera',
   Exams = 'Exams',
   Profile = 'Profile',
+  ExamList = 'Exam list',
+  PendingExams = 'Pending exams',
+  PastExams = 'Past exams',
+  ExamDetails = 'Exam details',
 }

@@ -15,6 +15,10 @@ const themeSlice = createSlice({
   reducers: {
     changeTheme(state, action: PayloadAction<ThemeKeyType>) {
       state.selected = action.payload;
+      if (action.payload === 'system')
+        state.display =
+          Appearance.getColorScheme() === 'dark' ? 'dark' : 'light';
+      else state.display = action.payload;
     },
     changeDisplay(state, action: PayloadAction<'light' | 'dark'>) {
       state.display = action.payload;

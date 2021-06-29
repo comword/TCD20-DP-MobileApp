@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, FlatList, View, Text } from 'react-native';
 import { Platform } from '@unimodules/react-native-adapter';
 import * as FileSystem from 'expo-file-system';
+import Constants from 'expo-constants';
 import {
   ProgressBar,
   Dialog,
@@ -122,7 +123,12 @@ const DownloadModal: React.FC<Props> = ({
   };
 
   useEffect(() => {
-    if (Platform.OS === 'web' || loadStatus === 'LOAD') setShowDiag(false);
+    if (Constants.appOwnership === 'expo' || Platform.OS === 'web')
+      setShowDiag(false);
+  }, [setShowDiag]);
+
+  useEffect(() => {
+    if (loadStatus === 'LOAD' || Platform.OS === 'web') setShowDiag(false);
     else if (loadStatus === 'UNLOAD') checkExisting();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadStatus]);

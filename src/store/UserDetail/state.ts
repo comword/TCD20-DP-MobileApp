@@ -4,4 +4,5 @@ export interface UserDetailState {
   studentId: string;
   birthday: string;
   email: string;
+  avatar: string;
 }

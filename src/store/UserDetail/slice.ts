@@ -8,6 +8,7 @@ const initialState: UserDetailState = {
   studentId: '',
   birthday: '01-01-1970', //DD-MM-yyyy
   email: '',
+  avatar: '',
 };
 
 export const userSlice = createSlice({

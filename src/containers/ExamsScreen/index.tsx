@@ -1,41 +1,58 @@
 import React from 'react';
-import { compose, bindActionCreators, Dispatch } from 'redux';
-import { connect } from 'react-redux';
 import { AppScreens } from 'navigators/ScreenDefs';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
-import { View } from 'react-native';
-import tailwind from 'tailwind-rn';
-
-import { Button } from 'react-native-paper';
+import { createStackNavigator } from '@react-navigation/stack';
 import { RootState } from 'store/types';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
+import { selectUserDetail, userSlice } from 'store/UserDetail';
+
+import ExamDetails from './ExamDetails';
+import ExamListScreen from './ExamListScreen';
 import { injectReducer } from 'redux-injectors';
-import { useEffect } from 'react';
+import AppHeader from 'components/AppHeader';
 
 type ComponentProps = {
   navigation: DrawerNavigationProp<any, AppScreens.Exams>;
 };
 
-type Props = ComponentProps &
-  ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps>;
+type Props = ComponentProps & ReturnType<typeof mapStateToProps>;
 
-const ExamsScreen: React.FC<Props> = ({ navigation }) => {
-  // useEffect(() => {
-  //   navigation.openDrawer();
-  // });
-  return <View />;
+const ExamsScreen: React.FC<Props> = ({ navigation, userDetail }) => {
+  const Stack = createStackNavigator();
+  return (
+    <Stack.Navigator
+      initialRouteName={AppScreens.ExamList}
+      headerMode="screen"
+      screenOptions={{
+        header: props => (
+          <AppHeader
+            {...props}
+            drawerNavigation={navigation}
+            userDetail={userDetail}
+          />
+        ),
+      }}
+    >
+      <Stack.Screen name={AppScreens.ExamList} component={ExamListScreen} />
+      <Stack.Screen name={AppScreens.ExamDetails} component={ExamDetails} />
+    </Stack.Navigator>
+  );
 };
 
 const mapStateToProps = (state: RootState) => {
-  return {};
+  return {
+    userDetail: selectUserDetail(state),
+  };
 };
 
-function mapDispatchToProps(dispatch: Dispatch) {
-  return bindActionCreators({}, dispatch);
-}
+const withConnect = connect(mapStateToProps, null);
+const withReducer = injectReducer({
+  key: userSlice.name,
+  reducer: userSlice.reducer,
+});
 
-const withConnect = connect(mapStateToProps, mapDispatchToProps);
-
-export default compose(withConnect)(
-  ExamsScreen
-) as React.ComponentType<ComponentProps>;
+export default compose(
+  withConnect,
+  withReducer
+)(ExamsScreen) as React.ComponentType<ComponentProps>;

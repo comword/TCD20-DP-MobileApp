@@ -1,11 +1,12 @@
 import React, { useEffect, useLayoutEffect } from 'react';
 import { compose, bindActionCreators, Dispatch } from 'redux';
 import { Platform } from '@unimodules/react-native-adapter';
+import Constants from 'expo-constants';
 import { connect } from 'react-redux';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AppScreens } from 'navigators/ScreenDefs';
 import { View, StyleSheet } from 'react-native';
-import { useTheme } from 'react-native-paper';
+import { useTheme, Text } from 'react-native-paper';
 import tailwind from 'tailwind-rn';
 
 import { RootState } from 'store/types';
@@ -26,12 +27,13 @@ type Props = ComponentProps &
   ReturnType<typeof mapDispatchToProps>;
 
 const CameraScreen: React.FC<Props> = ({ navigation }) => {
+  const inApp = Platform.OS !== 'web' && Constants.appOwnership !== 'expo';
   useLayoutEffect(() => {
     const setupCamera = async () => {
       await CameraGLModule.requestCameraPermissionsAsync();
       await CameraGLModule.requestMicrophonePermissionsAsync();
     };
-    if (Platform.OS !== 'web') setupCamera();
+    if (inApp) setupCamera();
   });
 
   useEffect(() =>
@@ -45,14 +47,14 @@ const CameraScreen: React.FC<Props> = ({ navigation }) => {
       await CameraGLModule.setCameraSize(640, 640);
       await CameraGLModule.startCamera();
     };
-    if (Platform.OS !== 'web') setupCamera();
+    if (inApp) setupCamera();
   });
 
   const onBack = () => {
     const stopCamera = async () => {
       await CameraGLModule.stopCamera();
     };
-    if (Platform.OS !== 'web') stopCamera();
+    if (inApp) stopCamera();
     return false;
   };
 
@@ -67,7 +69,16 @@ const CameraScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <View style={tailwind('flex h-full w-full')}>
       <View style={styles.container}>
-        <CameraGLView style={tailwind('flex h-full w-full')} />
+        {inApp && <CameraGLView style={tailwind('flex h-full w-full')} />}
+        {!inApp && (
+          <View
+            style={tailwind(
+              'flex bg-blue-300 h-full items-center justify-center'
+            )}
+          >
+            <Text>Native code not available in web or expo-go app</Text>
+          </View>
+        )}
       </View>
       <View style={styles.container}>
         <ResultDisplay

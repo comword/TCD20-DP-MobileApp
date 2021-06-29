@@ -77,9 +77,8 @@ const RootNavigator: React.FC<Props> = ({ authKey }) => {
   return (
     <Suspense fallback={<LoadingIndicator />}>
       <NavigationContainer ref={navigatorRef} theme={themeContext}>
-        {/* {!authKey && <PreLoginNavigator />}
-        {authKey.length !== 0 && <PostLoginNavigator />} */}
-        <PostLoginNavigator />
+        {!authKey && <PreLoginNavigator />}
+        {authKey.length !== 0 && <PostLoginNavigator />}
       </NavigationContainer>
     </Suspense>
   );

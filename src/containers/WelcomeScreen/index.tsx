@@ -9,6 +9,8 @@ import { Button, Text } from 'react-native-paper';
 
 import IntroIcon from './assets/intro.svg';
 import DownloadModal from 'components/DownloadModal';
+import { useDispatch } from 'react-redux';
+import { authSlice } from 'services/auth';
 
 type Props = {
   navigation: StackNavigationProp<any, AppScreens.Welcome>;
@@ -16,6 +18,7 @@ type Props = {
 
 const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
   const theme = useTheme();
+  const dispatch = useDispatch();
 
   return (
     <>
@@ -60,6 +63,16 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
             style={tailwind('mt-6')}
           >
             <Text style={tailwind('text-lg')}>Test Camera</Text>
+          </Button>
+          <Button
+            mode="outlined"
+            uppercase={false}
+            onPress={() => {
+              dispatch(authSlice.actions.setAuthKey('FakeAuthKey'));
+            }}
+            style={tailwind('mt-6')}
+          >
+            <Text style={tailwind('text-lg')}>Mock login</Text>
           </Button>
         </View>
       </View>

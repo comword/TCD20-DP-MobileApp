@@ -7,17 +7,17 @@ import {
   DrawerContentScrollView,
   DrawerItem,
 } from '@react-navigation/drawer';
-import { Avatar, Title, Caption, Drawer } from 'react-native-paper';
+import { Title, Caption, Drawer } from 'react-native-paper';
 import { StyleSheet } from 'react-native';
 import { useTheme } from 'styled-components/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { ThemeSwitch } from 'components/ThemeSwitch';
+import MultiAvatar from 'components/MultiAvatar';
 import { RootState } from 'store/types';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { selectUserDetail, userSlice } from 'store/UserDetail';
 import { injectReducer } from 'redux-injectors';
-import { MaterialIcons } from '@expo/vector-icons';
 
 type ComponentProps = {} & DrawerContentComponentProps<DrawerContentOptions>;
 
@@ -41,27 +41,40 @@ const DrawerContent: React.FC<Props> = ({ userDetail, ...rest }) => {
     return focusedRoute === name;
   };
 
+  const navigateTo = (name: string) => {
+    const { navigation } = rest;
+    navigation.navigate(name);
+  };
+
+  const userName =
+    userDetail.firstName.length !== 0 && userDetail.lastName.length !== 0
+      ? userDetail.firstName[0] + userDetail.lastName[0]
+      : undefined;
+
   return (
     <DrawerContentScrollView style={styles.container} {...rest}>
       <View style={styles.userCard}>
-        {(userDetail.firstName || userDetail.lastName) && (
+        <MultiAvatar
+          size={60}
+          img={
+            userDetail.avatar.length !== 0
+              ? { uri: userDetail.avatar }
+              : undefined
+          }
+          uName={userName}
+        />
+        {userDetail.firstName.length !== 0 && userDetail.lastName.length !== 0 && (
           <React.Fragment>
-            <Avatar.Text
-              size={60}
-              label={userDetail.firstName[0] + userDetail.lastName[0]}
-            />
             <Title style={styles.userNameText}>
               {userDetail.firstName + ' ' + userDetail.lastName}
             </Title>
             <Caption style={styles.emailText}>{userDetail.email}</Caption>
           </React.Fragment>
         )}
-        {!userDetail.firstName && !userDetail.lastName && (
+        {!(
+          userDetail.firstName.length !== 0 && userDetail.lastName.length !== 0
+        ) && (
           <React.Fragment>
-            <Avatar.Icon
-              size={60}
-              icon={ic => <MaterialIcons name="person" {...ic} />}
-            />
             <Title style={styles.userNameText}>Unknown user</Title>
             <Caption style={styles.emailText}>Unknown email</Caption>
           </React.Fragment>
@@ -78,7 +91,7 @@ const DrawerContent: React.FC<Props> = ({ userDetail, ...rest }) => {
           )}
           label="Exams"
           focused={getFocused('Exams')}
-          onPress={() => {}}
+          onPress={() => navigateTo('Exams')}
         />
         <DrawerItem
           icon={({ color, size }) => (
@@ -90,7 +103,7 @@ const DrawerContent: React.FC<Props> = ({ userDetail, ...rest }) => {
           )}
           label="Profile"
           focused={getFocused('Profile')}
-          onPress={() => {}}
+          onPress={() => navigateTo('Profile')}
         />
       </Drawer.Section>
       <Drawer.Section title="Theme">
