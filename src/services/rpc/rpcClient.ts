@@ -15,8 +15,7 @@ class _RpcClient<T extends StudentAppClient | SignUpInClient, K> {
         transport: WebsocketTransport(),
       });
     } else {
-      const url = window.location.href.split('/');
-      this.client = new cls(url[0] + '//' + url[2] + '/api', {
+      this.client = new cls('https://posture-study.gtdev.org/api', {
         transport: WebsocketTransport(),
       });
     }

@@ -178,13 +178,10 @@ class CommonGetRequest::_Internal {
  public:
 };
 
-CommonGetRequest::CommonGetRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                         bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::MessageLite(arena, is_message_owned) {
+CommonGetRequest::CommonGetRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::MessageLite(arena) {
   SharedCtor();
-  if (!is_message_owned) {
-    RegisterArenaDtor(arena);
-  }
+  RegisterArenaDtor(arena);
   // @@protoc_insertion_point(arena_constructor:student.CommonGetRequest)
 }
 CommonGetRequest::CommonGetRequest(const CommonGetRequest& from)
@@ -193,24 +190,23 @@ CommonGetRequest::CommonGetRequest(const CommonGetRequest& from)
   content_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (!from._internal_content().empty()) {
     content_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, from._internal_content(), 
-      GetArenaForAllocation());
+      GetArena());
   }
   // @@protoc_insertion_point(copy_constructor:student.CommonGetRequest)
 }
 
-inline void CommonGetRequest::SharedCtor() {
+void CommonGetRequest::SharedCtor() {
 content_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
 CommonGetRequest::~CommonGetRequest() {
   // @@protoc_insertion_point(destructor:student.CommonGetRequest)
-  if (GetArenaForAllocation() != nullptr) return;
   SharedDtor();
   _internal_metadata_.Delete<std::string>();
 }
 
-inline void CommonGetRequest::SharedDtor() {
-  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+void CommonGetRequest::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
   content_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
@@ -239,6 +235,7 @@ const char* CommonGetRequest::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPA
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    CHK_(ptr);
     switch (tag >> 3) {
       // string content = 1;
       case 1:
@@ -251,8 +248,7 @@ const char* CommonGetRequest::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPA
         continue;
       default: {
       handle_unusual:
-        if ((tag == 0) || ((tag & 7) == 4)) {
-          CHK_(ptr);
+        if ((tag & 7) == 4 || tag == 0) {
           ctx->SetLastTag(tag);
           goto success;
         }
@@ -279,7 +275,7 @@ failure:
   (void) cached_has_bits;
 
   // string content = 1;
-  if (!this->_internal_content().empty()) {
+  if (this->content().size() > 0) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_content().data(), static_cast<int>(this->_internal_content().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
@@ -305,7 +301,7 @@ size_t CommonGetRequest::ByteSizeLong() const {
   (void) cached_has_bits;
 
   // string content = 1;
-  if (!this->_internal_content().empty()) {
+  if (this->content().size() > 0) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
         this->_internal_content());
@@ -328,13 +324,13 @@ void CommonGetRequest::CheckTypeAndMergeFrom(
 void CommonGetRequest::MergeFrom(const CommonGetRequest& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:student.CommonGetRequest)
   GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom<std::string>(from._internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (!from._internal_content().empty()) {
+  if (from.content().size() > 0) {
     _internal_set_content(from._internal_content());
   }
-  _internal_metadata_.MergeFrom<std::string>(from._internal_metadata_);
 }
 
 void CommonGetRequest::CopyFrom(const CommonGetRequest& from) {
@@ -350,12 +346,8 @@ bool CommonGetRequest::IsInitialized() const {
 
 void CommonGetRequest::InternalSwap(CommonGetRequest* other) {
   using std::swap;
-  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      &content_, GetArenaForAllocation(),
-      &other->content_, other->GetArenaForAllocation()
-  );
+  _internal_metadata_.Swap<std::string>(&other->_internal_metadata_);
+  content_.Swap(&other->content_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
 
 std::string CommonGetRequest::GetTypeName() const {
@@ -369,13 +361,10 @@ class CommonGetResponse::_Internal {
  public:
 };
 
-CommonGetResponse::CommonGetResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                         bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::MessageLite(arena, is_message_owned) {
+CommonGetResponse::CommonGetResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::MessageLite(arena) {
   SharedCtor();
-  if (!is_message_owned) {
-    RegisterArenaDtor(arena);
-  }
+  RegisterArenaDtor(arena);
   // @@protoc_insertion_point(arena_constructor:student.CommonGetResponse)
 }
 CommonGetResponse::CommonGetResponse(const CommonGetResponse& from)
@@ -384,26 +373,25 @@ CommonGetResponse::CommonGetResponse(const CommonGetResponse& from)
   msg_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (!from._internal_msg().empty()) {
     msg_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, from._internal_msg(), 
-      GetArenaForAllocation());
+      GetArena());
   }
   code_ = from.code_;
   // @@protoc_insertion_point(copy_constructor:student.CommonGetResponse)
 }
 
-inline void CommonGetResponse::SharedCtor() {
+void CommonGetResponse::SharedCtor() {
 msg_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 code_ = 0;
 }
 
 CommonGetResponse::~CommonGetResponse() {
   // @@protoc_insertion_point(destructor:student.CommonGetResponse)
-  if (GetArenaForAllocation() != nullptr) return;
   SharedDtor();
   _internal_metadata_.Delete<std::string>();
 }
 
-inline void CommonGetResponse::SharedDtor() {
-  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+void CommonGetResponse::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
   msg_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
@@ -433,6 +421,7 @@ const char* CommonGetResponse::_InternalParse(const char* ptr, ::PROTOBUF_NAMESP
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    CHK_(ptr);
     switch (tag >> 3) {
       // int32 code = 1;
       case 1:
@@ -452,8 +441,7 @@ const char* CommonGetResponse::_InternalParse(const char* ptr, ::PROTOBUF_NAMESP
         continue;
       default: {
       handle_unusual:
-        if ((tag == 0) || ((tag & 7) == 4)) {
-          CHK_(ptr);
+        if ((tag & 7) == 4 || tag == 0) {
           ctx->SetLastTag(tag);
           goto success;
         }
@@ -480,13 +468,13 @@ failure:
   (void) cached_has_bits;
 
   // int32 code = 1;
-  if (this->_internal_code() != 0) {
+  if (this->code() != 0) {
     target = stream->EnsureSpace(target);
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(1, this->_internal_code(), target);
   }
 
   // string msg = 2;
-  if (!this->_internal_msg().empty()) {
+  if (this->msg().size() > 0) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_msg().data(), static_cast<int>(this->_internal_msg().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
@@ -512,14 +500,14 @@ size_t CommonGetResponse::ByteSizeLong() const {
   (void) cached_has_bits;
 
   // string msg = 2;
-  if (!this->_internal_msg().empty()) {
+  if (this->msg().size() > 0) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
         this->_internal_msg());
   }
 
   // int32 code = 1;
-  if (this->_internal_code() != 0) {
+  if (this->code() != 0) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
         this->_internal_code());
@@ -542,16 +530,16 @@ void CommonGetResponse::CheckTypeAndMergeFrom(
 void CommonGetResponse::MergeFrom(const CommonGetResponse& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:student.CommonGetResponse)
   GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom<std::string>(from._internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (!from._internal_msg().empty()) {
+  if (from.msg().size() > 0) {
     _internal_set_msg(from._internal_msg());
   }
-  if (from._internal_code() != 0) {
+  if (from.code() != 0) {
     _internal_set_code(from._internal_code());
   }
-  _internal_metadata_.MergeFrom<std::string>(from._internal_metadata_);
 }
 
 void CommonGetResponse::CopyFrom(const CommonGetResponse& from) {
@@ -567,12 +555,8 @@ bool CommonGetResponse::IsInitialized() const {
 
 void CommonGetResponse::InternalSwap(CommonGetResponse* other) {
   using std::swap;
-  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      &msg_, GetArenaForAllocation(),
-      &other->msg_, other->GetArenaForAllocation()
-  );
+  _internal_metadata_.Swap<std::string>(&other->_internal_metadata_);
+  msg_.Swap(&other->msg_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   swap(code_, other->code_);
 }
 
@@ -607,26 +591,23 @@ ExamDetail::_Internal::endtime(const ExamDetail* msg) {
   return *msg->endtime_;
 }
 void ExamDetail::clear_starttime() {
-  if (GetArenaForAllocation() == nullptr && starttime_ != nullptr) {
+  if (GetArena() == nullptr && starttime_ != nullptr) {
     delete starttime_;
   }
   starttime_ = nullptr;
 }
 void ExamDetail::clear_endtime() {
-  if (GetArenaForAllocation() == nullptr && endtime_ != nullptr) {
+  if (GetArena() == nullptr && endtime_ != nullptr) {
     delete endtime_;
   }
   endtime_ = nullptr;
 }
-ExamDetail::ExamDetail(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                         bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::MessageLite(arena, is_message_owned),
+ExamDetail::ExamDetail(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::MessageLite(arena),
   additioninfo_(arena),
   predictid_(arena) {
   SharedCtor();
-  if (!is_message_owned) {
-    RegisterArenaDtor(arena);
-  }
+  RegisterArenaDtor(arena);
   // @@protoc_insertion_point(arena_constructor:student.ExamDetail)
 }
 ExamDetail::ExamDetail(const ExamDetail& from)
@@ -637,12 +618,12 @@ ExamDetail::ExamDetail(const ExamDetail& from)
   examid_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (!from._internal_examid().empty()) {
     examid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, from._internal_examid(), 
-      GetArenaForAllocation());
+      GetArena());
   }
   examname_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (!from._internal_examname().empty()) {
     examname_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, from._internal_examname(), 
-      GetArenaForAllocation());
+      GetArena());
   }
   if (from._internal_has_starttime()) {
     starttime_ = new PROTOBUF_NAMESPACE_ID::Timestamp(*from.starttime_);
@@ -657,7 +638,7 @@ ExamDetail::ExamDetail(const ExamDetail& from)
   // @@protoc_insertion_point(copy_constructor:student.ExamDetail)
 }
 
-inline void ExamDetail::SharedCtor() {
+void ExamDetail::SharedCtor() {
 examid_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 examname_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 ::memset(reinterpret_cast<char*>(this) + static_cast<size_t>(
@@ -668,13 +649,12 @@ examname_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlr
 
 ExamDetail::~ExamDetail() {
   // @@protoc_insertion_point(destructor:student.ExamDetail)
-  if (GetArenaForAllocation() != nullptr) return;
   SharedDtor();
   _internal_metadata_.Delete<std::string>();
 }
 
-inline void ExamDetail::SharedDtor() {
-  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+void ExamDetail::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
   examid_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   examname_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (this != internal_default_instance()) delete starttime_;
@@ -701,11 +681,11 @@ void ExamDetail::Clear() {
   predictid_.Clear();
   examid_.ClearToEmpty();
   examname_.ClearToEmpty();
-  if (GetArenaForAllocation() == nullptr && starttime_ != nullptr) {
+  if (GetArena() == nullptr && starttime_ != nullptr) {
     delete starttime_;
   }
   starttime_ = nullptr;
-  if (GetArenaForAllocation() == nullptr && endtime_ != nullptr) {
+  if (GetArena() == nullptr && endtime_ != nullptr) {
     delete endtime_;
   }
   endtime_ = nullptr;
@@ -717,6 +697,7 @@ const char* ExamDetail::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID:
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    CHK_(ptr);
     switch (tag >> 3) {
       // string examId = 1;
       case 1:
@@ -778,8 +759,7 @@ const char* ExamDetail::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID:
         continue;
       default: {
       handle_unusual:
-        if ((tag == 0) || ((tag & 7) == 4)) {
-          CHK_(ptr);
+        if ((tag & 7) == 4 || tag == 0) {
           ctx->SetLastTag(tag);
           goto success;
         }
@@ -806,7 +786,7 @@ failure:
   (void) cached_has_bits;
 
   // string examId = 1;
-  if (!this->_internal_examid().empty()) {
+  if (this->examid().size() > 0) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_examid().data(), static_cast<int>(this->_internal_examid().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
@@ -816,7 +796,7 @@ failure:
   }
 
   // string examName = 2;
-  if (!this->_internal_examname().empty()) {
+  if (this->examname().size() > 0) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_examname().data(), static_cast<int>(this->_internal_examname().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
@@ -826,7 +806,7 @@ failure:
   }
 
   // .google.protobuf.Timestamp startTime = 3;
-  if (this->_internal_has_starttime()) {
+  if (this->has_starttime()) {
     target = stream->EnsureSpace(target);
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(
@@ -834,7 +814,7 @@ failure:
   }
 
   // .google.protobuf.Timestamp endTime = 4;
-  if (this->_internal_has_endtime()) {
+  if (this->has_endtime()) {
     target = stream->EnsureSpace(target);
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(
@@ -849,7 +829,6 @@ failure:
     typedef ::PROTOBUF_NAMESPACE_ID::internal::CompareByDerefFirst<SortItem> Less;
     struct Utf8Check {
       static void Check(ConstPtr p) {
-        (void)p;
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
           p->first.data(), static_cast<int>(p->first.length()),
           ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
@@ -931,28 +910,28 @@ size_t ExamDetail::ByteSizeLong() const {
   }
 
   // string examId = 1;
-  if (!this->_internal_examid().empty()) {
+  if (this->examid().size() > 0) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
         this->_internal_examid());
   }
 
   // string examName = 2;
-  if (!this->_internal_examname().empty()) {
+  if (this->examname().size() > 0) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
         this->_internal_examname());
   }
 
   // .google.protobuf.Timestamp startTime = 3;
-  if (this->_internal_has_starttime()) {
+  if (this->has_starttime()) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
         *starttime_);
   }
 
   // .google.protobuf.Timestamp endTime = 4;
-  if (this->_internal_has_endtime()) {
+  if (this->has_endtime()) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
         *endtime_);
@@ -975,24 +954,24 @@ void ExamDetail::CheckTypeAndMergeFrom(
 void ExamDetail::MergeFrom(const ExamDetail& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:student.ExamDetail)
   GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom<std::string>(from._internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   additioninfo_.MergeFrom(from.additioninfo_);
   predictid_.MergeFrom(from.predictid_);
-  if (!from._internal_examid().empty()) {
+  if (from.examid().size() > 0) {
     _internal_set_examid(from._internal_examid());
   }
-  if (!from._internal_examname().empty()) {
+  if (from.examname().size() > 0) {
     _internal_set_examname(from._internal_examname());
   }
-  if (from._internal_has_starttime()) {
+  if (from.has_starttime()) {
     _internal_mutable_starttime()->PROTOBUF_NAMESPACE_ID::Timestamp::MergeFrom(from._internal_starttime());
   }
-  if (from._internal_has_endtime()) {
+  if (from.has_endtime()) {
     _internal_mutable_endtime()->PROTOBUF_NAMESPACE_ID::Timestamp::MergeFrom(from._internal_endtime());
   }
-  _internal_metadata_.MergeFrom<std::string>(from._internal_metadata_);
 }
 
 void ExamDetail::CopyFrom(const ExamDetail& from) {
@@ -1008,19 +987,11 @@ bool ExamDetail::IsInitialized() const {
 
 void ExamDetail::InternalSwap(ExamDetail* other) {
   using std::swap;
-  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  additioninfo_.InternalSwap(&other->additioninfo_);
+  _internal_metadata_.Swap<std::string>(&other->_internal_metadata_);
+  additioninfo_.Swap(&other->additioninfo_);
   predictid_.InternalSwap(&other->predictid_);
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      &examid_, GetArenaForAllocation(),
-      &other->examid_, other->GetArenaForAllocation()
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      &examname_, GetArenaForAllocation(),
-      &other->examname_, other->GetArenaForAllocation()
-  );
+  examid_.Swap(&other->examid_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  examname_.Swap(&other->examname_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
       PROTOBUF_FIELD_OFFSET(ExamDetail, endtime_)
       + sizeof(ExamDetail::endtime_)
@@ -1040,15 +1011,12 @@ class ExamResponse::_Internal {
  public:
 };
 
-ExamResponse::ExamResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                         bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::MessageLite(arena, is_message_owned),
+ExamResponse::ExamResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::MessageLite(arena),
   pendingexams_(arena),
   pastexams_(arena) {
   SharedCtor();
-  if (!is_message_owned) {
-    RegisterArenaDtor(arena);
-  }
+  RegisterArenaDtor(arena);
   // @@protoc_insertion_point(arena_constructor:student.ExamResponse)
 }
 ExamResponse::ExamResponse(const ExamResponse& from)
@@ -1059,26 +1027,25 @@ ExamResponse::ExamResponse(const ExamResponse& from)
   msg_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (!from._internal_msg().empty()) {
     msg_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, from._internal_msg(), 
-      GetArenaForAllocation());
+      GetArena());
   }
   code_ = from.code_;
   // @@protoc_insertion_point(copy_constructor:student.ExamResponse)
 }
 
-inline void ExamResponse::SharedCtor() {
+void ExamResponse::SharedCtor() {
 msg_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 code_ = 0;
 }
 
 ExamResponse::~ExamResponse() {
   // @@protoc_insertion_point(destructor:student.ExamResponse)
-  if (GetArenaForAllocation() != nullptr) return;
   SharedDtor();
   _internal_metadata_.Delete<std::string>();
 }
 
-inline void ExamResponse::SharedDtor() {
-  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+void ExamResponse::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
   msg_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
@@ -1110,6 +1077,7 @@ const char* ExamResponse::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_I
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    CHK_(ptr);
     switch (tag >> 3) {
       // int32 code = 1;
       case 1:
@@ -1153,8 +1121,7 @@ const char* ExamResponse::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_I
         continue;
       default: {
       handle_unusual:
-        if ((tag == 0) || ((tag & 7) == 4)) {
-          CHK_(ptr);
+        if ((tag & 7) == 4 || tag == 0) {
           ctx->SetLastTag(tag);
           goto success;
         }
@@ -1181,13 +1148,13 @@ failure:
   (void) cached_has_bits;
 
   // int32 code = 1;
-  if (this->_internal_code() != 0) {
+  if (this->code() != 0) {
     target = stream->EnsureSpace(target);
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(1, this->_internal_code(), target);
   }
 
   // string msg = 2;
-  if (!this->_internal_msg().empty()) {
+  if (this->msg().size() > 0) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_msg().data(), static_cast<int>(this->_internal_msg().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
@@ -1243,14 +1210,14 @@ size_t ExamResponse::ByteSizeLong() const {
   }
 
   // string msg = 2;
-  if (!this->_internal_msg().empty()) {
+  if (this->msg().size() > 0) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
         this->_internal_msg());
   }
 
   // int32 code = 1;
-  if (this->_internal_code() != 0) {
+  if (this->code() != 0) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
         this->_internal_code());
@@ -1273,18 +1240,18 @@ void ExamResponse::CheckTypeAndMergeFrom(
 void ExamResponse::MergeFrom(const ExamResponse& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:student.ExamResponse)
   GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom<std::string>(from._internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   pendingexams_.MergeFrom(from.pendingexams_);
   pastexams_.MergeFrom(from.pastexams_);
-  if (!from._internal_msg().empty()) {
+  if (from.msg().size() > 0) {
     _internal_set_msg(from._internal_msg());
   }
-  if (from._internal_code() != 0) {
+  if (from.code() != 0) {
     _internal_set_code(from._internal_code());
   }
-  _internal_metadata_.MergeFrom<std::string>(from._internal_metadata_);
 }
 
 void ExamResponse::CopyFrom(const ExamResponse& from) {
@@ -1300,14 +1267,10 @@ bool ExamResponse::IsInitialized() const {
 
 void ExamResponse::InternalSwap(ExamResponse* other) {
   using std::swap;
-  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  _internal_metadata_.Swap<std::string>(&other->_internal_metadata_);
   pendingexams_.InternalSwap(&other->pendingexams_);
   pastexams_.InternalSwap(&other->pastexams_);
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      &msg_, GetArenaForAllocation(),
-      &other->msg_, other->GetArenaForAllocation()
-  );
+  msg_.Swap(&other->msg_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   swap(code_, other->code_);
 }
 
@@ -1337,19 +1300,16 @@ ModelPredict::_Internal::time(const ModelPredict* msg) {
   return *msg->time_;
 }
 void ModelPredict::clear_time() {
-  if (GetArenaForAllocation() == nullptr && time_ != nullptr) {
+  if (GetArena() == nullptr && time_ != nullptr) {
     delete time_;
   }
   time_ = nullptr;
 }
-ModelPredict::ModelPredict(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                         bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::MessageLite(arena, is_message_owned),
+ModelPredict::ModelPredict(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::MessageLite(arena),
   result_(arena) {
   SharedCtor();
-  if (!is_message_owned) {
-    RegisterArenaDtor(arena);
-  }
+  RegisterArenaDtor(arena);
   // @@protoc_insertion_point(arena_constructor:student.ModelPredict)
 }
 ModelPredict::ModelPredict(const ModelPredict& from)
@@ -1359,12 +1319,12 @@ ModelPredict::ModelPredict(const ModelPredict& from)
   examid_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (!from._internal_examid().empty()) {
     examid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, from._internal_examid(), 
-      GetArenaForAllocation());
+      GetArena());
   }
   studentid_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (!from._internal_studentid().empty()) {
     studentid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, from._internal_studentid(), 
-      GetArenaForAllocation());
+      GetArena());
   }
   if (from._internal_has_time()) {
     time_ = new PROTOBUF_NAMESPACE_ID::Timestamp(*from.time_);
@@ -1374,7 +1334,7 @@ ModelPredict::ModelPredict(const ModelPredict& from)
   // @@protoc_insertion_point(copy_constructor:student.ModelPredict)
 }
 
-inline void ModelPredict::SharedCtor() {
+void ModelPredict::SharedCtor() {
 examid_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 studentid_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 time_ = nullptr;
@@ -1382,13 +1342,12 @@ time_ = nullptr;
 
 ModelPredict::~ModelPredict() {
   // @@protoc_insertion_point(destructor:student.ModelPredict)
-  if (GetArenaForAllocation() != nullptr) return;
   SharedDtor();
   _internal_metadata_.Delete<std::string>();
 }
 
-inline void ModelPredict::SharedDtor() {
-  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+void ModelPredict::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
   examid_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   studentid_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (this != internal_default_instance()) delete time_;
@@ -1413,7 +1372,7 @@ void ModelPredict::Clear() {
   result_.Clear();
   examid_.ClearToEmpty();
   studentid_.ClearToEmpty();
-  if (GetArenaForAllocation() == nullptr && time_ != nullptr) {
+  if (GetArena() == nullptr && time_ != nullptr) {
     delete time_;
   }
   time_ = nullptr;
@@ -1425,6 +1384,7 @@ const char* ModelPredict::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_I
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    CHK_(ptr);
     switch (tag >> 3) {
       // string examId = 1;
       case 1:
@@ -1465,8 +1425,7 @@ const char* ModelPredict::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_I
         continue;
       default: {
       handle_unusual:
-        if ((tag == 0) || ((tag & 7) == 4)) {
-          CHK_(ptr);
+        if ((tag & 7) == 4 || tag == 0) {
           ctx->SetLastTag(tag);
           goto success;
         }
@@ -1493,7 +1452,7 @@ failure:
   (void) cached_has_bits;
 
   // string examId = 1;
-  if (!this->_internal_examid().empty()) {
+  if (this->examid().size() > 0) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_examid().data(), static_cast<int>(this->_internal_examid().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
@@ -1503,7 +1462,7 @@ failure:
   }
 
   // string studentId = 2;
-  if (!this->_internal_studentid().empty()) {
+  if (this->studentid().size() > 0) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_studentid().data(), static_cast<int>(this->_internal_studentid().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
@@ -1513,7 +1472,7 @@ failure:
   }
 
   // .google.protobuf.Timestamp time = 3;
-  if (this->_internal_has_time()) {
+  if (this->has_time()) {
     target = stream->EnsureSpace(target);
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(
@@ -1528,7 +1487,6 @@ failure:
     typedef ::PROTOBUF_NAMESPACE_ID::internal::CompareByDerefFirst<SortItem> Less;
     struct Utf8Check {
       static void Check(ConstPtr p) {
-        (void)p;
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
           p->first.data(), static_cast<int>(p->first.length()),
           ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
@@ -1588,21 +1546,21 @@ size_t ModelPredict::ByteSizeLong() const {
   }
 
   // string examId = 1;
-  if (!this->_internal_examid().empty()) {
+  if (this->examid().size() > 0) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
         this->_internal_examid());
   }
 
   // string studentId = 2;
-  if (!this->_internal_studentid().empty()) {
+  if (this->studentid().size() > 0) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
         this->_internal_studentid());
   }
 
   // .google.protobuf.Timestamp time = 3;
-  if (this->_internal_has_time()) {
+  if (this->has_time()) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
         *time_);
@@ -1625,20 +1583,20 @@ void ModelPredict::CheckTypeAndMergeFrom(
 void ModelPredict::MergeFrom(const ModelPredict& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:student.ModelPredict)
   GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom<std::string>(from._internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   result_.MergeFrom(from.result_);
-  if (!from._internal_examid().empty()) {
+  if (from.examid().size() > 0) {
     _internal_set_examid(from._internal_examid());
   }
-  if (!from._internal_studentid().empty()) {
+  if (from.studentid().size() > 0) {
     _internal_set_studentid(from._internal_studentid());
   }
-  if (from._internal_has_time()) {
+  if (from.has_time()) {
     _internal_mutable_time()->PROTOBUF_NAMESPACE_ID::Timestamp::MergeFrom(from._internal_time());
   }
-  _internal_metadata_.MergeFrom<std::string>(from._internal_metadata_);
 }
 
 void ModelPredict::CopyFrom(const ModelPredict& from) {
@@ -1654,18 +1612,10 @@ bool ModelPredict::IsInitialized() const {
 
 void ModelPredict::InternalSwap(ModelPredict* other) {
   using std::swap;
-  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  result_.InternalSwap(&other->result_);
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      &examid_, GetArenaForAllocation(),
-      &other->examid_, other->GetArenaForAllocation()
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      &studentid_, GetArenaForAllocation(),
-      &other->studentid_, other->GetArenaForAllocation()
-  );
+  _internal_metadata_.Swap<std::string>(&other->_internal_metadata_);
+  result_.Swap(&other->result_);
+  examid_.Swap(&other->examid_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  studentid_.Swap(&other->studentid_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   swap(time_, other->time_);
 }
 
@@ -1680,14 +1630,11 @@ class GetPredictRequest::_Internal {
  public:
 };
 
-GetPredictRequest::GetPredictRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                         bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::MessageLite(arena, is_message_owned),
+GetPredictRequest::GetPredictRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::MessageLite(arena),
   predictid_(arena) {
   SharedCtor();
-  if (!is_message_owned) {
-    RegisterArenaDtor(arena);
-  }
+  RegisterArenaDtor(arena);
   // @@protoc_insertion_point(arena_constructor:student.GetPredictRequest)
 }
 GetPredictRequest::GetPredictRequest(const GetPredictRequest& from)
@@ -1697,18 +1644,17 @@ GetPredictRequest::GetPredictRequest(const GetPredictRequest& from)
   // @@protoc_insertion_point(copy_constructor:student.GetPredictRequest)
 }
 
-inline void GetPredictRequest::SharedCtor() {
+void GetPredictRequest::SharedCtor() {
 }
 
 GetPredictRequest::~GetPredictRequest() {
   // @@protoc_insertion_point(destructor:student.GetPredictRequest)
-  if (GetArenaForAllocation() != nullptr) return;
   SharedDtor();
   _internal_metadata_.Delete<std::string>();
 }
 
-inline void GetPredictRequest::SharedDtor() {
-  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+void GetPredictRequest::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
 }
 
 void GetPredictRequest::ArenaDtor(void* object) {
@@ -1736,6 +1682,7 @@ const char* GetPredictRequest::_InternalParse(const char* ptr, ::PROTOBUF_NAMESP
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    CHK_(ptr);
     switch (tag >> 3) {
       // repeated string predictId = 1;
       case 1:
@@ -1753,8 +1700,7 @@ const char* GetPredictRequest::_InternalParse(const char* ptr, ::PROTOBUF_NAMESP
         continue;
       default: {
       handle_unusual:
-        if ((tag == 0) || ((tag & 7) == 4)) {
-          CHK_(ptr);
+        if ((tag & 7) == 4 || tag == 0) {
           ctx->SetLastTag(tag);
           goto success;
         }
@@ -1831,11 +1777,11 @@ void GetPredictRequest::CheckTypeAndMergeFrom(
 void GetPredictRequest::MergeFrom(const GetPredictRequest& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:student.GetPredictRequest)
   GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom<std::string>(from._internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   predictid_.MergeFrom(from.predictid_);
-  _internal_metadata_.MergeFrom<std::string>(from._internal_metadata_);
 }
 
 void GetPredictRequest::CopyFrom(const GetPredictRequest& from) {
@@ -1851,7 +1797,7 @@ bool GetPredictRequest::IsInitialized() const {
 
 void GetPredictRequest::InternalSwap(GetPredictRequest* other) {
   using std::swap;
-  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  _internal_metadata_.Swap<std::string>(&other->_internal_metadata_);
   predictid_.InternalSwap(&other->predictid_);
 }
 
@@ -1875,14 +1821,11 @@ class GetPredictResponse::_Internal {
  public:
 };
 
-GetPredictResponse::GetPredictResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                         bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::MessageLite(arena, is_message_owned),
+GetPredictResponse::GetPredictResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::MessageLite(arena),
   result_(arena) {
   SharedCtor();
-  if (!is_message_owned) {
-    RegisterArenaDtor(arena);
-  }
+  RegisterArenaDtor(arena);
   // @@protoc_insertion_point(arena_constructor:student.GetPredictResponse)
 }
 GetPredictResponse::GetPredictResponse(const GetPredictResponse& from)
@@ -1892,26 +1835,25 @@ GetPredictResponse::GetPredictResponse(const GetPredictResponse& from)
   msg_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (!from._internal_msg().empty()) {
     msg_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, from._internal_msg(), 
-      GetArenaForAllocation());
+      GetArena());
   }
   code_ = from.code_;
   // @@protoc_insertion_point(copy_constructor:student.GetPredictResponse)
 }
 
-inline void GetPredictResponse::SharedCtor() {
+void GetPredictResponse::SharedCtor() {
 msg_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 code_ = 0;
 }
 
 GetPredictResponse::~GetPredictResponse() {
   // @@protoc_insertion_point(destructor:student.GetPredictResponse)
-  if (GetArenaForAllocation() != nullptr) return;
   SharedDtor();
   _internal_metadata_.Delete<std::string>();
 }
 
-inline void GetPredictResponse::SharedDtor() {
-  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+void GetPredictResponse::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
   msg_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
@@ -1942,6 +1884,7 @@ const char* GetPredictResponse::_InternalParse(const char* ptr, ::PROTOBUF_NAMES
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    CHK_(ptr);
     switch (tag >> 3) {
       // int32 code = 1;
       case 1:
@@ -1973,8 +1916,7 @@ const char* GetPredictResponse::_InternalParse(const char* ptr, ::PROTOBUF_NAMES
         continue;
       default: {
       handle_unusual:
-        if ((tag == 0) || ((tag & 7) == 4)) {
-          CHK_(ptr);
+        if ((tag & 7) == 4 || tag == 0) {
           ctx->SetLastTag(tag);
           goto success;
         }
@@ -2001,13 +1943,13 @@ failure:
   (void) cached_has_bits;
 
   // int32 code = 1;
-  if (this->_internal_code() != 0) {
+  if (this->code() != 0) {
     target = stream->EnsureSpace(target);
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(1, this->_internal_code(), target);
   }
 
   // string msg = 2;
-  if (!this->_internal_msg().empty()) {
+  if (this->msg().size() > 0) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_msg().data(), static_cast<int>(this->_internal_msg().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
@@ -2024,7 +1966,6 @@ failure:
     typedef ::PROTOBUF_NAMESPACE_ID::internal::CompareByDerefFirst<SortItem> Less;
     struct Utf8Check {
       static void Check(ConstPtr p) {
-        (void)p;
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
           p->first.data(), static_cast<int>(p->first.length()),
           ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
@@ -2084,14 +2025,14 @@ size_t GetPredictResponse::ByteSizeLong() const {
   }
 
   // string msg = 2;
-  if (!this->_internal_msg().empty()) {
+  if (this->msg().size() > 0) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
         this->_internal_msg());
   }
 
   // int32 code = 1;
-  if (this->_internal_code() != 0) {
+  if (this->code() != 0) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
         this->_internal_code());
@@ -2114,17 +2055,17 @@ void GetPredictResponse::CheckTypeAndMergeFrom(
 void GetPredictResponse::MergeFrom(const GetPredictResponse& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:student.GetPredictResponse)
   GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom<std::string>(from._internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   result_.MergeFrom(from.result_);
-  if (!from._internal_msg().empty()) {
+  if (from.msg().size() > 0) {
     _internal_set_msg(from._internal_msg());
   }
-  if (from._internal_code() != 0) {
+  if (from.code() != 0) {
     _internal_set_code(from._internal_code());
   }
-  _internal_metadata_.MergeFrom<std::string>(from._internal_metadata_);
 }
 
 void GetPredictResponse::CopyFrom(const GetPredictResponse& from) {
@@ -2140,13 +2081,9 @@ bool GetPredictResponse::IsInitialized() const {
 
 void GetPredictResponse::InternalSwap(GetPredictResponse* other) {
   using std::swap;
-  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  result_.InternalSwap(&other->result_);
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      &msg_, GetArenaForAllocation(),
-      &other->msg_, other->GetArenaForAllocation()
-  );
+  _internal_metadata_.Swap<std::string>(&other->_internal_metadata_);
+  result_.Swap(&other->result_);
+  msg_.Swap(&other->msg_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   swap(code_, other->code_);
 }
 
@@ -2161,13 +2098,10 @@ class MetaData::_Internal {
  public:
 };
 
-MetaData::MetaData(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                         bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::MessageLite(arena, is_message_owned) {
+MetaData::MetaData(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::MessageLite(arena) {
   SharedCtor();
-  if (!is_message_owned) {
-    RegisterArenaDtor(arena);
-  }
+  RegisterArenaDtor(arena);
   // @@protoc_insertion_point(arena_constructor:student.MetaData)
 }
 MetaData::MetaData(const MetaData& from)
@@ -2176,24 +2110,23 @@ MetaData::MetaData(const MetaData& from)
   examid_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (!from._internal_examid().empty()) {
     examid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, from._internal_examid(), 
-      GetArenaForAllocation());
+      GetArena());
   }
   // @@protoc_insertion_point(copy_constructor:student.MetaData)
 }
 
-inline void MetaData::SharedCtor() {
+void MetaData::SharedCtor() {
 examid_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
 MetaData::~MetaData() {
   // @@protoc_insertion_point(destructor:student.MetaData)
-  if (GetArenaForAllocation() != nullptr) return;
   SharedDtor();
   _internal_metadata_.Delete<std::string>();
 }
 
-inline void MetaData::SharedDtor() {
-  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+void MetaData::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
   examid_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
@@ -2222,6 +2155,7 @@ const char* MetaData::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::i
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    CHK_(ptr);
     switch (tag >> 3) {
       // string examId = 1;
       case 1:
@@ -2234,8 +2168,7 @@ const char* MetaData::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::i
         continue;
       default: {
       handle_unusual:
-        if ((tag == 0) || ((tag & 7) == 4)) {
-          CHK_(ptr);
+        if ((tag & 7) == 4 || tag == 0) {
           ctx->SetLastTag(tag);
           goto success;
         }
@@ -2262,7 +2195,7 @@ failure:
   (void) cached_has_bits;
 
   // string examId = 1;
-  if (!this->_internal_examid().empty()) {
+  if (this->examid().size() > 0) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_examid().data(), static_cast<int>(this->_internal_examid().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
@@ -2288,7 +2221,7 @@ size_t MetaData::ByteSizeLong() const {
   (void) cached_has_bits;
 
   // string examId = 1;
-  if (!this->_internal_examid().empty()) {
+  if (this->examid().size() > 0) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
         this->_internal_examid());
@@ -2311,13 +2244,13 @@ void MetaData::CheckTypeAndMergeFrom(
 void MetaData::MergeFrom(const MetaData& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:student.MetaData)
   GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom<std::string>(from._internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (!from._internal_examid().empty()) {
+  if (from.examid().size() > 0) {
     _internal_set_examid(from._internal_examid());
   }
-  _internal_metadata_.MergeFrom<std::string>(from._internal_metadata_);
 }
 
 void MetaData::CopyFrom(const MetaData& from) {
@@ -2333,12 +2266,8 @@ bool MetaData::IsInitialized() const {
 
 void MetaData::InternalSwap(MetaData* other) {
   using std::swap;
-  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      &examid_, GetArenaForAllocation(),
-      &other->examid_, other->GetArenaForAllocation()
-  );
+  _internal_metadata_.Swap<std::string>(&other->_internal_metadata_);
+  examid_.Swap(&other->examid_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
 
 std::string MetaData::GetTypeName() const {
@@ -2358,11 +2287,11 @@ StreamVideoRequest::_Internal::metadata(const StreamVideoRequest* msg) {
   return *msg->request_.metadata_;
 }
 void StreamVideoRequest::set_allocated_metadata(::student::MetaData* metadata) {
-  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArena();
   clear_request();
   if (metadata) {
     ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
-      ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper<::student::MetaData>::GetOwningArena(metadata);
+      ::PROTOBUF_NAMESPACE_ID::Arena::GetArena(metadata);
     if (message_arena != submessage_arena) {
       metadata = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
           message_arena, metadata, submessage_arena);
@@ -2372,13 +2301,10 @@ void StreamVideoRequest::set_allocated_metadata(::student::MetaData* metadata) {
   }
   // @@protoc_insertion_point(field_set_allocated:student.StreamVideoRequest.metadata)
 }
-StreamVideoRequest::StreamVideoRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                         bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::MessageLite(arena, is_message_owned) {
+StreamVideoRequest::StreamVideoRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::MessageLite(arena) {
   SharedCtor();
-  if (!is_message_owned) {
-    RegisterArenaDtor(arena);
-  }
+  RegisterArenaDtor(arena);
   // @@protoc_insertion_point(arena_constructor:student.StreamVideoRequest)
 }
 StreamVideoRequest::StreamVideoRequest(const StreamVideoRequest& from)
@@ -2401,19 +2327,18 @@ StreamVideoRequest::StreamVideoRequest(const StreamVideoRequest& from)
   // @@protoc_insertion_point(copy_constructor:student.StreamVideoRequest)
 }
 
-inline void StreamVideoRequest::SharedCtor() {
+void StreamVideoRequest::SharedCtor() {
 clear_has_request();
 }
 
 StreamVideoRequest::~StreamVideoRequest() {
   // @@protoc_insertion_point(destructor:student.StreamVideoRequest)
-  if (GetArenaForAllocation() != nullptr) return;
   SharedDtor();
   _internal_metadata_.Delete<std::string>();
 }
 
-inline void StreamVideoRequest::SharedDtor() {
-  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+void StreamVideoRequest::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
   if (has_request()) {
     clear_request();
   }
@@ -2433,13 +2358,13 @@ void StreamVideoRequest::clear_request() {
 // @@protoc_insertion_point(one_of_clear_start:student.StreamVideoRequest)
   switch (request_case()) {
     case kMetadata: {
-      if (GetArenaForAllocation() == nullptr) {
+      if (GetArena() == nullptr) {
         delete request_.metadata_;
       }
       break;
     }
     case kChunkdata: {
-      request_.chunkdata_.Destroy(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+      request_.chunkdata_.Destroy(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArena());
       break;
     }
     case REQUEST_NOT_SET: {
@@ -2465,6 +2390,7 @@ const char* StreamVideoRequest::_InternalParse(const char* ptr, ::PROTOBUF_NAMES
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    CHK_(ptr);
     switch (tag >> 3) {
       // .student.MetaData metadata = 1;
       case 1:
@@ -2483,8 +2409,7 @@ const char* StreamVideoRequest::_InternalParse(const char* ptr, ::PROTOBUF_NAMES
         continue;
       default: {
       handle_unusual:
-        if ((tag == 0) || ((tag & 7) == 4)) {
-          CHK_(ptr);
+        if ((tag & 7) == 4 || tag == 0) {
           ctx->SetLastTag(tag);
           goto success;
         }
@@ -2576,6 +2501,7 @@ void StreamVideoRequest::CheckTypeAndMergeFrom(
 void StreamVideoRequest::MergeFrom(const StreamVideoRequest& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:student.StreamVideoRequest)
   GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom<std::string>(from._internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -2592,7 +2518,6 @@ void StreamVideoRequest::MergeFrom(const StreamVideoRequest& from) {
       break;
     }
   }
-  _internal_metadata_.MergeFrom<std::string>(from._internal_metadata_);
 }
 
 void StreamVideoRequest::CopyFrom(const StreamVideoRequest& from) {
@@ -2608,7 +2533,7 @@ bool StreamVideoRequest::IsInitialized() const {
 
 void StreamVideoRequest::InternalSwap(StreamVideoRequest* other) {
   using std::swap;
-  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  _internal_metadata_.Swap<std::string>(&other->_internal_metadata_);
   swap(request_, other->request_);
   swap(_oneof_case_[0], other->_oneof_case_[0]);
 }
