@@ -23,7 +23,7 @@ import {
 import { DatePickerModalContent } from 'react-native-paper-dates';
 import { CalendarDate } from 'react-native-paper-dates/lib/typescript/src/Date/Calendar';
 import { RootState } from 'store/types';
-import { selectUserDetail, userSlice } from 'store/UserDetail';
+import { selectUserDetail, userSlice } from 'services/userdetail';
 import { injectReducer } from 'redux-injectors';
 import moment from 'moment';
 import AppHeader from 'components/AppHeader';

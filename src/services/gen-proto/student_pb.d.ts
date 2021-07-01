@@ -94,15 +94,21 @@ export namespace ExamDetail {
 }
 
 export class ExamResponse extends jspb.Message {
+  getCode(): number;
+  setCode(value: number): void;
+
+  getMsg(): string;
+  setMsg(value: string): void;
+
   clearPendingexamsList(): void;
   getPendingexamsList(): Array<ExamDetail>;
   setPendingexamsList(value: Array<ExamDetail>): void;
   addPendingexams(value?: ExamDetail, index?: number): ExamDetail;
 
-  clearFinishedexamsList(): void;
-  getFinishedexamsList(): Array<ExamDetail>;
-  setFinishedexamsList(value: Array<ExamDetail>): void;
-  addFinishedexams(value?: ExamDetail, index?: number): ExamDetail;
+  clearPastexamsList(): void;
+  getPastexamsList(): Array<ExamDetail>;
+  setPastexamsList(value: Array<ExamDetail>): void;
+  addPastexams(value?: ExamDetail, index?: number): ExamDetail;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ExamResponse.AsObject;
@@ -116,8 +122,10 @@ export class ExamResponse extends jspb.Message {
 
 export namespace ExamResponse {
   export type AsObject = {
+    code: number,
+    msg: string,
     pendingexamsList: Array<ExamDetail.AsObject>,
-    finishedexamsList: Array<ExamDetail.AsObject>,
+    pastexamsList: Array<ExamDetail.AsObject>,
   }
 }
 
@@ -177,6 +185,12 @@ export namespace GetPredictRequest {
 }
 
 export class GetPredictResponse extends jspb.Message {
+  getCode(): number;
+  setCode(value: number): void;
+
+  getMsg(): string;
+  setMsg(value: string): void;
+
   getResultMap(): jspb.Map<string, ModelPredict>;
   clearResultMap(): void;
   serializeBinary(): Uint8Array;
@@ -191,6 +205,8 @@ export class GetPredictResponse extends jspb.Message {
 
 export namespace GetPredictResponse {
   export type AsObject = {
+    code: number,
+    msg: string,
     resultMap: Array<[string, ModelPredict.AsObject]>,
   }
 }

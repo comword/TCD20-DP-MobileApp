@@ -1,3 +1,4 @@
+import { ExamDetailState } from 'containers/ExamsScreen/slice';
 import { AuthState } from 'services/auth/state';
 import { PCState } from 'services/ml/types';
 import { ThemeState } from 'theme/types';
@@ -8,4 +9,5 @@ export interface RootState {
   PCSrv: PCState;
   theme?: ThemeState;
   user?: UserDetailState;
+  exams?: ExamDetailState;
 }

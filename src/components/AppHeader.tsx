@@ -5,7 +5,7 @@ import { Appbar, useTheme } from 'react-native-paper';
 import { AppScreens } from 'navigators/ScreenDefs';
 import { StackHeaderProps } from '@react-navigation/stack';
 import MultiAvatar from 'components/MultiAvatar';
-import { UserDetailState } from 'store/UserDetail';
+import { UserDetailState } from 'services/userdetail';
 import tailwind from 'tailwind-rn';
 import { StyleSheet } from 'react-native';
 

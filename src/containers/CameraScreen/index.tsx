@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AppScreens } from 'navigators/ScreenDefs';
 import { View, StyleSheet } from 'react-native';
-import { useTheme, Text } from 'react-native-paper';
+import { useTheme, Text, ActivityIndicator, Title } from 'react-native-paper';
 import tailwind from 'tailwind-rn';
 
 import { RootState } from 'store/types';
@@ -16,6 +16,7 @@ import { MLActionTypes } from 'services/ml/types';
 
 import { NativeModulesProxy } from '@unimodules/core';
 import ResultDisplay from 'components/BottomControl/ResultDisplay';
+import { selectPCSrv } from 'services/ml';
 const { CameraGLModule } = NativeModulesProxy;
 
 type ComponentProps = {
@@ -26,9 +27,20 @@ type Props = ComponentProps &
   ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
 
-const CameraScreen: React.FC<Props> = ({ navigation }) => {
+const CameraScreen: React.FC<Props> = ({ navigation, results }) => {
+  const theme = useTheme();
+  const styles = StyleSheet.create({
+    container: {
+      ...tailwind('flex h-1/2 w-full'),
+      backgroundColor: theme.colors.surface,
+    },
+    toolbar: tailwind('absolute w-full top-0 left-0 right-0'),
+  });
   const inApp = Platform.OS !== 'web' && Constants.appOwnership !== 'expo';
   useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => <View style={tailwind('flex flex-row')} />,
+    });
     const setupCamera = async () => {
       await CameraGLModule.requestCameraPermissionsAsync();
       await CameraGLModule.requestMicrophonePermissionsAsync();
@@ -58,14 +70,6 @@ const CameraScreen: React.FC<Props> = ({ navigation }) => {
     return false;
   };
 
-  const theme = useTheme();
-  const styles = StyleSheet.create({
-    container: {
-      ...tailwind('flex h-1/2 w-full'),
-      backgroundColor: theme.colors.surface,
-    },
-  });
-
   return (
     <View style={tailwind('flex h-full w-full')}>
       <View style={styles.container}>
@@ -81,25 +85,33 @@ const CameraScreen: React.FC<Props> = ({ navigation }) => {
         )}
       </View>
       <View style={styles.container}>
-        <ResultDisplay
-          results={[
-            {
-              type: MLActionTypes.Unknown,
-              prob: 0.6,
-            },
-            {
-              type: MLActionTypes.LookScreen,
-              prob: 0.4,
-            },
-          ]}
-        />
+        {!results && (
+          <View style={tailwind('flex h-full items-center justify-center')}>
+            <ActivityIndicator
+              animating
+              color={theme.colors.primary}
+              size="large"
+            />
+            <Title>Waiting results...</Title>
+          </View>
+        )}
+        {results && results.length === Object.keys(MLActionTypes).length && (
+          <ResultDisplay
+            results={Object.keys(MLActionTypes).map((it, idx) => ({
+              type: MLActionTypes[it as keyof typeof MLActionTypes],
+              prob: results[idx],
+            }))}
+          />
+        )}
       </View>
     </View>
   );
 };
 
 const mapStateToProps = (state: RootState) => {
-  return {};
+  return {
+    results: selectPCSrv(state).result,
+  };
 };
 
 function mapDispatchToProps(dispatch: Dispatch) {

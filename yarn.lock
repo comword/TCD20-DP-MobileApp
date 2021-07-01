@@ -8382,9 +8382,9 @@ jest-environment-node@^25.5.0:
     jest-util "^25.5.0"
     semver "^6.3.0"
 
-jest-expo@~41.0.0:
+jest-expo@^41.0.0:
   version "41.0.0"
-  resolved "https://registry.npm.taobao.org/jest-expo/download/jest-expo-41.0.0.tgz#9a1a6f6c263b76d557c53f99f4f15f23ab3dae61"
+  resolved "https://registry.nlark.com/jest-expo/download/jest-expo-41.0.0.tgz#9a1a6f6c263b76d557c53f99f4f15f23ab3dae61"
   integrity sha1-mhpvbCY7dtVXxT+Z9PFfI6s9rmE=
   dependencies:
     "@expo/config" "^3.2.3"

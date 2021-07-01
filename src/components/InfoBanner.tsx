@@ -3,6 +3,7 @@ import { Banner } from 'react-native-paper';
 import { useTheme } from 'styled-components/native';
 import tailwind from 'tailwind-rn';
 import { MaterialIcons } from '@expo/vector-icons';
+import { ErrorMsg } from 'services/types';
 
 export enum BannerLevel {
   Info = 1,
@@ -61,6 +62,46 @@ const InfoBanner: React.FC<Props> = ({ level, msg, show, onDismiss }) => {
       </Banner>
     </>
   );
+};
+
+type WithInfoBannerProps = {
+  top: boolean;
+  error?: ErrorMsg;
+  onDismiss?: (update: ErrorMsg) => void;
+};
+
+export const WithInfoBanner: React.FC<WithInfoBannerProps> = ({
+  top,
+  error,
+  onDismiss,
+  children,
+}) => {
+  const renderBanner = (
+    <InfoBanner
+      msg={error ? error.msg : ''}
+      show={error ? error.show : false}
+      level={error ? getInfoLevel(error.code) : 1}
+      onDismiss={
+        onDismiss && error
+          ? () => onDismiss({ ...error, show: false })
+          : () => {}
+      }
+    />
+  );
+  if (top)
+    return (
+      <React.Fragment>
+        {renderBanner}
+        {children}
+      </React.Fragment>
+    );
+  else
+    return (
+      <React.Fragment>
+        {children}
+        {renderBanner}
+      </React.Fragment>
+    );
 };
 
 export default InfoBanner;

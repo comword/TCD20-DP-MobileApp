@@ -16,7 +16,7 @@ import MultiAvatar from 'components/MultiAvatar';
 import { RootState } from 'store/types';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
-import { selectUserDetail, userSlice } from 'store/UserDetail';
+import { selectUserDetail, userSlice } from 'services/userdetail';
 import { injectReducer } from 'redux-injectors';
 
 type ComponentProps = {} & DrawerContentComponentProps<DrawerContentOptions>;

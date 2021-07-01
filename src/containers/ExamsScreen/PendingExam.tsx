@@ -1,8 +1,49 @@
 import React from 'react';
-import { View } from 'react-native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { connect } from 'react-redux';
+import { bindActionCreators, compose, Dispatch } from 'redux';
+import { injectReducer } from 'redux-injectors';
+import { AppScreens } from 'navigators/ScreenDefs';
+import { RootState } from 'store/types';
+import { examSlice, selectExam } from './slice';
+import ExamList from 'components/ExamList';
 
-const PendingExam = () => {
-  return <View />;
+type ComponentProps = {
+  navigation: StackNavigationProp<any, AppScreens.PendingExams>;
 };
 
-export default PendingExam;
+type Props = ComponentProps &
+  ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps>;
+
+const PendingExam: React.FC<Props> = ({ pendingExam }) => {
+  const mockExams = [0, 1, 2, 3, 4].map(it => ({
+    accessible: it < 2,
+    icon: 'file-check-outline',
+    id: it.toString(),
+    name: `Mock exam ${it}`,
+    description: '',
+  }));
+  return <ExamList exams={mockExams} onSelect={id => console.log(id)} />;
+};
+
+const mapStateToProps = (state: RootState) => {
+  return {
+    pendingExam: selectExam(state).pendingExams,
+  };
+};
+
+function mapDispatchToProps(dispatch: Dispatch) {
+  return bindActionCreators({}, dispatch);
+}
+
+const withConnect = connect(mapStateToProps, mapDispatchToProps);
+const withReducer = injectReducer({
+  key: examSlice.name,
+  reducer: examSlice.reducer,
+});
+
+export default compose(
+  withConnect,
+  withReducer
+)(PendingExam) as React.ComponentType<ComponentProps>;

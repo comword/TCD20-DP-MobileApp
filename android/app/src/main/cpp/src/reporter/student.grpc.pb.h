@@ -67,6 +67,21 @@ class StudentApp final {
     std::unique_ptr< ::grpc::ClientAsyncReaderWriterInterface< ::student::StreamVideoRequest, ::student::CommonGetResponse>> PrepareAsyncStreamVideo(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncReaderWriterInterface< ::student::StreamVideoRequest, ::student::CommonGetResponse>>(PrepareAsyncStreamVideoRaw(context, cq));
     }
+    virtual ::grpc::Status GetUserDetail(::grpc::ClientContext* context, const ::student::CommonGetRequest& request, ::student::CommonGetResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::student::CommonGetResponse>> AsyncGetUserDetail(::grpc::ClientContext* context, const ::student::CommonGetRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::student::CommonGetResponse>>(AsyncGetUserDetailRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::student::CommonGetResponse>> PrepareAsyncGetUserDetail(::grpc::ClientContext* context, const ::student::CommonGetRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::student::CommonGetResponse>>(PrepareAsyncGetUserDetailRaw(context, request, cq));
+    }
+    // extensible JSON user details in msg
+    virtual ::grpc::Status PutUserDetail(::grpc::ClientContext* context, const ::student::CommonGetRequest& request, ::student::CommonGetResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::student::CommonGetResponse>> AsyncPutUserDetail(::grpc::ClientContext* context, const ::student::CommonGetRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::student::CommonGetResponse>>(AsyncPutUserDetailRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::student::CommonGetResponse>> PrepareAsyncPutUserDetail(::grpc::ClientContext* context, const ::student::CommonGetRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::student::CommonGetResponse>>(PrepareAsyncPutUserDetailRaw(context, request, cq));
+    }
     class experimental_async_interface {
      public:
       virtual ~experimental_async_interface() {}
@@ -94,6 +109,19 @@ class StudentApp final {
       #else
       virtual void StreamVideo(::grpc::ClientContext* context, ::grpc::experimental::ClientBidiReactor< ::student::StreamVideoRequest,::student::CommonGetResponse>* reactor) = 0;
       #endif
+      virtual void GetUserDetail(::grpc::ClientContext* context, const ::student::CommonGetRequest* request, ::student::CommonGetResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void GetUserDetail(::grpc::ClientContext* context, const ::student::CommonGetRequest* request, ::student::CommonGetResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void GetUserDetail(::grpc::ClientContext* context, const ::student::CommonGetRequest* request, ::student::CommonGetResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      // extensible JSON user details in msg
+      virtual void PutUserDetail(::grpc::ClientContext* context, const ::student::CommonGetRequest* request, ::student::CommonGetResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void PutUserDetail(::grpc::ClientContext* context, const ::student::CommonGetRequest* request, ::student::CommonGetResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void PutUserDetail(::grpc::ClientContext* context, const ::student::CommonGetRequest* request, ::student::CommonGetResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
     };
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
     typedef class experimental_async_interface async_interface;
@@ -112,6 +140,10 @@ class StudentApp final {
     virtual ::grpc::ClientReaderWriterInterface< ::student::StreamVideoRequest, ::student::CommonGetResponse>* StreamVideoRaw(::grpc::ClientContext* context) = 0;
     virtual ::grpc::ClientAsyncReaderWriterInterface< ::student::StreamVideoRequest, ::student::CommonGetResponse>* AsyncStreamVideoRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) = 0;
     virtual ::grpc::ClientAsyncReaderWriterInterface< ::student::StreamVideoRequest, ::student::CommonGetResponse>* PrepareAsyncStreamVideoRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::student::CommonGetResponse>* AsyncGetUserDetailRaw(::grpc::ClientContext* context, const ::student::CommonGetRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::student::CommonGetResponse>* PrepareAsyncGetUserDetailRaw(::grpc::ClientContext* context, const ::student::CommonGetRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::student::CommonGetResponse>* AsyncPutUserDetailRaw(::grpc::ClientContext* context, const ::student::CommonGetRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::student::CommonGetResponse>* PrepareAsyncPutUserDetailRaw(::grpc::ClientContext* context, const ::student::CommonGetRequest& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -146,6 +178,20 @@ class StudentApp final {
     std::unique_ptr<  ::grpc::ClientAsyncReaderWriter< ::student::StreamVideoRequest, ::student::CommonGetResponse>> PrepareAsyncStreamVideo(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncReaderWriter< ::student::StreamVideoRequest, ::student::CommonGetResponse>>(PrepareAsyncStreamVideoRaw(context, cq));
     }
+    ::grpc::Status GetUserDetail(::grpc::ClientContext* context, const ::student::CommonGetRequest& request, ::student::CommonGetResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::student::CommonGetResponse>> AsyncGetUserDetail(::grpc::ClientContext* context, const ::student::CommonGetRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::student::CommonGetResponse>>(AsyncGetUserDetailRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::student::CommonGetResponse>> PrepareAsyncGetUserDetail(::grpc::ClientContext* context, const ::student::CommonGetRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::student::CommonGetResponse>>(PrepareAsyncGetUserDetailRaw(context, request, cq));
+    }
+    ::grpc::Status PutUserDetail(::grpc::ClientContext* context, const ::student::CommonGetRequest& request, ::student::CommonGetResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::student::CommonGetResponse>> AsyncPutUserDetail(::grpc::ClientContext* context, const ::student::CommonGetRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::student::CommonGetResponse>>(AsyncPutUserDetailRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::student::CommonGetResponse>> PrepareAsyncPutUserDetail(::grpc::ClientContext* context, const ::student::CommonGetRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::student::CommonGetResponse>>(PrepareAsyncPutUserDetailRaw(context, request, cq));
+    }
     class experimental_async final :
       public StubInterface::experimental_async_interface {
      public:
@@ -172,6 +218,18 @@ class StudentApp final {
       #else
       void StreamVideo(::grpc::ClientContext* context, ::grpc::experimental::ClientBidiReactor< ::student::StreamVideoRequest,::student::CommonGetResponse>* reactor) override;
       #endif
+      void GetUserDetail(::grpc::ClientContext* context, const ::student::CommonGetRequest* request, ::student::CommonGetResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void GetUserDetail(::grpc::ClientContext* context, const ::student::CommonGetRequest* request, ::student::CommonGetResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void GetUserDetail(::grpc::ClientContext* context, const ::student::CommonGetRequest* request, ::student::CommonGetResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      void PutUserDetail(::grpc::ClientContext* context, const ::student::CommonGetRequest* request, ::student::CommonGetResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void PutUserDetail(::grpc::ClientContext* context, const ::student::CommonGetRequest* request, ::student::CommonGetResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void PutUserDetail(::grpc::ClientContext* context, const ::student::CommonGetRequest* request, ::student::CommonGetResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
      private:
       friend class Stub;
       explicit experimental_async(Stub* stub): stub_(stub) { }
@@ -192,10 +250,16 @@ class StudentApp final {
     ::grpc::ClientReaderWriter< ::student::StreamVideoRequest, ::student::CommonGetResponse>* StreamVideoRaw(::grpc::ClientContext* context) override;
     ::grpc::ClientAsyncReaderWriter< ::student::StreamVideoRequest, ::student::CommonGetResponse>* AsyncStreamVideoRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) override;
     ::grpc::ClientAsyncReaderWriter< ::student::StreamVideoRequest, ::student::CommonGetResponse>* PrepareAsyncStreamVideoRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::student::CommonGetResponse>* AsyncGetUserDetailRaw(::grpc::ClientContext* context, const ::student::CommonGetRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::student::CommonGetResponse>* PrepareAsyncGetUserDetailRaw(::grpc::ClientContext* context, const ::student::CommonGetRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::student::CommonGetResponse>* AsyncPutUserDetailRaw(::grpc::ClientContext* context, const ::student::CommonGetRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::student::CommonGetResponse>* PrepareAsyncPutUserDetailRaw(::grpc::ClientContext* context, const ::student::CommonGetRequest& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_UpPredictResult_;
     const ::grpc::internal::RpcMethod rpcmethod_GetExams_;
     const ::grpc::internal::RpcMethod rpcmethod_GetPredicts_;
     const ::grpc::internal::RpcMethod rpcmethod_StreamVideo_;
+    const ::grpc::internal::RpcMethod rpcmethod_GetUserDetail_;
+    const ::grpc::internal::RpcMethod rpcmethod_PutUserDetail_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -208,6 +272,9 @@ class StudentApp final {
     virtual ::grpc::Status GetExams(::grpc::ServerContext* context, const ::student::CommonGetRequest* request, ::student::ExamResponse* response);
     virtual ::grpc::Status GetPredicts(::grpc::ServerContext* context, const ::student::GetPredictRequest* request, ::student::GetPredictResponse* response);
     virtual ::grpc::Status StreamVideo(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::student::CommonGetResponse, ::student::StreamVideoRequest>* stream);
+    virtual ::grpc::Status GetUserDetail(::grpc::ServerContext* context, const ::student::CommonGetRequest* request, ::student::CommonGetResponse* response);
+    // extensible JSON user details in msg
+    virtual ::grpc::Status PutUserDetail(::grpc::ServerContext* context, const ::student::CommonGetRequest* request, ::student::CommonGetResponse* response);
   };
   template <class BaseClass>
   class WithAsyncMethod_UpPredictResult : public BaseClass {
@@ -289,7 +356,47 @@ class StudentApp final {
       ::grpc::Service::RequestAsyncBidiStreaming(3, context, stream, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_UpPredictResult<WithAsyncMethod_GetExams<WithAsyncMethod_GetPredicts<WithAsyncMethod_StreamVideo<Service > > > > AsyncService;
+  template <class BaseClass>
+  class WithAsyncMethod_GetUserDetail : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_GetUserDetail() {
+      ::grpc::Service::MarkMethodAsync(4);
+    }
+    ~WithAsyncMethod_GetUserDetail() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetUserDetail(::grpc::ServerContext* /*context*/, const ::student::CommonGetRequest* /*request*/, ::student::CommonGetResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestGetUserDetail(::grpc::ServerContext* context, ::student::CommonGetRequest* request, ::grpc::ServerAsyncResponseWriter< ::student::CommonGetResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_PutUserDetail : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_PutUserDetail() {
+      ::grpc::Service::MarkMethodAsync(5);
+    }
+    ~WithAsyncMethod_PutUserDetail() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status PutUserDetail(::grpc::ServerContext* /*context*/, const ::student::CommonGetRequest* /*request*/, ::student::CommonGetResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestPutUserDetail(::grpc::ServerContext* context, ::student::CommonGetRequest* request, ::grpc::ServerAsyncResponseWriter< ::student::CommonGetResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_UpPredictResult<WithAsyncMethod_GetExams<WithAsyncMethod_GetPredicts<WithAsyncMethod_StreamVideo<WithAsyncMethod_GetUserDetail<WithAsyncMethod_PutUserDetail<Service > > > > > > AsyncService;
   template <class BaseClass>
   class ExperimentalWithCallbackMethod_UpPredictResult : public BaseClass {
    private:
@@ -469,11 +576,105 @@ class StudentApp final {
     #endif
       { return nullptr; }
   };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_GetUserDetail : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_GetUserDetail() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(4,
+          new ::grpc::internal::CallbackUnaryHandler< ::student::CommonGetRequest, ::student::CommonGetResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::student::CommonGetRequest* request, ::student::CommonGetResponse* response) { return this->GetUserDetail(context, request, response); }));}
+    void SetMessageAllocatorFor_GetUserDetail(
+        ::grpc::experimental::MessageAllocator< ::student::CommonGetRequest, ::student::CommonGetResponse>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(4);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(4);
+    #endif
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::student::CommonGetRequest, ::student::CommonGetResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_GetUserDetail() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetUserDetail(::grpc::ServerContext* /*context*/, const ::student::CommonGetRequest* /*request*/, ::student::CommonGetResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* GetUserDetail(
+      ::grpc::CallbackServerContext* /*context*/, const ::student::CommonGetRequest* /*request*/, ::student::CommonGetResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* GetUserDetail(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::student::CommonGetRequest* /*request*/, ::student::CommonGetResponse* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_PutUserDetail : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_PutUserDetail() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(5,
+          new ::grpc::internal::CallbackUnaryHandler< ::student::CommonGetRequest, ::student::CommonGetResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::student::CommonGetRequest* request, ::student::CommonGetResponse* response) { return this->PutUserDetail(context, request, response); }));}
+    void SetMessageAllocatorFor_PutUserDetail(
+        ::grpc::experimental::MessageAllocator< ::student::CommonGetRequest, ::student::CommonGetResponse>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(5);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(5);
+    #endif
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::student::CommonGetRequest, ::student::CommonGetResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_PutUserDetail() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status PutUserDetail(::grpc::ServerContext* /*context*/, const ::student::CommonGetRequest* /*request*/, ::student::CommonGetResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* PutUserDetail(
+      ::grpc::CallbackServerContext* /*context*/, const ::student::CommonGetRequest* /*request*/, ::student::CommonGetResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* PutUserDetail(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::student::CommonGetRequest* /*request*/, ::student::CommonGetResponse* /*response*/)
+    #endif
+      { return nullptr; }
+  };
   #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-  typedef ExperimentalWithCallbackMethod_UpPredictResult<ExperimentalWithCallbackMethod_GetExams<ExperimentalWithCallbackMethod_GetPredicts<ExperimentalWithCallbackMethod_StreamVideo<Service > > > > CallbackService;
+  typedef ExperimentalWithCallbackMethod_UpPredictResult<ExperimentalWithCallbackMethod_GetExams<ExperimentalWithCallbackMethod_GetPredicts<ExperimentalWithCallbackMethod_StreamVideo<ExperimentalWithCallbackMethod_GetUserDetail<ExperimentalWithCallbackMethod_PutUserDetail<Service > > > > > > CallbackService;
   #endif
 
-  typedef ExperimentalWithCallbackMethod_UpPredictResult<ExperimentalWithCallbackMethod_GetExams<ExperimentalWithCallbackMethod_GetPredicts<ExperimentalWithCallbackMethod_StreamVideo<Service > > > > ExperimentalCallbackService;
+  typedef ExperimentalWithCallbackMethod_UpPredictResult<ExperimentalWithCallbackMethod_GetExams<ExperimentalWithCallbackMethod_GetPredicts<ExperimentalWithCallbackMethod_StreamVideo<ExperimentalWithCallbackMethod_GetUserDetail<ExperimentalWithCallbackMethod_PutUserDetail<Service > > > > > > ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_UpPredictResult : public BaseClass {
    private:
@@ -538,6 +739,40 @@ class StudentApp final {
     }
     // disable synchronous version of this method
     ::grpc::Status StreamVideo(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::student::CommonGetResponse, ::student::StreamVideoRequest>* /*stream*/)  override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_GetUserDetail : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_GetUserDetail() {
+      ::grpc::Service::MarkMethodGeneric(4);
+    }
+    ~WithGenericMethod_GetUserDetail() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetUserDetail(::grpc::ServerContext* /*context*/, const ::student::CommonGetRequest* /*request*/, ::student::CommonGetResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_PutUserDetail : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_PutUserDetail() {
+      ::grpc::Service::MarkMethodGeneric(5);
+    }
+    ~WithGenericMethod_PutUserDetail() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status PutUserDetail(::grpc::ServerContext* /*context*/, const ::student::CommonGetRequest* /*request*/, ::student::CommonGetResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -620,6 +855,46 @@ class StudentApp final {
     }
     void RequestStreamVideo(::grpc::ServerContext* context, ::grpc::ServerAsyncReaderWriter< ::grpc::ByteBuffer, ::grpc::ByteBuffer>* stream, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncBidiStreaming(3, context, stream, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_GetUserDetail : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_GetUserDetail() {
+      ::grpc::Service::MarkMethodRaw(4);
+    }
+    ~WithRawMethod_GetUserDetail() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetUserDetail(::grpc::ServerContext* /*context*/, const ::student::CommonGetRequest* /*request*/, ::student::CommonGetResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestGetUserDetail(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_PutUserDetail : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_PutUserDetail() {
+      ::grpc::Service::MarkMethodRaw(5);
+    }
+    ~WithRawMethod_PutUserDetail() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status PutUserDetail(::grpc::ServerContext* /*context*/, const ::student::CommonGetRequest* /*request*/, ::student::CommonGetResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestPutUserDetail(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -775,6 +1050,82 @@ class StudentApp final {
       { return nullptr; }
   };
   template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_GetUserDetail : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_GetUserDetail() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(4,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->GetUserDetail(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_GetUserDetail() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetUserDetail(::grpc::ServerContext* /*context*/, const ::student::CommonGetRequest* /*request*/, ::student::CommonGetResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* GetUserDetail(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* GetUserDetail(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_PutUserDetail : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_PutUserDetail() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(5,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->PutUserDetail(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_PutUserDetail() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status PutUserDetail(::grpc::ServerContext* /*context*/, const ::student::CommonGetRequest* /*request*/, ::student::CommonGetResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* PutUserDetail(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* PutUserDetail(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
   class WithStreamedUnaryMethod_UpPredictResult : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
@@ -855,9 +1206,63 @@ class StudentApp final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status StreamedGetPredicts(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::student::GetPredictRequest,::student::GetPredictResponse>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_UpPredictResult<WithStreamedUnaryMethod_GetExams<WithStreamedUnaryMethod_GetPredicts<Service > > > StreamedUnaryService;
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_GetUserDetail : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_GetUserDetail() {
+      ::grpc::Service::MarkMethodStreamed(4,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::student::CommonGetRequest, ::student::CommonGetResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::student::CommonGetRequest, ::student::CommonGetResponse>* streamer) {
+                       return this->StreamedGetUserDetail(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_GetUserDetail() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status GetUserDetail(::grpc::ServerContext* /*context*/, const ::student::CommonGetRequest* /*request*/, ::student::CommonGetResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedGetUserDetail(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::student::CommonGetRequest,::student::CommonGetResponse>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_PutUserDetail : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_PutUserDetail() {
+      ::grpc::Service::MarkMethodStreamed(5,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::student::CommonGetRequest, ::student::CommonGetResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::student::CommonGetRequest, ::student::CommonGetResponse>* streamer) {
+                       return this->StreamedPutUserDetail(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_PutUserDetail() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status PutUserDetail(::grpc::ServerContext* /*context*/, const ::student::CommonGetRequest* /*request*/, ::student::CommonGetResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedPutUserDetail(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::student::CommonGetRequest,::student::CommonGetResponse>* server_unary_streamer) = 0;
+  };
+  typedef WithStreamedUnaryMethod_UpPredictResult<WithStreamedUnaryMethod_GetExams<WithStreamedUnaryMethod_GetPredicts<WithStreamedUnaryMethod_GetUserDetail<WithStreamedUnaryMethod_PutUserDetail<Service > > > > > StreamedUnaryService;
   typedef Service SplitStreamedService;
-  typedef WithStreamedUnaryMethod_UpPredictResult<WithStreamedUnaryMethod_GetExams<WithStreamedUnaryMethod_GetPredicts<Service > > > StreamedService;
+  typedef WithStreamedUnaryMethod_UpPredictResult<WithStreamedUnaryMethod_GetExams<WithStreamedUnaryMethod_GetPredicts<WithStreamedUnaryMethod_GetUserDetail<WithStreamedUnaryMethod_PutUserDetail<Service > > > > > StreamedService;
 };
 
 }  // namespace student

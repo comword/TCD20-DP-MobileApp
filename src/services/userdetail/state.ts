@@ -1,4 +1,7 @@
+import { ErrorMsg } from 'services/types';
+
 export interface UserDetailState {
+  lastError?: ErrorMsg;
   firstName: string;
   lastName: string;
   studentId: string;

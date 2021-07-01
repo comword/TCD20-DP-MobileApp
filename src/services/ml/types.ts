@@ -50,5 +50,5 @@ export interface PCState {
   netStatus: 'UNLOAD' | 'LOAD';
   modelPaths: Array<ModelPath>;
   downloadProg: Array<ProgressMap>;
-  result?: Array<InferResult>;
+  result?: Array<number>;
 }

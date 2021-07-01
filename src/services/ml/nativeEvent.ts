@@ -25,6 +25,7 @@ export function* sagaNativeEventHandler(
           yield put(PCSlice.actions.setModelLoaded(event.path));
           break;
         case 'OnModelResult':
+          yield put(PCSlice.actions.setResult(event.result));
           break;
       }
     }

@@ -1,7 +1,7 @@
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ErrorMsg } from 'services/types';
 import { RootState } from 'store/types';
-import { InferResult, ModelPath, PCState, ProgressMap } from './types';
+import { ModelPath, PCState, ProgressMap } from './types';
 
 const initialState: PCState = {
   status: 'UNLOAD',
@@ -37,7 +37,7 @@ export const PCSlice = createSlice({
           it.name === action.payload.name ? action.payload : it
         );
     },
-    setResult: (state, action: PayloadAction<Array<InferResult>>) => {
+    setResult: (state, action: PayloadAction<Array<number>>) => {
       state.result = action.payload;
     },
     setModelLoaded: (state, action: PayloadAction<string>) => {

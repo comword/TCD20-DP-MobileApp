@@ -26,6 +26,8 @@ static const char* StudentApp_method_names[] = {
   "/student.StudentApp/GetExams",
   "/student.StudentApp/GetPredicts",
   "/student.StudentApp/StreamVideo",
+  "/student.StudentApp/GetUserDetail",
+  "/student.StudentApp/PutUserDetail",
 };
 
 std::unique_ptr< StudentApp::Stub> StudentApp::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -39,6 +41,8 @@ StudentApp::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel
   , rpcmethod_GetExams_(StudentApp_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_GetPredicts_(StudentApp_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_StreamVideo_(StudentApp_method_names[3], options.suffix_for_stats(),::grpc::internal::RpcMethod::BIDI_STREAMING, channel)
+  , rpcmethod_GetUserDetail_(StudentApp_method_names[4], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_PutUserDetail_(StudentApp_method_names[5], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status StudentApp::Stub::UpPredictResult(::grpc::ClientContext* context, const ::student::ModelPredict& request, ::student::CommonGetResponse* response) {
@@ -126,6 +130,52 @@ void StudentApp::Stub::experimental_async::StreamVideo(::grpc::ClientContext* co
   return ::grpc::internal::ClientAsyncReaderWriterFactory< ::student::StreamVideoRequest, ::student::CommonGetResponse>::Create(channel_.get(), cq, rpcmethod_StreamVideo_, context, false, nullptr);
 }
 
+::grpc::Status StudentApp::Stub::GetUserDetail(::grpc::ClientContext* context, const ::student::CommonGetRequest& request, ::student::CommonGetResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::student::CommonGetRequest, ::student::CommonGetResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_GetUserDetail_, context, request, response);
+}
+
+void StudentApp::Stub::experimental_async::GetUserDetail(::grpc::ClientContext* context, const ::student::CommonGetRequest* request, ::student::CommonGetResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::student::CommonGetRequest, ::student::CommonGetResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetUserDetail_, context, request, response, std::move(f));
+}
+
+void StudentApp::Stub::experimental_async::GetUserDetail(::grpc::ClientContext* context, const ::student::CommonGetRequest* request, ::student::CommonGetResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetUserDetail_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::student::CommonGetResponse>* StudentApp::Stub::PrepareAsyncGetUserDetailRaw(::grpc::ClientContext* context, const ::student::CommonGetRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::student::CommonGetResponse, ::student::CommonGetRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_GetUserDetail_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::student::CommonGetResponse>* StudentApp::Stub::AsyncGetUserDetailRaw(::grpc::ClientContext* context, const ::student::CommonGetRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncGetUserDetailRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status StudentApp::Stub::PutUserDetail(::grpc::ClientContext* context, const ::student::CommonGetRequest& request, ::student::CommonGetResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::student::CommonGetRequest, ::student::CommonGetResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_PutUserDetail_, context, request, response);
+}
+
+void StudentApp::Stub::experimental_async::PutUserDetail(::grpc::ClientContext* context, const ::student::CommonGetRequest* request, ::student::CommonGetResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::student::CommonGetRequest, ::student::CommonGetResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_PutUserDetail_, context, request, response, std::move(f));
+}
+
+void StudentApp::Stub::experimental_async::PutUserDetail(::grpc::ClientContext* context, const ::student::CommonGetRequest* request, ::student::CommonGetResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_PutUserDetail_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::student::CommonGetResponse>* StudentApp::Stub::PrepareAsyncPutUserDetailRaw(::grpc::ClientContext* context, const ::student::CommonGetRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::student::CommonGetResponse, ::student::CommonGetRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_PutUserDetail_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::student::CommonGetResponse>* StudentApp::Stub::AsyncPutUserDetailRaw(::grpc::ClientContext* context, const ::student::CommonGetRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncPutUserDetailRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
 StudentApp::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       StudentApp_method_names[0],
@@ -167,6 +217,26 @@ StudentApp::Service::Service() {
              ::student::StreamVideoRequest>* stream) {
                return service->StreamVideo(ctx, stream);
              }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      StudentApp_method_names[4],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< StudentApp::Service, ::student::CommonGetRequest, ::student::CommonGetResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](StudentApp::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::student::CommonGetRequest* req,
+             ::student::CommonGetResponse* resp) {
+               return service->GetUserDetail(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      StudentApp_method_names[5],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< StudentApp::Service, ::student::CommonGetRequest, ::student::CommonGetResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](StudentApp::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::student::CommonGetRequest* req,
+             ::student::CommonGetResponse* resp) {
+               return service->PutUserDetail(ctx, req, resp);
+             }, this)));
 }
 
 StudentApp::Service::~Service() {
@@ -196,6 +266,20 @@ StudentApp::Service::~Service() {
 ::grpc::Status StudentApp::Service::StreamVideo(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::student::CommonGetResponse, ::student::StreamVideoRequest>* stream) {
   (void) context;
   (void) stream;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status StudentApp::Service::GetUserDetail(::grpc::ServerContext* context, const ::student::CommonGetRequest* request, ::student::CommonGetResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status StudentApp::Service::PutUserDetail(::grpc::ServerContext* context, const ::student::CommonGetRequest* request, ::student::CommonGetResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 

@@ -1,4 +1,5 @@
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { ErrorMsg } from 'services/types';
 import { RootState } from 'store/types';
 import { UserDetailState } from './state';
 
@@ -29,6 +30,9 @@ export const userSlice = createSlice({
     },
     setBirthday(state, action: PayloadAction<string>) {
       state.birthday = action.payload;
+    },
+    setError(state, action: PayloadAction<ErrorMsg | undefined>) {
+      state.lastError = action.payload;
     },
   },
 });

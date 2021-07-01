@@ -863,7 +863,7 @@ proto.student.ExamDetail.prototype.clearPredictidList = function() {
  * @private {!Array<number>}
  * @const
  */
-proto.student.ExamResponse.repeatedFields_ = [1,2];
+proto.student.ExamResponse.repeatedFields_ = [3,4];
 
 
 
@@ -896,9 +896,11 @@ proto.student.ExamResponse.prototype.toObject = function(opt_includeInstance) {
  */
 proto.student.ExamResponse.toObject = function(includeInstance, msg) {
   var f, obj = {
+    code: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    msg: jspb.Message.getFieldWithDefault(msg, 2, ""),
     pendingexamsList: jspb.Message.toObjectList(msg.getPendingexamsList(),
     proto.student.ExamDetail.toObject, includeInstance),
-    finishedexamsList: jspb.Message.toObjectList(msg.getFinishedexamsList(),
+    pastexamsList: jspb.Message.toObjectList(msg.getPastexamsList(),
     proto.student.ExamDetail.toObject, includeInstance)
   };
 
@@ -937,14 +939,22 @@ proto.student.ExamResponse.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setCode(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setMsg(value);
+      break;
+    case 3:
       var value = new proto.student.ExamDetail;
       reader.readMessage(value,proto.student.ExamDetail.deserializeBinaryFromReader);
       msg.addPendingexams(value);
       break;
-    case 2:
+    case 4:
       var value = new proto.student.ExamDetail;
       reader.readMessage(value,proto.student.ExamDetail.deserializeBinaryFromReader);
-      msg.addFinishedexams(value);
+      msg.addPastexams(value);
       break;
     default:
       reader.skipField();
@@ -975,18 +985,32 @@ proto.student.ExamResponse.prototype.serializeBinary = function() {
  */
 proto.student.ExamResponse.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
+  f = message.getCode();
+  if (f !== 0) {
+    writer.writeInt32(
+      1,
+      f
+    );
+  }
+  f = message.getMsg();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
   f = message.getPendingexamsList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
-      1,
+      3,
       f,
       proto.student.ExamDetail.serializeBinaryToWriter
     );
   }
-  f = message.getFinishedexamsList();
+  f = message.getPastexamsList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
-      2,
+      4,
       f,
       proto.student.ExamDetail.serializeBinaryToWriter
     );
@@ -995,12 +1019,48 @@ proto.student.ExamResponse.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * repeated ExamDetail pendingExams = 1;
+ * optional int32 code = 1;
+ * @return {number}
+ */
+proto.student.ExamResponse.prototype.getCode = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.student.ExamResponse} returns this
+ */
+proto.student.ExamResponse.prototype.setCode = function(value) {
+  return jspb.Message.setProto3IntField(this, 1, value);
+};
+
+
+/**
+ * optional string msg = 2;
+ * @return {string}
+ */
+proto.student.ExamResponse.prototype.getMsg = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.student.ExamResponse} returns this
+ */
+proto.student.ExamResponse.prototype.setMsg = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * repeated ExamDetail pendingExams = 3;
  * @return {!Array<!proto.student.ExamDetail>}
  */
 proto.student.ExamResponse.prototype.getPendingexamsList = function() {
   return /** @type{!Array<!proto.student.ExamDetail>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.student.ExamDetail, 1));
+    jspb.Message.getRepeatedWrapperField(this, proto.student.ExamDetail, 3));
 };
 
 
@@ -1009,7 +1069,7 @@ proto.student.ExamResponse.prototype.getPendingexamsList = function() {
  * @return {!proto.student.ExamResponse} returns this
 */
 proto.student.ExamResponse.prototype.setPendingexamsList = function(value) {
-  return jspb.Message.setRepeatedWrapperField(this, 1, value);
+  return jspb.Message.setRepeatedWrapperField(this, 3, value);
 };
 
 
@@ -1019,7 +1079,7 @@ proto.student.ExamResponse.prototype.setPendingexamsList = function(value) {
  * @return {!proto.student.ExamDetail}
  */
 proto.student.ExamResponse.prototype.addPendingexams = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.student.ExamDetail, opt_index);
+  return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.student.ExamDetail, opt_index);
 };
 
 
@@ -1033,12 +1093,12 @@ proto.student.ExamResponse.prototype.clearPendingexamsList = function() {
 
 
 /**
- * repeated ExamDetail finishedExams = 2;
+ * repeated ExamDetail pastExams = 4;
  * @return {!Array<!proto.student.ExamDetail>}
  */
-proto.student.ExamResponse.prototype.getFinishedexamsList = function() {
+proto.student.ExamResponse.prototype.getPastexamsList = function() {
   return /** @type{!Array<!proto.student.ExamDetail>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.student.ExamDetail, 2));
+    jspb.Message.getRepeatedWrapperField(this, proto.student.ExamDetail, 4));
 };
 
 
@@ -1046,8 +1106,8 @@ proto.student.ExamResponse.prototype.getFinishedexamsList = function() {
  * @param {!Array<!proto.student.ExamDetail>} value
  * @return {!proto.student.ExamResponse} returns this
 */
-proto.student.ExamResponse.prototype.setFinishedexamsList = function(value) {
-  return jspb.Message.setRepeatedWrapperField(this, 2, value);
+proto.student.ExamResponse.prototype.setPastexamsList = function(value) {
+  return jspb.Message.setRepeatedWrapperField(this, 4, value);
 };
 
 
@@ -1056,8 +1116,8 @@ proto.student.ExamResponse.prototype.setFinishedexamsList = function(value) {
  * @param {number=} opt_index
  * @return {!proto.student.ExamDetail}
  */
-proto.student.ExamResponse.prototype.addFinishedexams = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 2, opt_value, proto.student.ExamDetail, opt_index);
+proto.student.ExamResponse.prototype.addPastexams = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 4, opt_value, proto.student.ExamDetail, opt_index);
 };
 
 
@@ -1065,8 +1125,8 @@ proto.student.ExamResponse.prototype.addFinishedexams = function(opt_value, opt_
  * Clears the list making it empty but non-null.
  * @return {!proto.student.ExamResponse} returns this
  */
-proto.student.ExamResponse.prototype.clearFinishedexamsList = function() {
-  return this.setFinishedexamsList([]);
+proto.student.ExamResponse.prototype.clearPastexamsList = function() {
+  return this.setPastexamsList([]);
 };
 
 
@@ -1502,6 +1562,8 @@ proto.student.GetPredictResponse.prototype.toObject = function(opt_includeInstan
  */
 proto.student.GetPredictResponse.toObject = function(includeInstance, msg) {
   var f, obj = {
+    code: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    msg: jspb.Message.getFieldWithDefault(msg, 2, ""),
     resultMap: (f = msg.getResultMap()) ? f.toObject(includeInstance, proto.student.ModelPredict.toObject) : []
   };
 
@@ -1540,6 +1602,14 @@ proto.student.GetPredictResponse.deserializeBinaryFromReader = function(msg, rea
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setCode(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setMsg(value);
+      break;
+    case 3:
       var value = msg.getResultMap();
       reader.readMessage(value, function(message, reader) {
         jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readString, jspb.BinaryReader.prototype.readMessage, proto.student.ModelPredict.deserializeBinaryFromReader, "", new proto.student.ModelPredict());
@@ -1574,22 +1644,72 @@ proto.student.GetPredictResponse.prototype.serializeBinary = function() {
  */
 proto.student.GetPredictResponse.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
+  f = message.getCode();
+  if (f !== 0) {
+    writer.writeInt32(
+      1,
+      f
+    );
+  }
+  f = message.getMsg();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
   f = message.getResultMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(1, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeMessage, proto.student.ModelPredict.serializeBinaryToWriter);
+    f.serializeBinary(3, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeMessage, proto.student.ModelPredict.serializeBinaryToWriter);
   }
 };
 
 
 /**
- * map<string, ModelPredict> result = 1;
+ * optional int32 code = 1;
+ * @return {number}
+ */
+proto.student.GetPredictResponse.prototype.getCode = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.student.GetPredictResponse} returns this
+ */
+proto.student.GetPredictResponse.prototype.setCode = function(value) {
+  return jspb.Message.setProto3IntField(this, 1, value);
+};
+
+
+/**
+ * optional string msg = 2;
+ * @return {string}
+ */
+proto.student.GetPredictResponse.prototype.getMsg = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.student.GetPredictResponse} returns this
+ */
+proto.student.GetPredictResponse.prototype.setMsg = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * map<string, ModelPredict> result = 3;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
  * @return {!jspb.Map<string,!proto.student.ModelPredict>}
  */
 proto.student.GetPredictResponse.prototype.getResultMap = function(opt_noLazyCreate) {
   return /** @type {!jspb.Map<string,!proto.student.ModelPredict>} */ (
-      jspb.Message.getMapField(this, 1, opt_noLazyCreate,
+      jspb.Message.getMapField(this, 3, opt_noLazyCreate,
       proto.student.ModelPredict));
 };
 
