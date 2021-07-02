@@ -100,15 +100,10 @@ export class ExamResponse extends jspb.Message {
   getMsg(): string;
   setMsg(value: string): void;
 
-  clearPendingexamsList(): void;
-  getPendingexamsList(): Array<ExamDetail>;
-  setPendingexamsList(value: Array<ExamDetail>): void;
-  addPendingexams(value?: ExamDetail, index?: number): ExamDetail;
-
-  clearPastexamsList(): void;
-  getPastexamsList(): Array<ExamDetail>;
-  setPastexamsList(value: Array<ExamDetail>): void;
-  addPastexams(value?: ExamDetail, index?: number): ExamDetail;
+  clearExamsList(): void;
+  getExamsList(): Array<ExamDetail>;
+  setExamsList(value: Array<ExamDetail>): void;
+  addExams(value?: ExamDetail, index?: number): ExamDetail;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ExamResponse.AsObject;
@@ -124,8 +119,7 @@ export namespace ExamResponse {
   export type AsObject = {
     code: number,
     msg: string,
-    pendingexamsList: Array<ExamDetail.AsObject>,
-    pastexamsList: Array<ExamDetail.AsObject>,
+    examsList: Array<ExamDetail.AsObject>,
   }
 }
 

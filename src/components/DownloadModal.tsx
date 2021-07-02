@@ -27,13 +27,16 @@ import { RootState } from 'store/types';
 import { injectReducer } from 'redux-injectors';
 import { select } from 'redux-saga/effects';
 
-type ComponentProps = {};
+type ComponentProps = {
+  onLoaded: () => void;
+};
 
 type Props = ComponentProps &
   ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
 
 const DownloadModal: React.FC<Props> = ({
+  onLoaded,
   progress,
   modelPaths,
   loadStatus,
@@ -123,13 +126,17 @@ const DownloadModal: React.FC<Props> = ({
   };
 
   useEffect(() => {
-    if (Constants.appOwnership === 'expo' || Platform.OS === 'web')
+    if (Constants.appOwnership === 'expo' || Platform.OS === 'web') {
       setShowDiag(false);
-  }, [setShowDiag]);
+      onLoaded();
+    }
+  }, [onLoaded, setShowDiag]);
 
   useEffect(() => {
-    if (loadStatus === 'LOAD' || Platform.OS === 'web') setShowDiag(false);
-    else if (loadStatus === 'UNLOAD') checkExisting();
+    if (loadStatus === 'LOAD' || Platform.OS === 'web') {
+      setShowDiag(false);
+      onLoaded();
+    } else if (loadStatus === 'UNLOAD') checkExisting();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadStatus]);
 

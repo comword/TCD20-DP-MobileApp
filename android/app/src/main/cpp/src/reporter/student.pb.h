@@ -743,46 +743,27 @@ class ExamResponse PROTOBUF_FINAL :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kPendingExamsFieldNumber = 3,
-    kPastExamsFieldNumber = 4,
+    kExamsFieldNumber = 3,
     kMsgFieldNumber = 2,
     kCodeFieldNumber = 1,
   };
-  // repeated .student.ExamDetail pendingExams = 3;
-  int pendingexams_size() const;
+  // repeated .student.ExamDetail exams = 3;
+  int exams_size() const;
   private:
-  int _internal_pendingexams_size() const;
+  int _internal_exams_size() const;
   public:
-  void clear_pendingexams();
-  ::student::ExamDetail* mutable_pendingexams(int index);
+  void clear_exams();
+  ::student::ExamDetail* mutable_exams(int index);
   ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::student::ExamDetail >*
-      mutable_pendingexams();
+      mutable_exams();
   private:
-  const ::student::ExamDetail& _internal_pendingexams(int index) const;
-  ::student::ExamDetail* _internal_add_pendingexams();
+  const ::student::ExamDetail& _internal_exams(int index) const;
+  ::student::ExamDetail* _internal_add_exams();
   public:
-  const ::student::ExamDetail& pendingexams(int index) const;
-  ::student::ExamDetail* add_pendingexams();
+  const ::student::ExamDetail& exams(int index) const;
+  ::student::ExamDetail* add_exams();
   const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::student::ExamDetail >&
-      pendingexams() const;
-
-  // repeated .student.ExamDetail pastExams = 4;
-  int pastexams_size() const;
-  private:
-  int _internal_pastexams_size() const;
-  public:
-  void clear_pastexams();
-  ::student::ExamDetail* mutable_pastexams(int index);
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::student::ExamDetail >*
-      mutable_pastexams();
-  private:
-  const ::student::ExamDetail& _internal_pastexams(int index) const;
-  ::student::ExamDetail* _internal_add_pastexams();
-  public:
-  const ::student::ExamDetail& pastexams(int index) const;
-  ::student::ExamDetail* add_pastexams();
-  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::student::ExamDetail >&
-      pastexams() const;
+      exams() const;
 
   // string msg = 2;
   void clear_msg();
@@ -816,8 +797,7 @@ class ExamResponse PROTOBUF_FINAL :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::student::ExamDetail > pendingexams_;
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::student::ExamDetail > pastexams_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::student::ExamDetail > exams_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr msg_;
   ::PROTOBUF_NAMESPACE_ID::int32 code_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
@@ -2294,82 +2274,43 @@ inline void ExamResponse::set_allocated_msg(std::string* msg) {
   // @@protoc_insertion_point(field_set_allocated:student.ExamResponse.msg)
 }
 
-// repeated .student.ExamDetail pendingExams = 3;
-inline int ExamResponse::_internal_pendingexams_size() const {
-  return pendingexams_.size();
+// repeated .student.ExamDetail exams = 3;
+inline int ExamResponse::_internal_exams_size() const {
+  return exams_.size();
 }
-inline int ExamResponse::pendingexams_size() const {
-  return _internal_pendingexams_size();
+inline int ExamResponse::exams_size() const {
+  return _internal_exams_size();
 }
-inline void ExamResponse::clear_pendingexams() {
-  pendingexams_.Clear();
+inline void ExamResponse::clear_exams() {
+  exams_.Clear();
 }
-inline ::student::ExamDetail* ExamResponse::mutable_pendingexams(int index) {
-  // @@protoc_insertion_point(field_mutable:student.ExamResponse.pendingExams)
-  return pendingexams_.Mutable(index);
-}
-inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::student::ExamDetail >*
-ExamResponse::mutable_pendingexams() {
-  // @@protoc_insertion_point(field_mutable_list:student.ExamResponse.pendingExams)
-  return &pendingexams_;
-}
-inline const ::student::ExamDetail& ExamResponse::_internal_pendingexams(int index) const {
-  return pendingexams_.Get(index);
-}
-inline const ::student::ExamDetail& ExamResponse::pendingexams(int index) const {
-  // @@protoc_insertion_point(field_get:student.ExamResponse.pendingExams)
-  return _internal_pendingexams(index);
-}
-inline ::student::ExamDetail* ExamResponse::_internal_add_pendingexams() {
-  return pendingexams_.Add();
-}
-inline ::student::ExamDetail* ExamResponse::add_pendingexams() {
-  // @@protoc_insertion_point(field_add:student.ExamResponse.pendingExams)
-  return _internal_add_pendingexams();
-}
-inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::student::ExamDetail >&
-ExamResponse::pendingexams() const {
-  // @@protoc_insertion_point(field_list:student.ExamResponse.pendingExams)
-  return pendingexams_;
-}
-
-// repeated .student.ExamDetail pastExams = 4;
-inline int ExamResponse::_internal_pastexams_size() const {
-  return pastexams_.size();
-}
-inline int ExamResponse::pastexams_size() const {
-  return _internal_pastexams_size();
-}
-inline void ExamResponse::clear_pastexams() {
-  pastexams_.Clear();
-}
-inline ::student::ExamDetail* ExamResponse::mutable_pastexams(int index) {
-  // @@protoc_insertion_point(field_mutable:student.ExamResponse.pastExams)
-  return pastexams_.Mutable(index);
+inline ::student::ExamDetail* ExamResponse::mutable_exams(int index) {
+  // @@protoc_insertion_point(field_mutable:student.ExamResponse.exams)
+  return exams_.Mutable(index);
 }
 inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::student::ExamDetail >*
-ExamResponse::mutable_pastexams() {
-  // @@protoc_insertion_point(field_mutable_list:student.ExamResponse.pastExams)
-  return &pastexams_;
+ExamResponse::mutable_exams() {
+  // @@protoc_insertion_point(field_mutable_list:student.ExamResponse.exams)
+  return &exams_;
 }
-inline const ::student::ExamDetail& ExamResponse::_internal_pastexams(int index) const {
-  return pastexams_.Get(index);
+inline const ::student::ExamDetail& ExamResponse::_internal_exams(int index) const {
+  return exams_.Get(index);
 }
-inline const ::student::ExamDetail& ExamResponse::pastexams(int index) const {
-  // @@protoc_insertion_point(field_get:student.ExamResponse.pastExams)
-  return _internal_pastexams(index);
+inline const ::student::ExamDetail& ExamResponse::exams(int index) const {
+  // @@protoc_insertion_point(field_get:student.ExamResponse.exams)
+  return _internal_exams(index);
 }
-inline ::student::ExamDetail* ExamResponse::_internal_add_pastexams() {
-  return pastexams_.Add();
+inline ::student::ExamDetail* ExamResponse::_internal_add_exams() {
+  return exams_.Add();
 }
-inline ::student::ExamDetail* ExamResponse::add_pastexams() {
-  // @@protoc_insertion_point(field_add:student.ExamResponse.pastExams)
-  return _internal_add_pastexams();
+inline ::student::ExamDetail* ExamResponse::add_exams() {
+  // @@protoc_insertion_point(field_add:student.ExamResponse.exams)
+  return _internal_add_exams();
 }
 inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::student::ExamDetail >&
-ExamResponse::pastexams() const {
-  // @@protoc_insertion_point(field_list:student.ExamResponse.pastExams)
-  return pastexams_;
+ExamResponse::exams() const {
+  // @@protoc_insertion_point(field_list:student.ExamResponse.exams)
+  return exams_;
 }
 
 // -------------------------------------------------------------------

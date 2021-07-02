@@ -6,6 +6,7 @@ import { ThemeContext } from 'styled-components/native';
 import DrawerContent from 'containers/DrawerContent';
 import ExamsScreen from 'containers/ExamsScreen';
 import ProfileScreen from 'containers/ProfileScreen';
+import CameraScreen from 'containers/CameraScreen';
 
 const PostLoginNavigator: React.FC = () => {
   const themeContext = useContext(ThemeContext);
@@ -31,6 +32,11 @@ const PostLoginNavigator: React.FC = () => {
         name={AppScreens.Profile}
         options={navOptions}
         component={ProfileScreen}
+      />
+      <Drawer.Screen
+        name={AppScreens.Camera}
+        options={navOptions}
+        component={CameraScreen}
       />
     </Drawer.Navigator>
   );

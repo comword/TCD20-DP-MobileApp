@@ -43,7 +43,11 @@ const DrawerContent: React.FC<Props> = ({ userDetail, ...rest }) => {
 
   const navigateTo = (name: string) => {
     const { navigation } = rest;
-    navigation.navigate(name);
+    navigation.reset({
+      index: 0,
+      routes: [{ name: name }],
+    });
+    // navigation.navigate(name);
   };
 
   const userName =
@@ -104,6 +108,14 @@ const DrawerContent: React.FC<Props> = ({ userDetail, ...rest }) => {
           label="Profile"
           focused={getFocused('Profile')}
           onPress={() => navigateTo('Profile')}
+        />
+        <DrawerItem
+          icon={({ color, size }) => (
+            <MaterialCommunityIcons name="camera" color={color} size={size} />
+          )}
+          label="Test camera"
+          focused={getFocused('Camera')}
+          onPress={() => navigateTo('Camera')}
         />
       </Drawer.Section>
       <Drawer.Section title="Theme">

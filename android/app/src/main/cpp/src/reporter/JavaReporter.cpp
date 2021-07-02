@@ -43,6 +43,33 @@ void JavaReporter::onMLResult( const std::vector<float> &result )
 
 void JavaReporter::onVideoFrame( const cv::Mat &result ) {}
 
+bool JavaReporter::start()
+{
+    return true;
+}
+
+const char *JavaReporter::getName()
+{
+    return "JavaReporter";
+}
+
+void JavaReporter::registerMgr( ReporterMgr *mgr )
+{
+    reporterMgr = mgr;
+}
+
+void JavaReporter::stop() {}
+
+void JavaReporter::reportError( const char *name, const char *reason )
+{
+    ScopedEnv scopedEnv( *this );
+    auto env = scopedEnv.GetEnv();
+    jclass mlClass = env->GetObjectClass( mCls );
+    jmethodID idEmitError = env->GetMethodID( mlClass, "emitError",
+                            "(Ljava/lang/String;Ljava/lang/String;)V" );
+
+}
+
 JavaReporter::ScopedEnv::ScopedEnv( const JavaReporter &parent ): mParent( parent )
 {
     mAttached = GetJniEnv( mParent.mJvm, &mEnv );

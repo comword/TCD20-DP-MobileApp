@@ -8,7 +8,6 @@ import { useTheme } from 'styled-components/native';
 import { Button, Text } from 'react-native-paper';
 
 import IntroIcon from './assets/intro.svg';
-import DownloadModal from 'components/DownloadModal';
 import { useDispatch } from 'react-redux';
 import { authSlice } from 'services/auth';
 
@@ -21,63 +20,49 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
   const dispatch = useDispatch();
 
   return (
-    <>
-      <View style={tailwind('flex h-full w-full')}>
-        <View style={tailwind('flex-1 pt-16 px-8')}>
-          <Text style={tailwind('text-left text-2xl')}>Invigilator</Text>
-          <Text style={tailwind('text-center text-4xl mt-3')}>
-            <RNText style={{ color: theme.colors.accent }}>Veritas</RNText>{' '}
-            Exams
-          </Text>
-          <IntroIcon
-            width={tailwind('w-full').width}
-            height={tailwind('h-1/4').height}
-          />
-          <Button
-            mode="contained"
-            uppercase={false}
-            onPress={() => {
-              navigation.navigate(AppScreens.Register);
-            }}
-            color={theme.colors.primary}
-            style={tailwind('mt-6')}
-          >
-            <Text style={tailwind('text-lg')}>Sign up</Text>
-          </Button>
-          <Button
-            mode="outlined"
-            uppercase={false}
-            onPress={() => {
-              navigation.navigate(AppScreens.Login);
-            }}
-            style={tailwind('mt-6')}
-          >
-            <Text style={tailwind('text-lg')}>Log in</Text>
-          </Button>
-          <Button
-            mode="outlined"
-            uppercase={false}
-            onPress={() => {
-              navigation.navigate(AppScreens.Camera);
-            }}
-            style={tailwind('mt-6')}
-          >
-            <Text style={tailwind('text-lg')}>Test Camera</Text>
-          </Button>
-          <Button
-            mode="outlined"
-            uppercase={false}
-            onPress={() => {
-              dispatch(authSlice.actions.setAuthKey('FakeAuthKey'));
-            }}
-            style={tailwind('mt-6')}
-          >
-            <Text style={tailwind('text-lg')}>Mock login</Text>
-          </Button>
-        </View>
+    <View style={tailwind('flex h-full w-full')}>
+      <View style={tailwind('flex-1 pt-16 px-8')}>
+        <Text style={tailwind('text-left text-2xl')}>Invigilator</Text>
+        <Text style={tailwind('text-center text-4xl mt-3')}>
+          <RNText style={{ color: theme.colors.accent }}>Veritas</RNText> Exams
+        </Text>
+        <IntroIcon
+          width={tailwind('w-full').width}
+          height={tailwind('h-1/4').height}
+        />
+        <Button
+          mode="contained"
+          uppercase={false}
+          onPress={() => {
+            navigation.navigate(AppScreens.Register);
+          }}
+          color={theme.colors.primary}
+          style={tailwind('mt-6')}
+        >
+          <Text style={tailwind('text-lg')}>Sign up</Text>
+        </Button>
+        <Button
+          mode="outlined"
+          uppercase={false}
+          onPress={() => {
+            navigation.navigate(AppScreens.Login);
+          }}
+          style={tailwind('mt-6')}
+        >
+          <Text style={tailwind('text-lg')}>Log in</Text>
+        </Button>
+        <Button
+          mode="outlined"
+          uppercase={false}
+          onPress={() => {
+            dispatch(authSlice.actions.setAuthKey('FakeAuthKey'));
+          }}
+          style={tailwind('mt-6')}
+        >
+          <Text style={tailwind('text-lg')}>Mock login</Text>
+        </Button>
       </View>
-      <DownloadModal />
-    </>
+    </View>
   );
 };
 

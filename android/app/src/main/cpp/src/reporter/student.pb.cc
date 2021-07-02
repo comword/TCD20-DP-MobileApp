@@ -69,8 +69,7 @@ struct ExamDetailDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT ExamDetailDefaultTypeInternal _ExamDetail_default_instance_;
 constexpr ExamResponse::ExamResponse(
   ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
-  : pendingexams_()
-  , pastexams_()
+  : exams_()
   , msg_(&::PROTOBUF_NAMESPACE_ID::internal::fixed_address_empty_string)
   , code_(0){}
 struct ExamResponseDefaultTypeInternal {
@@ -1013,16 +1012,14 @@ class ExamResponse::_Internal {
 
 ExamResponse::ExamResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena)
   : ::PROTOBUF_NAMESPACE_ID::MessageLite(arena),
-  pendingexams_(arena),
-  pastexams_(arena) {
+  exams_(arena) {
   SharedCtor();
   RegisterArenaDtor(arena);
   // @@protoc_insertion_point(arena_constructor:student.ExamResponse)
 }
 ExamResponse::ExamResponse(const ExamResponse& from)
   : ::PROTOBUF_NAMESPACE_ID::MessageLite(),
-      pendingexams_(from.pendingexams_),
-      pastexams_(from.pastexams_) {
+      exams_(from.exams_) {
   _internal_metadata_.MergeFrom<std::string>(from._internal_metadata_);
   msg_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (!from._internal_msg().empty()) {
@@ -1065,8 +1062,7 @@ void ExamResponse::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  pendingexams_.Clear();
-  pastexams_.Clear();
+  exams_.Clear();
   msg_.ClearToEmpty();
   code_ = 0;
   _internal_metadata_.Clear<std::string>();
@@ -1095,28 +1091,16 @@ const char* ExamResponse::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_I
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // repeated .student.ExamDetail pendingExams = 3;
+      // repeated .student.ExamDetail exams = 3;
       case 3:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 26)) {
           ptr -= 1;
           do {
             ptr += 1;
-            ptr = ctx->ParseMessage(_internal_add_pendingexams(), ptr);
+            ptr = ctx->ParseMessage(_internal_add_exams(), ptr);
             CHK_(ptr);
             if (!ctx->DataAvailable(ptr)) break;
           } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<26>(ptr));
-        } else goto handle_unusual;
-        continue;
-      // repeated .student.ExamDetail pastExams = 4;
-      case 4:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 34)) {
-          ptr -= 1;
-          do {
-            ptr += 1;
-            ptr = ctx->ParseMessage(_internal_add_pastexams(), ptr);
-            CHK_(ptr);
-            if (!ctx->DataAvailable(ptr)) break;
-          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<34>(ptr));
         } else goto handle_unusual;
         continue;
       default: {
@@ -1163,20 +1147,12 @@ failure:
         2, this->_internal_msg(), target);
   }
 
-  // repeated .student.ExamDetail pendingExams = 3;
+  // repeated .student.ExamDetail exams = 3;
   for (unsigned int i = 0,
-      n = static_cast<unsigned int>(this->_internal_pendingexams_size()); i < n; i++) {
+      n = static_cast<unsigned int>(this->_internal_exams_size()); i < n; i++) {
     target = stream->EnsureSpace(target);
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
-      InternalWriteMessage(3, this->_internal_pendingexams(i), target, stream);
-  }
-
-  // repeated .student.ExamDetail pastExams = 4;
-  for (unsigned int i = 0,
-      n = static_cast<unsigned int>(this->_internal_pastexams_size()); i < n; i++) {
-    target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
-      InternalWriteMessage(4, this->_internal_pastexams(i), target, stream);
+      InternalWriteMessage(3, this->_internal_exams(i), target, stream);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -1195,16 +1171,9 @@ size_t ExamResponse::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // repeated .student.ExamDetail pendingExams = 3;
-  total_size += 1UL * this->_internal_pendingexams_size();
-  for (const auto& msg : this->pendingexams_) {
-    total_size +=
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
-  }
-
-  // repeated .student.ExamDetail pastExams = 4;
-  total_size += 1UL * this->_internal_pastexams_size();
-  for (const auto& msg : this->pastexams_) {
+  // repeated .student.ExamDetail exams = 3;
+  total_size += 1UL * this->_internal_exams_size();
+  for (const auto& msg : this->exams_) {
     total_size +=
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
   }
@@ -1244,8 +1213,7 @@ void ExamResponse::MergeFrom(const ExamResponse& from) {
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  pendingexams_.MergeFrom(from.pendingexams_);
-  pastexams_.MergeFrom(from.pastexams_);
+  exams_.MergeFrom(from.exams_);
   if (from.msg().size() > 0) {
     _internal_set_msg(from._internal_msg());
   }
@@ -1268,8 +1236,7 @@ bool ExamResponse::IsInitialized() const {
 void ExamResponse::InternalSwap(ExamResponse* other) {
   using std::swap;
   _internal_metadata_.Swap<std::string>(&other->_internal_metadata_);
-  pendingexams_.InternalSwap(&other->pendingexams_);
-  pastexams_.InternalSwap(&other->pastexams_);
+  exams_.InternalSwap(&other->exams_);
   msg_.Swap(&other->msg_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   swap(code_, other->code_);
 }

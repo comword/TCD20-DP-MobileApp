@@ -16,7 +16,7 @@ type Props = ComponentProps &
   ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
 
-const PendingExam: React.FC<Props> = ({ pendingExam }) => {
+const PendingExam: React.FC<Props> = ({ navigation, exams }) => {
   const mockExams = [0, 1, 2, 3, 4].map(it => ({
     accessible: it < 2,
     icon: 'file-check-outline',
@@ -24,12 +24,19 @@ const PendingExam: React.FC<Props> = ({ pendingExam }) => {
     name: `Mock exam ${it}`,
     description: '',
   }));
-  return <ExamList exams={mockExams} onSelect={id => console.log(id)} />;
+  return (
+    <ExamList
+      exams={mockExams}
+      onSelect={id =>
+        navigation.navigate(AppScreens.ExamDetails, { examId: id })
+      }
+    />
+  );
 };
 
 const mapStateToProps = (state: RootState) => {
   return {
-    pendingExam: selectExam(state).pendingExams,
+    exams: selectExam(state).exams,
   };
 };
 

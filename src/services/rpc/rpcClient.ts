@@ -10,15 +10,9 @@ class _RpcClient<T extends StudentAppClient | SignUpInClient, K> {
     cls: new (serviceHost: string, options?: grpc.RpcOptions) => T,
     services: K
   ) {
-    if (process.env.NODE_ENV !== 'production') {
-      this.client = new cls('http://localhost:8888', {
-        transport: WebsocketTransport(),
-      });
-    } else {
-      this.client = new cls('https://posture-study.gtdev.org/api', {
-        transport: WebsocketTransport(),
-      });
-    }
+    this.client = new cls(serverAddr(), {
+      transport: WebsocketTransport(),
+    });
 
     Object.keys(services).forEach(func => {
       //@ts-ignore
@@ -42,4 +36,12 @@ export const RpcClient = _RpcClient as {
     cls: new (serviceHost: string, options?: grpc.RpcOptions) => T,
     services: K
   ): _RpcClient<T, K> & K;
+};
+
+export const serverAddr = () => {
+  if (process.env.NODE_ENV !== 'production') {
+    return 'http://localhost:8888';
+  } else {
+    return 'https://posture-study.gtdev.org/api';
+  }
 };

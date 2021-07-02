@@ -112,9 +112,16 @@ void FaceDetector::pipeline( cv::VideoCapture &cpt,
             return nullptr;
         }
         auto pData = new ProcessingChainData;
-        cpt >> pData->img;
-        if( pData->img.empty() )
+        try {
+            cpt >> pData->img;
+        } catch(...) {
+            delete pData;
             return nullptr;
+        }
+        if( pData->img.empty() ) {
+            delete pData;
+            return nullptr;
+        }
         rotate( pData->img, pData->img, ROTATE_90_CLOCKWISE );
         return pData;
     } ) & make_filter<ProcessingChainData *, ProcessingChainData *>( filter::serial_in_order,

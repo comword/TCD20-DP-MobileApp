@@ -119,8 +119,13 @@ void Camera::stop()
 {
     if( cvCapture->isOpened() ) {
         renderStop = true;
-        cvCapture->release();
-        LOGD( "Camera closed" );
+        auto delayDestroyThread = thread( [ = ]() {
+            using namespace chrono_literals;
+            this_thread::sleep_for(1000ms);
+            cvCapture->release();
+            LOGD( "Camera closed" );
+        });
+        delayDestroyThread.detach();
     }
 }
 

@@ -5,7 +5,6 @@ import { createNativeStackNavigator } from 'react-native-screens/native-stack';
 
 import { AppScreens } from './ScreenDefs';
 import WelcomeScreen from 'containers/WelcomeScreen';
-import CameraScreen from 'containers/CameraScreen';
 import RegisterScreen from 'containers/RegisterScreen';
 import LoginScreen from 'containers/LoginScreen';
 
@@ -20,7 +19,6 @@ const PreLoginNavigator: React.FC = () => {
         options={{ headerShown: false }}
         component={WelcomeScreen}
       />
-      <Stack.Screen name={AppScreens.Camera} component={CameraScreen} />
       <Stack.Screen name={AppScreens.Register} component={RegisterScreen} />
       <Stack.Screen name={AppScreens.Login} component={LoginScreen} />
     </Stack.Navigator>

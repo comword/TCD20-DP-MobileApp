@@ -863,7 +863,7 @@ proto.student.ExamDetail.prototype.clearPredictidList = function() {
  * @private {!Array<number>}
  * @const
  */
-proto.student.ExamResponse.repeatedFields_ = [3,4];
+proto.student.ExamResponse.repeatedFields_ = [3];
 
 
 
@@ -898,9 +898,7 @@ proto.student.ExamResponse.toObject = function(includeInstance, msg) {
   var f, obj = {
     code: jspb.Message.getFieldWithDefault(msg, 1, 0),
     msg: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    pendingexamsList: jspb.Message.toObjectList(msg.getPendingexamsList(),
-    proto.student.ExamDetail.toObject, includeInstance),
-    pastexamsList: jspb.Message.toObjectList(msg.getPastexamsList(),
+    examsList: jspb.Message.toObjectList(msg.getExamsList(),
     proto.student.ExamDetail.toObject, includeInstance)
   };
 
@@ -949,12 +947,7 @@ proto.student.ExamResponse.deserializeBinaryFromReader = function(msg, reader) {
     case 3:
       var value = new proto.student.ExamDetail;
       reader.readMessage(value,proto.student.ExamDetail.deserializeBinaryFromReader);
-      msg.addPendingexams(value);
-      break;
-    case 4:
-      var value = new proto.student.ExamDetail;
-      reader.readMessage(value,proto.student.ExamDetail.deserializeBinaryFromReader);
-      msg.addPastexams(value);
+      msg.addExams(value);
       break;
     default:
       reader.skipField();
@@ -999,18 +992,10 @@ proto.student.ExamResponse.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getPendingexamsList();
+  f = message.getExamsList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
       3,
-      f,
-      proto.student.ExamDetail.serializeBinaryToWriter
-    );
-  }
-  f = message.getPastexamsList();
-  if (f.length > 0) {
-    writer.writeRepeatedMessage(
-      4,
       f,
       proto.student.ExamDetail.serializeBinaryToWriter
     );
@@ -1055,10 +1040,10 @@ proto.student.ExamResponse.prototype.setMsg = function(value) {
 
 
 /**
- * repeated ExamDetail pendingExams = 3;
+ * repeated ExamDetail exams = 3;
  * @return {!Array<!proto.student.ExamDetail>}
  */
-proto.student.ExamResponse.prototype.getPendingexamsList = function() {
+proto.student.ExamResponse.prototype.getExamsList = function() {
   return /** @type{!Array<!proto.student.ExamDetail>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.student.ExamDetail, 3));
 };
@@ -1068,7 +1053,7 @@ proto.student.ExamResponse.prototype.getPendingexamsList = function() {
  * @param {!Array<!proto.student.ExamDetail>} value
  * @return {!proto.student.ExamResponse} returns this
 */
-proto.student.ExamResponse.prototype.setPendingexamsList = function(value) {
+proto.student.ExamResponse.prototype.setExamsList = function(value) {
   return jspb.Message.setRepeatedWrapperField(this, 3, value);
 };
 
@@ -1078,7 +1063,7 @@ proto.student.ExamResponse.prototype.setPendingexamsList = function(value) {
  * @param {number=} opt_index
  * @return {!proto.student.ExamDetail}
  */
-proto.student.ExamResponse.prototype.addPendingexams = function(opt_value, opt_index) {
+proto.student.ExamResponse.prototype.addExams = function(opt_value, opt_index) {
   return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.student.ExamDetail, opt_index);
 };
 
@@ -1087,46 +1072,8 @@ proto.student.ExamResponse.prototype.addPendingexams = function(opt_value, opt_i
  * Clears the list making it empty but non-null.
  * @return {!proto.student.ExamResponse} returns this
  */
-proto.student.ExamResponse.prototype.clearPendingexamsList = function() {
-  return this.setPendingexamsList([]);
-};
-
-
-/**
- * repeated ExamDetail pastExams = 4;
- * @return {!Array<!proto.student.ExamDetail>}
- */
-proto.student.ExamResponse.prototype.getPastexamsList = function() {
-  return /** @type{!Array<!proto.student.ExamDetail>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.student.ExamDetail, 4));
-};
-
-
-/**
- * @param {!Array<!proto.student.ExamDetail>} value
- * @return {!proto.student.ExamResponse} returns this
-*/
-proto.student.ExamResponse.prototype.setPastexamsList = function(value) {
-  return jspb.Message.setRepeatedWrapperField(this, 4, value);
-};
-
-
-/**
- * @param {!proto.student.ExamDetail=} opt_value
- * @param {number=} opt_index
- * @return {!proto.student.ExamDetail}
- */
-proto.student.ExamResponse.prototype.addPastexams = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 4, opt_value, proto.student.ExamDetail, opt_index);
-};
-
-
-/**
- * Clears the list making it empty but non-null.
- * @return {!proto.student.ExamResponse} returns this
- */
-proto.student.ExamResponse.prototype.clearPastexamsList = function() {
-  return this.setPastexamsList([]);
+proto.student.ExamResponse.prototype.clearExamsList = function() {
+  return this.setExamsList([]);
 };
 
 

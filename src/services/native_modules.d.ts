@@ -5,10 +5,12 @@ import { PermissionResponse } from 'expo-permissions';
 export type IPostureClassify = {
   initTFLite: (path: string) => Promise<boolean>;
   deInitTFLite: () => Promise<boolean>;
-  getInitialised: () => Promise<boolean>;
-  initNetReporter: (address: string) => Promise<boolean>;
-  deinitNetReporter: () => Promise<boolean>;
-  netReporterSetAuth: (authKey: string) => Promise<boolean>;
+  getTFInitialised: () => Promise<boolean>;
+  getReporterInitialised: () => Promise<boolean>;
+  initReporter: (address: string) => Promise<boolean>;
+  deinitReporter: () => Promise<boolean>;
+  reporterSetAuth: (authKey: string) => Promise<boolean>;
+  reporterSetExamId: (examId: string) => Promise<boolean>;
 };
 
 export type ICameraGLModule = {

@@ -16,11 +16,17 @@ class JavaReporter: public IResultReporter
         JavaReporter();
         virtual ~JavaReporter();
         bool init( void *userData ) override;
+        void registerMgr( ReporterMgr *mgr ) override;
+        bool start() override;
+        void stop() override;
+        const char *getName() override;
         void onMLResult( const std::vector<float> &result ) override;
         void onVideoFrame( const cv::Mat &result ) override;
+        void reportError( const char *name, const char *reason );
     private:
         JavaVM *mJvm = nullptr;
         jobject mCls = nullptr;
+        ReporterMgr *reporterMgr = nullptr;
     private:
         class ScopedEnv final
         {

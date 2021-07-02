@@ -5,13 +5,11 @@ import { RootState } from 'store/types';
 
 export type ExamDetailState = {
   lastError?: ErrorMsg;
-  pendingExams: Array<ExamDetail.AsObject>;
-  pastExams: Array<ExamDetail.AsObject>;
+  exams: Array<ExamDetail.AsObject>;
 };
 
 const initialState: ExamDetailState = {
-  pendingExams: [],
-  pastExams: [],
+  exams: [],
 };
 
 export const examSlice = createSlice({
@@ -24,11 +22,8 @@ export const examSlice = createSlice({
     setError(state, action: PayloadAction<ErrorMsg | undefined>) {
       state.lastError = action.payload;
     },
-    setPendingExams(state, action: PayloadAction<Array<ExamDetail.AsObject>>) {
-      state.pendingExams = action.payload;
-    },
-    setPastExams(state, action: PayloadAction<Array<ExamDetail.AsObject>>) {
-      state.pastExams = action.payload;
+    setExams(state, action: PayloadAction<Array<ExamDetail.AsObject>>) {
+      state.exams = action.payload;
     },
   },
 });

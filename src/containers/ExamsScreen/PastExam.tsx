@@ -16,13 +16,13 @@ type Props = ComponentProps &
   ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
 
-const PastExam: React.FC<Props> = ({ pastExam }) => {
+const PastExam: React.FC<Props> = ({ exams }) => {
   return <View />;
 };
 
 const mapStateToProps = (state: RootState) => {
   return {
-    pastExam: selectExam(state).pastExams,
+    exams: selectExam(state).exams,
   };
 };
 

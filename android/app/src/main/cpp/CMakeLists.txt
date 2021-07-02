@@ -98,11 +98,11 @@ find_library(egl-lib EGL)
 target_link_libraries(result-report
         ${log-lib} ${android-lib} ${grpc++} ${grpc} ${cares} ${upb} ${re2} ${address_sorting}
         ${grpc-libz} ${ssl} ${crypto} ${gpr} ${absl} ${absl_strings_internal} ${protobuf-lite}
-        cv-tbb cv-core cv-imgproc)
+        cv-imgcodecs cv-imgproc cv-core cv-tbb)
 
 target_link_libraries(mlmodel
         ${log-lib} ${android-lib} ${gl-lib} ${egl-lib}
-        tflite cv-tbb cv-core cv-imgproc result-report)
+        tflite cv-imgproc cv-core cv-tbb result-report)
 
 target_link_libraries(camera-view
         ${log-lib} ${android-lib} ${camera-lib} ${media-lib} ${gl-lib} ${egl-lib}

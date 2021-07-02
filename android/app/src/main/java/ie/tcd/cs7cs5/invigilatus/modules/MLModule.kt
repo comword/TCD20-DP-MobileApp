@@ -32,8 +32,6 @@ class MLModule(context: Context) : ExportedModule(context) {
         private set
     var mReporterHandle: Long = 0
         private set
-    var mNetReporterHandle: Long = 0
-        private set
     lateinit var mSrvAddr: String
         private set
 
@@ -44,7 +42,6 @@ class MLModule(context: Context) : ExportedModule(context) {
     init {
         System.loadLibrary("result-report")
         System.loadLibrary("mlmodel")
-        mReporterHandle = nativeReporterInit()
     }
 
     override fun onDestroy() {
@@ -55,10 +52,6 @@ class MLModule(context: Context) : ExportedModule(context) {
         if(mReporterHandle != 0L) {
             nativeReporterDeInit(mReporterHandle)
             mReporterHandle = 0
-        }
-        if(mNetReporterHandle != 0L) {
-            nativeNetReporterDeInit(mNetReporterHandle)
-            mNetReporterHandle = 0
         }
     }
 
@@ -144,7 +137,7 @@ class MLModule(context: Context) : ExportedModule(context) {
     }
 
     @ExpoMethod
-    fun getInitialised(promise: Promise) {
+    fun getTFInitialised(promise: Promise) {
         if(mPCHandle == 0L)
             promise.resolve(false)
         else
@@ -152,8 +145,16 @@ class MLModule(context: Context) : ExportedModule(context) {
     }
 
     @ExpoMethod
-    fun initNetReporter(address: String, promise: Promise) {
-        if(mNetReporterHandle != 0L) {
+    fun getReporterInitialised(promise: Promise) {
+        if(mReporterHandle == 0L)
+            promise.resolve(false)
+        else
+            promise.resolve(true)
+    }
+
+    @ExpoMethod
+    fun initReporter(address: String, promise: Promise) {
+        if(mReporterHandle != 0L) {
             if(mSrvAddr != address){
                 promise.reject("E_INITED", "The network reporter has already been initialised.")
                 return
@@ -164,19 +165,19 @@ class MLModule(context: Context) : ExportedModule(context) {
         }
 
         mSrvAddr = address
-        mNetReporterHandle = nativeNetReporterInit(mSrvAddr)
-        if(mNetReporterHandle != 0L)
+        mReporterHandle = nativeReporterInit(mSrvAddr)
+        if(mReporterHandle != 0L)
             promise.resolve(true)
         else
             promise.reject("E_UNKNOWN", "Native return null")
     }
 
     @ExpoMethod
-    fun deinitNetReporter(promise: Promise) {
-        if(mNetReporterHandle != 0L) {
-            nativeNetReporterDeInit(mNetReporterHandle)
+    fun deinitReporter(promise: Promise) {
+        if(mReporterHandle != 0L) {
+            nativeReporterDeInit(mReporterHandle)
             mSrvAddr = ""
-            mNetReporterHandle = 0
+            mReporterHandle = 0
             promise.resolve(true)
             return
         } else
@@ -184,9 +185,17 @@ class MLModule(context: Context) : ExportedModule(context) {
     }
 
     @ExpoMethod
-    fun netReporterSetAuth(authKey: String, promise: Promise) {
-        if(mNetReporterHandle != 0L)
-            promise.resolve(nativeNetReporterAuth(mNetReporterHandle, authKey))
+    fun reporterSetAuth(authKey: String, promise: Promise) {
+        if(mReporterHandle != 0L)
+            promise.resolve(nativeReporterAuth(mReporterHandle, authKey))
+        else
+            promise.reject("E_NOT_INIT", "Native handle is empty.")
+    }
+
+    @ExpoMethod
+    fun reporterSetExamId(examId: String, promise: Promise) {
+        if(mReporterHandle != 0L)
+            promise.resolve(nativeReporterExamId(mReporterHandle, examId))
         else
             promise.reject("E_NOT_INIT", "Native handle is empty.")
     }
@@ -198,12 +207,20 @@ class MLModule(context: Context) : ExportedModule(context) {
         eventEmitter.emit("OnModelResult", bundle)
     }
 
+    fun emitError(name: String, reason: String) {
+        val eventEmitter = mModuleRegistry.getModule(EventEmitter::class.java)
+        val bundle = Bundle()
+        bundle.putInt("code", -1);
+        bundle.putString("msg", "$name: $reason")
+        bundle.putBoolean("show", true);
+        eventEmitter.emit("OnPostureClassifyErr", bundle)
+    }
+
     private external fun nativeModelInit(interpreter: Interpreter): Long
     private external fun nativeDeInit(pcHandle: Long)
 
-    private external fun nativeReporterInit(): Long
+    private external fun nativeReporterInit(address: String): Long
+    private external fun nativeReporterAuth(handle:Long, authKey: String): Boolean
+    private external fun nativeReporterExamId(handle:Long, examId: String): Boolean
     private external fun nativeReporterDeInit(handle: Long)
-    private external fun nativeNetReporterInit(address: String): Long
-    private external fun nativeNetReporterDeInit(handle: Long)
-    private external fun nativeNetReporterAuth(handle: Long, authKey: String): Boolean
 }

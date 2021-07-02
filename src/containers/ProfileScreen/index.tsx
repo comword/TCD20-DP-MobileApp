@@ -12,14 +12,7 @@ import { AppScreens } from 'navigators/ScreenDefs';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import tailwind from 'tailwind-rn';
 
-import {
-  Divider,
-  TextInput,
-  Text,
-  useTheme,
-  Portal,
-  Appbar,
-} from 'react-native-paper';
+import { Divider, TextInput, Text, useTheme, Portal } from 'react-native-paper';
 import { DatePickerModalContent } from 'react-native-paper-dates';
 import { CalendarDate } from 'react-native-paper-dates/lib/typescript/src/Date/Calendar';
 import { RootState } from 'store/types';
@@ -41,6 +34,7 @@ const ProfileScreen: React.FC<Props> = ({
   setFirstName,
   setLastName,
   setBirthday,
+  setStudentId,
   navigation,
 }) => {
   const theme = useTheme();
@@ -100,19 +94,32 @@ const ProfileScreen: React.FC<Props> = ({
             onChangeText={t => setLastName(t)}
           />
         </View>
-        <TouchableOpacity onPress={() => setOpenBirthday(true)}>
+        <View style={tailwind('flex-row justify-between')}>
           <TextInput
-            style={styles.textBox}
-            testID="birthday"
-            editable={false}
-            textAlign="left"
-            label="Birthday"
+            style={styles.textBoxDuo}
+            testID="studentId"
+            label="Student ID"
             mode="outlined"
-            value={moment(userDetail.birthday, 'DD-MM-yyyy').format(
-              'DD-MMM-YYYY'
-            )}
+            textAlign="left"
+            value={userDetail.studentId}
+            onChangeText={t => setStudentId(t)}
           />
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.textBoxDuo}
+            onPress={() => setOpenBirthday(true)}
+          >
+            <TextInput
+              testID="birthday"
+              editable={false}
+              textAlign="left"
+              label="Birthday"
+              mode="outlined"
+              value={moment(userDetail.birthday, 'DD-MM-yyyy').format(
+                'DD-MMM-YYYY'
+              )}
+            />
+          </TouchableOpacity>
+        </View>
         <Text style={styles.sectionText}>Options</Text>
         <Divider />
       </ScrollView>

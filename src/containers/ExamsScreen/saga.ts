@@ -16,8 +16,7 @@ function* sagaFetchExams(): SagaIterator {
     )) as ExamResponse;
     if (result.getCode() === 0) {
       const objify = result.toObject();
-      yield put(examSlice.actions.setPendingExams(objify.pendingexamsList));
-      yield put(examSlice.actions.setPastExams(objify.pastexamsList));
+      yield put(examSlice.actions.setExams(objify.examsList));
     } else
       yield put(
         examSlice.actions.setError({

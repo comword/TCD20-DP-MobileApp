@@ -1,8 +1,8 @@
 import { ExamDetailState } from 'containers/ExamsScreen/slice';
 import { AuthState } from 'services/auth/state';
 import { PCState } from 'services/ml/types';
+import { UserDetailState } from 'services/userdetail';
 import { ThemeState } from 'theme/types';
-import { UserDetailState } from './UserDetail';
 
 export interface RootState {
   auth: AuthState;
