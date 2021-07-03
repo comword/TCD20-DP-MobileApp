@@ -39,6 +39,14 @@ export function* sagaLoadModel(
         ),
         eventEmitter.addListener('OnModelLoaded', (event: { path: string }) =>
           emitter({ eventName: 'OnModelLoaded', event: event })
+        ),
+        eventEmitter.addListener(
+          'OnModelResult',
+          (event: { result: number[] }) =>
+            emitter({ eventName: 'OnModelResult', event: event })
+        ),
+        eventEmitter.addListener('OnCameraFPS', (event: { fps: number }) =>
+          emitter({ eventName: 'OnCameraFPS', event: event })
         )
       );
       return () => {

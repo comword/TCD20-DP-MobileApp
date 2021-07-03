@@ -27,6 +27,9 @@ export function* sagaNativeEventHandler(
         case 'OnModelResult':
           yield put(PCSlice.actions.setResult(event.result));
           break;
+        case 'OnCameraFPS':
+          console.log(`FPS:${event.fps}`);
+          break;
       }
     }
   } catch (err) {

@@ -4,6 +4,7 @@ import android.content.Context
 import android.opengl.GLSurfaceView
 import android.util.Log
 import org.unimodules.core.ModuleRegistry
+import org.unimodules.core.interfaces.services.EventEmitter
 import javax.microedition.khronos.egl.EGL10
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.egl.EGLContext
@@ -54,7 +55,8 @@ class CamGLView : GLSurfaceView {
         })
         setEGLContextClientVersion(3)
         val cameraModule: CameraModule? = mModuleRegistry.getExportedModule("CameraGLModule") as CameraModule?
-        camRenderer = CamRenderer(cameraModule?.cameraHandle)
+        val eventEmitter = mModuleRegistry.getModule(EventEmitter::class.java)
+        camRenderer = CamRenderer(cameraModule?.cameraHandle, eventEmitter)
         setRenderer(camRenderer)
     }
 }
