@@ -94,6 +94,10 @@ export const signOutAction = createAction('auth/signOut');
 export function* sagaSignOut(): SagaIterator {
   try {
     const auth = (yield select(selectAuth)) as AuthState;
+    if (auth.authKey === 'FakeAuthKey') {
+      yield put(authSlice.actions.setAuthKey(''));
+      return;
+    }
     if (auth.authKey || auth.refreshKey) {
       const param = new SignOutRequest();
       if (auth.authKey) param.setAuthkey(auth.authKey);

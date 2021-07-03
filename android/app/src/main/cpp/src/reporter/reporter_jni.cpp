@@ -62,7 +62,7 @@ Java_ie_tcd_cs7cs5_invigilatus_modules_MLModule_nativeReporterAuth( JNIEnv *env,
     if( !mgr ) {
         return false;
     }
-    auto netRprt = reinterpret_cast<NetworkReporter*>(mgr->findReporter("NetworkReporter"));
+    auto netRprt = reinterpret_cast<NetworkReporter *>( mgr->findReporter( "NetworkReporter" ) );
     if( !netRprt ) {
         return false;
     }
@@ -83,8 +83,8 @@ Java_ie_tcd_cs7cs5_invigilatus_modules_MLModule_nativeReporterExamId( JNIEnv *en
         return false;
     }
     auto keyStr = env->GetStringUTFChars( exam_id, nullptr );
-    std::string str(keyStr);
-    mgr->setCurrentExamId(str);
+    std::string str( keyStr );
+    mgr->setCurrentExamId( str );
     env->ReleaseStringUTFChars( exam_id, keyStr );
     return true;
 }

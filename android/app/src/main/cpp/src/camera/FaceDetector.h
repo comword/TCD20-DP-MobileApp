@@ -37,7 +37,7 @@ class FaceDetector
         bool isPipelineStop() const;
         void stopPipeline();
         std::shared_ptr<std::thread>startThread( cv::VideoCapture &cpt,
-                tbb::concurrent_bounded_queue<ProcessingChainData *> &queue );
+                tbb::concurrent_bounded_queue<ProcessingChainData *> &queue, int index );
         bool registerClassifier( IClassifier *ml );
         bool unloadClassifier();
     private:
@@ -46,6 +46,7 @@ class FaceDetector
         volatile bool pipelineStop = false;
         std::shared_ptr<TripleBuffer<cv::Mat>> mlBuffer;
         IClassifier *classifier = nullptr;
+        int cachedIndex = -1;
     private:
         static bool detect( cv::InputArray image, cv::OutputArray faces, FaceDetector *cls );
 };

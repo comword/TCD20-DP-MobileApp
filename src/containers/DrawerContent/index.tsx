@@ -1,4 +1,9 @@
 import React from 'react';
+import { injectReducer } from 'redux-injectors';
+
+import { connect } from 'react-redux';
+import { bindActionCreators, compose, Dispatch } from 'redux';
+import { RootState } from 'store/types';
 import { View } from 'react-native';
 import tailwind from 'tailwind-rn';
 import {
@@ -13,17 +18,20 @@ import { useTheme } from 'styled-components/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { ThemeSwitch } from 'components/ThemeSwitch';
 import MultiAvatar from 'components/MultiAvatar';
-import { RootState } from 'store/types';
-import { connect } from 'react-redux';
-import { compose } from 'redux';
 import { selectUserDetail, userSlice } from 'services/userdetail';
-import { injectReducer } from 'redux-injectors';
+import { signOutAction } from 'services/auth';
 
 type ComponentProps = {} & DrawerContentComponentProps<DrawerContentOptions>;
 
-type Props = ComponentProps & ReturnType<typeof mapStateToProps>;
+type Props = ComponentProps &
+  ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps>;
 
-const DrawerContent: React.FC<Props> = ({ userDetail, ...rest }) => {
+const DrawerContent: React.FC<Props> = ({
+  userDetail,
+  signOutAction,
+  ...rest
+}) => {
   const theme = useTheme();
   const styles = StyleSheet.create({
     container: { ...tailwind('flex'), backgroundColor: theme.colors.surface },
@@ -111,6 +119,15 @@ const DrawerContent: React.FC<Props> = ({ userDetail, ...rest }) => {
         />
         <DrawerItem
           icon={({ color, size }) => (
+            <MaterialCommunityIcons name="logout" color={color} size={size} />
+          )}
+          label="Sign out"
+          onPress={() => {
+            signOutAction();
+          }}
+        />
+        <DrawerItem
+          icon={({ color, size }) => (
             <MaterialCommunityIcons name="camera" color={color} size={size} />
           )}
           label="Test camera"
@@ -133,7 +150,16 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-const withConnect = connect(mapStateToProps, null);
+function mapDispatchToProps(dispatch: Dispatch) {
+  return bindActionCreators(
+    {
+      signOutAction,
+    },
+    dispatch
+  );
+}
+
+const withConnect = connect(mapStateToProps, mapDispatchToProps);
 const withReducer = injectReducer({
   key: userSlice.name,
   reducer: userSlice.reducer,

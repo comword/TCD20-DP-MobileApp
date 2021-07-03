@@ -70,7 +70,7 @@ bool Camera::start( int index )
         }
         tbb::concurrent_bounded_queue<FaceDetector::ProcessingChainData *> procQueue;
         procQueue.set_capacity( 2 );
-        auto pipelineRunner = faceDetector->startThread( *cvCapture, procQueue );
+        auto pipelineRunner = faceDetector->startThread( *cvCapture, procQueue, index );
         FaceDetector::ProcessingChainData *recvData = nullptr;
         for( ; !renderStop && !faceDetector->isPipelineStop(); ) {
             procQueue.pop( recvData );
@@ -121,10 +121,10 @@ void Camera::stop()
         renderStop = true;
         auto delayDestroyThread = thread( [ = ]() {
             using namespace chrono_literals;
-            this_thread::sleep_for(1000ms);
+            this_thread::sleep_for( 1000ms );
             cvCapture->release();
             LOGD( "Camera closed" );
-        });
+        } );
         delayDestroyThread.detach();
     }
 }

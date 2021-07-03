@@ -4,7 +4,7 @@
  *
  * You can add other navigation functions that you need and export them
  */
-import React, { Suspense, useContext, useEffect } from 'react';
+import React, { Suspense, useContext } from 'react';
 import {
   CommonActions,
   NavigationContainer,

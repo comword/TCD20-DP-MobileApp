@@ -74,9 +74,9 @@ bool FaceDetector::detect( cv::InputArray image, cv::OutputArray faces, FaceDete
     std::vector<cv::Rect> faces_;
     std::vector<std::vector<cv::Point2f>> landmarks;
     cls->cvFaceCascade->detectMultiScale( image, faces_,
-                                          1.3, 3, 0
-                                          //|cv::CASCADE_FIND_BIGGEST_OBJECT
-                                          //|CASCADE_DO_ROUGH_SEARCH
+                                          1.1, 3, 0
+                                          | cv::CASCADE_FIND_BIGGEST_OBJECT
+//                                          | cv::CASCADE_DO_ROUGH_SEARCH
                                           | cv::CASCADE_SCALE_IMAGE,
                                           cv::Size( 30, 30 ) );
     cv::Mat( faces_ ).copyTo( faces );
@@ -112,17 +112,23 @@ void FaceDetector::pipeline( cv::VideoCapture &cpt,
             return nullptr;
         }
         auto pData = new ProcessingChainData;
-        try {
+        try
+        {
             cpt >> pData->img;
-        } catch(...) {
+        } catch( ... )
+        {
             delete pData;
             return nullptr;
         }
-        if( pData->img.empty() ) {
+        if( pData->img.empty() )
+        {
             delete pData;
             return nullptr;
         }
-        rotate( pData->img, pData->img, ROTATE_90_CLOCKWISE );
+        if( cachedIndex == 0 )
+            rotate( pData->img, pData->img, ROTATE_90_CLOCKWISE );
+        else if( cachedIndex == 1 )
+            rotate( pData->img, pData->img, ROTATE_90_COUNTERCLOCKWISE );
         return pData;
     } ) & make_filter<ProcessingChainData *, ProcessingChainData *>( filter::serial_in_order,
     [&]( ProcessingChainData * pData )->ProcessingChainData* {
@@ -195,9 +201,10 @@ void FaceDetector::pipeline( cv::VideoCapture &cpt,
 }
 
 shared_ptr<thread> FaceDetector::startThread( cv::VideoCapture &cpt,
-        tbb::concurrent_bounded_queue<ProcessingChainData *> &queue )
+        tbb::concurrent_bounded_queue<ProcessingChainData *> &queue, int index )
 {
     pipelineStop = false;
+    cachedIndex = index;
     return make_shared<thread>( &FaceDetector::pipeline, this, ref( cpt ), ref( queue ) );
 }
 

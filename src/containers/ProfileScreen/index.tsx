@@ -20,6 +20,10 @@ import { selectUserDetail, userSlice } from 'services/userdetail';
 import { injectReducer } from 'redux-injectors';
 import moment from 'moment';
 import AppHeader from 'components/AppHeader';
+import CameraPref from './CameraPref';
+import LabelledOption from 'components/LabelledOption';
+import { preferenceSlice, selectPreference } from 'store/preferences';
+import { ThemeSwitch } from 'components/ThemeSwitch';
 
 type ComponentProps = {
   navigation: DrawerNavigationProp<any, AppScreens.Exams>;
@@ -31,10 +35,12 @@ type Props = ComponentProps &
 
 const ProfileScreen: React.FC<Props> = ({
   userDetail,
+  userPref,
   setFirstName,
   setLastName,
   setBirthday,
   setStudentId,
+  setUseCamera,
   navigation,
 }) => {
   const theme = useTheme();
@@ -122,14 +128,23 @@ const ProfileScreen: React.FC<Props> = ({
         </View>
         <Text style={styles.sectionText}>Options</Text>
         <Divider />
+        <LabelledOption label="Theme">
+          <ThemeSwitch />
+        </LabelledOption>
+        <LabelledOption label="Use camera">
+          <CameraPref
+            cameras={[
+              { id: '0', name: 'Back' },
+              { id: '1', name: 'Front' },
+            ]}
+            value={userPref.useCamera}
+            onSelect={v => setUseCamera(v)}
+          />
+        </LabelledOption>
       </ScrollView>
       <Portal>
         {openBirthday && (
           <View style={[StyleSheet.absoluteFill, styles.dateModal]}>
-            <StatusBar
-              translucent
-              barStyle={theme.dark ? 'dark-content' : 'light-content'}
-            />
             <View
               style={[
                 {
@@ -156,6 +171,7 @@ const ProfileScreen: React.FC<Props> = ({
 const mapStateToProps = (state: RootState) => {
   return {
     userDetail: selectUserDetail(state),
+    userPref: selectPreference(state),
   };
 };
 
@@ -163,6 +179,7 @@ function mapDispatchToProps(dispatch: Dispatch) {
   return bindActionCreators(
     {
       ...userSlice.actions,
+      ...preferenceSlice.actions,
     },
     dispatch
   );

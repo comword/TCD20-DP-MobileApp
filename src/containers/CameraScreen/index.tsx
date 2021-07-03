@@ -16,6 +16,7 @@ import {
   ActivityIndicator,
   Title,
   Button,
+  Caption,
 } from 'react-native-paper';
 import tailwind from 'tailwind-rn';
 
@@ -27,6 +28,7 @@ import { NativeModulesProxy } from '@unimodules/core';
 import ResultDisplay from 'components/BottomControl/ResultDisplay';
 import { selectPCSrv } from 'services/ml';
 import DownloadModal from 'components/DownloadModal';
+import { selectPreference } from 'store/preferences';
 const { CameraGLModule } = NativeModulesProxy;
 
 type ComponentProps = {
@@ -37,21 +39,39 @@ type Props = ComponentProps &
   ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
 
-const CameraScreen: React.FC<Props> = ({ navigation, results }) => {
+const CameraScreen: React.FC<Props> = ({
+  navigation,
+  results,
+  fps,
+  cameraId,
+}) => {
   const theme = useTheme();
   const [permGranted, setPermGranted] = useState(false);
+  const [isCameraRun, setIsCameraRun] = useState(false);
   const styles = StyleSheet.create({
     container: {
       ...tailwind('flex h-1/2 w-full'),
       backgroundColor: theme.colors.surface,
     },
-    toolbar: tailwind('absolute w-full top-0 left-0 right-0'),
+    fpsText: tailwind('absolute bottom-0'),
   });
   const inApp = Platform.OS !== 'web' && Constants.appOwnership !== 'expo';
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => <View style={tailwind('flex flex-row')} />,
+    });
+    const onBack = () => {
+      const stopCamera = async () => {
+        await CameraGLModule.stopCamera();
+        setIsCameraRun(false);
+      };
+      if (inApp && isCameraRun) stopCamera();
+      return false;
+    };
+    const unsubscribe = navigation.addListener('beforeRemove', () => {
+      unsubscribe();
+      return onBack();
     });
   });
 
@@ -68,25 +88,21 @@ const CameraScreen: React.FC<Props> = ({ navigation, results }) => {
   };
 
   useEffect(() => {
-    const onBack = () => {
-      const stopCamera = async () => {
-        await CameraGLModule.stopCamera();
-      };
-      if (inApp) stopCamera();
-      return false;
-    };
-    const asyncCamera = async () => {
+    const setupCamera = async () => {
       if (permGranted) {
         await CameraGLModule.setCameraSize(640, 640);
         await CameraGLModule.startCamera();
-        const unsubscribe = navigation.addListener('beforeRemove', () => {
-          unsubscribe();
-          return onBack();
-        });
+        setIsCameraRun(true);
       }
     };
-    if (inApp) asyncCamera();
-  }, [inApp, navigation, permGranted]);
+    const indexCamera = async () => {
+      if (permGranted) {
+        await CameraGLModule.setCameraIndex(parseInt(cameraId, 10));
+      }
+    };
+    if (inApp) indexCamera();
+    if (inApp && !isCameraRun) setupCamera();
+  }, [cameraId, inApp, isCameraRun, permGranted]);
 
   return (
     <>
@@ -138,6 +154,7 @@ const CameraScreen: React.FC<Props> = ({ navigation, results }) => {
               }))}
             />
           )}
+          <Caption style={styles.fpsText}>FPS: {fps}</Caption>
         </View>
       </View>
       <DownloadModal onLoaded={setupCamera} />
@@ -148,6 +165,8 @@ const CameraScreen: React.FC<Props> = ({ navigation, results }) => {
 const mapStateToProps = (state: RootState) => {
   return {
     results: selectPCSrv(state).result,
+    fps: selectPCSrv(state).fps,
+    cameraId: selectPreference(state).useCamera,
   };
 };
 

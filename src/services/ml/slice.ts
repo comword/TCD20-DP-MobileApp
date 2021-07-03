@@ -47,6 +47,9 @@ export const PCSlice = createSlice({
       state.modelPaths = newModelPaths;
       if (newModelPaths.every(it => it.loaded)) state.status = 'LOAD';
     },
+    setFPS: (state, action: PayloadAction<number>) => {
+      state.fps = action.payload;
+    },
   },
 });
 

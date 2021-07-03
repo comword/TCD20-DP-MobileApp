@@ -51,4 +51,5 @@ export interface PCState {
   modelPaths: Array<ModelPath>;
   downloadProg: Array<ProgressMap>;
   result?: Array<number>;
+  fps?: number;
 }

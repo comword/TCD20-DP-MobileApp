@@ -33,7 +33,7 @@ declare global {
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  whitelist: ['theme', 'auth'],
+  whitelist: ['theme', 'auth', 'pref'],
   version: 1,
 };
 

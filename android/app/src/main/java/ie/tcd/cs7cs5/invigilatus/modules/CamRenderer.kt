@@ -19,7 +19,8 @@ class CamRenderer(camHandle: Long?, eventEmitter: EventEmitter) : GLSurfaceView.
     private val lock = Object()
     private var cameraHandle: Long? = camHandle
     private var eventEmitter = eventEmitter
-    private var mFrameLogThread: FrameLogThread? = null
+    private var startTime = System.nanoTime()
+    private var frames = 0
 
     init {
         System.loadLibrary("camera-view")
@@ -48,8 +49,6 @@ class CamRenderer(camHandle: Long?, eventEmitter: EventEmitter) : GLSurfaceView.
             Log.i(TAG, "cameraHandle: $cameraHandle")
             onSurfaceCreated(cameraHandle!!, textures[0], surface)
         }
-        mFrameLogThread = FrameLogThread()
-        mFrameLogThread!!.start()
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
@@ -63,52 +62,21 @@ class CamRenderer(camHandle: Long?, eventEmitter: EventEmitter) : GLSurfaceView.
                 surfaceTexture.updateTexImage()
                 surfaceTexture.getTransformMatrix(texMatrix)
                 frameAvailable = false
-                mFrameLogThread?.logFrame()
+                logFrame()
             }
         }
 
         onDrawFrame(texMatrix)
     }
 
-    protected fun finalize() {
-        if (mFrameLogThread != null) {
-            mFrameLogThread!!.interrupt()
-            try {
-                mFrameLogThread!!.join(1000)
-                mFrameLogThread = null
-            } catch (e: InterruptedException) {
-            }
-        }
-    }
-
-    private inner class FrameLogThread : Thread() {
-        private var startTime = System.nanoTime()
-        private var frames = 0
-        private val syncObject = Object()
-
-        override fun run() {
-            while (true) {
-                synchronized(syncObject) {
-                    try {
-                        syncObject.wait()
-                        if (System.nanoTime() - startTime >= 1000000000) {
-                            val bundle = Bundle()
-                            bundle.putInt("fps", frames)
-                            eventEmitter.emit("OnCameraFPS", bundle)
-                            frames = 0
-                            startTime = System.nanoTime()
-                        }
-                    } catch (e: InterruptedException) {
-                    }
-                }
-            }
-        }
-
-        fun logFrame() {
-            synchronized(syncObject) {
-                frames++
-                syncObject.notify()
-            }
+    private fun logFrame() {
+        frames++
+        if (System.nanoTime() - startTime >= 1000000000) {
+            val bundle = Bundle()
+            bundle.putInt("fps", frames)
+            eventEmitter.emit("OnCameraFPS", bundle)
+            frames = 0
+            startTime = System.nanoTime()
         }
     }
 
