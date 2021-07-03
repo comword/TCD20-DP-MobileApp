@@ -15,10 +15,9 @@ import {
 import PreLoginNavigator from './PreLoginNavigator';
 import PostLoginNavigator from './PostLoginNavigator';
 import LoadingIndicator from 'components/LoadingIndicator';
-import { authSlice, selectAuth } from 'services/auth';
+import { selectAuth } from 'services/auth';
 import { RootState } from 'store/types';
 import { compose } from 'redux';
-import { injectReducer } from 'redux-injectors';
 import { connect } from 'react-redux';
 import { ThemeContext } from 'styled-components/native';
 
@@ -90,13 +89,4 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-const withConnect = connect(mapStateToProps, null);
-const withReducer = injectReducer({
-  key: authSlice.name,
-  reducer: authSlice.reducer,
-});
-
-export default compose(
-  withConnect,
-  withReducer
-)(RootNavigator) as React.ComponentType<{}>;
+export default connect(mapStateToProps, null)(RootNavigator);

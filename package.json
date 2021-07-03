@@ -9,6 +9,7 @@
     "build:android": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res/",
     "lint": "yarn run eslint src",
     "lint:fix": "yarn run eslint --fix src",
+    "postinstall": "patch-package",
     "gen:protocol": "rm -rf src/services/gen-proto/*; protoc --plugin=protoc-gen-ts=./node_modules/.bin/protoc-gen-ts --js_out=import_style=commonjs,binary:src/services/gen-proto --ts_out=service=grpc-web:src/services/gen-proto -I src/services/api src/services/api/*.proto"
   },
   "dependencies": {
@@ -61,7 +62,6 @@
     "react-native-web": "~0.13.12",
     "react-redux": "^7.2.4",
     "redux": "^4.1.0",
-    "redux-injectors": "^1.3.0",
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
     "redux-saga": "^1.1.3",
@@ -98,6 +98,8 @@
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
     "jest-expo": "^41.0.0",
+    "patch-package": "^6.4.7",
+    "postinstall-postinstall": "^2.1.0",
     "prettier": "^2.3.0",
     "react-native-svg-transformer": "^0.14.3",
     "react-test-renderer": "16.13.1",

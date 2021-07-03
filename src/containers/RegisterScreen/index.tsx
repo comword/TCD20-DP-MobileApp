@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { compose, bindActionCreators, Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { injectReducer, injectSaga } from 'redux-injectors';
 import { View, ScrollView } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useTheme } from 'styled-components/native';
@@ -12,12 +11,7 @@ import tailwind from 'tailwind-rn';
 import { AppScreens } from 'navigators/ScreenDefs';
 import PassMeter, { PASS_LABELS, MAX_LEN, MIN_LEN } from 'components/PassMeter';
 import InfoBanner, { getInfoLevel } from 'components/InfoBanner';
-import {
-  authSlice,
-  rootAuthSaga,
-  selectAuth,
-  signUpAction,
-} from 'services/auth';
+import { authSlice, selectAuth, signUpAction } from 'services/auth';
 import { RootState } from 'store/types';
 
 type ComponentProps = {
@@ -229,14 +223,7 @@ function mapDispatchToProps(dispatch: Dispatch) {
 }
 
 const withConnect = connect(mapStateToProps, mapDispatchToProps);
-const withReducer = injectReducer({
-  key: authSlice.name,
-  reducer: authSlice.reducer,
-});
-const withSaga = injectSaga({ key: authSlice.name, saga: rootAuthSaga });
 
-export default compose(
-  withConnect,
-  withReducer,
-  withSaga
-)(RegisterScreen) as React.ComponentType<ComponentProps>;
+export default compose(withConnect)(
+  RegisterScreen
+) as React.ComponentType<ComponentProps>;

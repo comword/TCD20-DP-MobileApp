@@ -24,7 +24,6 @@ import {
 import { DownloadTask } from 'services/ml/download';
 import { PCState, ProgressMap } from 'services/ml/types';
 import { RootState } from 'store/types';
-import { injectReducer } from 'redux-injectors';
 import { select } from 'redux-saga/effects';
 
 type ComponentProps = {
@@ -234,14 +233,7 @@ function mapDispatchToProps(dispatch: Dispatch) {
 }
 
 const withConnect = connect(mapStateToProps, mapDispatchToProps);
-const withReducer = injectReducer({
-  key: PCSlice.name,
-  reducer: PCSlice.reducer,
-});
-// const withSaga = injectSaga({ key: PCSlice.name, saga: rootMLSaga });
 
-export default compose(
-  withConnect,
-  withReducer
-  // withSaga
-)(DownloadModal) as React.ComponentType<ComponentProps>;
+export default compose(withConnect)(
+  DownloadModal
+) as React.ComponentType<ComponentProps>;

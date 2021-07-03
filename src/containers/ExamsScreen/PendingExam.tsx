@@ -2,7 +2,7 @@ import React from 'react';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose, Dispatch } from 'redux';
-import { injectReducer } from 'redux-injectors';
+import { injectReducer } from 'utils/redux-injectors';
 import { AppScreens } from 'navigators/ScreenDefs';
 import { RootState } from 'store/types';
 import { examSlice, selectExam } from './slice';

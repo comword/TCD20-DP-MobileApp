@@ -3,16 +3,19 @@ import { StyleSheet, View } from 'react-native';
 import { RadioButton, Text } from 'react-native-paper';
 
 import { changeTheme, selectThemeKey } from 'theme/slice';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector, useStore } from 'react-redux';
 import { ThemeKeyType } from 'theme/types';
 import tailwind from 'tailwind-rn';
 
 export function ThemeSwitch() {
   const theme = useSelector(selectThemeKey);
   const dispatch = useDispatch();
+  const store = useStore();
 
   const handleThemeChange = (value: string) => {
     dispatch(changeTheme(value as ThemeKeyType));
+    //@ts-ignore
+    store.persistor.flush();
   };
 
   const styles = StyleSheet.create({

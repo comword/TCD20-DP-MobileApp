@@ -1,13 +1,10 @@
 import React, { useEffect } from 'react';
 import { ThemeProvider as SCThemeProvider } from 'styled-components/native';
 import { Appearance } from 'react-native-appearance';
-import { injectReducer } from 'redux-injectors';
 import { compose, bindActionCreators, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import {
   selectTheme,
-  themeSliceKey,
-  reducer,
   changeDisplay,
   selectDisplay,
   selectThemeKey,
@@ -70,9 +67,7 @@ function mapDispatchToProps(dispatch: Dispatch) {
 }
 
 const withConnect = connect(mapStateToProps, mapDispatchToProps);
-const withReducer = injectReducer({ key: themeSliceKey, reducer: reducer });
 
-export default compose(
-  withConnect,
-  withReducer
-)(ThemeProvider) as React.ComponentType<ComponentProps>;
+export default compose(withConnect)(
+  ThemeProvider
+) as React.ComponentType<ComponentProps>;

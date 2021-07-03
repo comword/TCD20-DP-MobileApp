@@ -2,7 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { injectReducer } from 'redux-injectors';
+import { injectReducer } from 'utils/redux-injectors';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 

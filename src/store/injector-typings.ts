@@ -1,5 +1,5 @@
 import { Saga } from 'redux-saga';
-import { SagaInjectionModes } from 'redux-injectors';
+import { SagaInjectionModes } from 'utils/redux-injectors';
 import { Reducer, AnyAction } from '@reduxjs/toolkit';
 import { RootState } from './types';
 

@@ -5,9 +5,8 @@ import {
   getDefaultMiddleware,
   Middleware,
 } from '@reduxjs/toolkit';
-import { createInjectorsEnhancer } from 'redux-injectors';
+import { createInjectorsEnhancer } from 'utils/redux-injectors';
 import createSagaMiddleware from 'redux-saga';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   persistReducer,
   persistStore,
@@ -20,6 +19,7 @@ import {
 } from 'redux-persist';
 import { rootMLSaga } from 'services/ml';
 import { rootAuthSaga } from 'services/auth';
+import { persistConfig } from './types';
 
 declare global {
   interface Window {
@@ -29,13 +29,6 @@ declare global {
     __SAGA_MONITOR_EXTENSION__: (obj: Record<string, any>) => Function;
   }
 }
-
-const persistConfig = {
-  key: 'root',
-  storage: AsyncStorage,
-  whitelist: ['theme', 'auth', 'pref'],
-  version: 1,
-};
 
 const persistedReducer = persistReducer(persistConfig, createReducer());
 
@@ -91,7 +84,7 @@ const store = configureStore({
 
 const persister = persistStore(store);
 //@ts-ignore
-store.persister = persister;
+store.persistor = persister;
 
 runSaga(rootMLSaga);
 runSaga(rootAuthSaga);

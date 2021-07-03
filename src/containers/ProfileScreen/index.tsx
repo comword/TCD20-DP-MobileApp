@@ -7,7 +7,7 @@ import {
   StatusBar,
 } from 'react-native';
 import { compose, bindActionCreators, Dispatch } from 'redux';
-import { connect } from 'react-redux';
+import { connect, useStore } from 'react-redux';
 import { AppScreens } from 'navigators/ScreenDefs';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import tailwind from 'tailwind-rn';
@@ -17,7 +17,7 @@ import { DatePickerModalContent } from 'react-native-paper-dates';
 import { CalendarDate } from 'react-native-paper-dates/lib/typescript/src/Date/Calendar';
 import { RootState } from 'store/types';
 import { selectUserDetail, userSlice } from 'services/userdetail';
-import { injectReducer } from 'redux-injectors';
+import { injectReducer } from 'utils/redux-injectors';
 import moment from 'moment';
 import AppHeader from 'components/AppHeader';
 import CameraPref from './CameraPref';
@@ -44,6 +44,7 @@ const ProfileScreen: React.FC<Props> = ({
   navigation,
 }) => {
   const theme = useTheme();
+  const store = useStore();
   const [openBirthday, setOpenBirthday] = useState(false);
   const styles = StyleSheet.create({
     sectionText: tailwind('text-sm mt-5 mb-2 px-4'),
@@ -138,7 +139,11 @@ const ProfileScreen: React.FC<Props> = ({
               { id: '1', name: 'Front' },
             ]}
             value={userPref.useCamera}
-            onSelect={v => setUseCamera(v)}
+            onSelect={v => {
+              setUseCamera(v);
+              //@ts-ignore
+              store.persistor.flush();
+            }}
           />
         </LabelledOption>
       </ScrollView>

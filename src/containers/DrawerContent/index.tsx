@@ -1,5 +1,5 @@
 import React from 'react';
-import { injectReducer } from 'redux-injectors';
+import { injectReducer } from 'utils/redux-injectors';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose, Dispatch } from 'redux';
@@ -55,7 +55,6 @@ const DrawerContent: React.FC<Props> = ({
       index: 0,
       routes: [{ name: name }],
     });
-    // navigation.navigate(name);
   };
 
   const userName =

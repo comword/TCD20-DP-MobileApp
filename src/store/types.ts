@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ExamDetailState } from 'containers/ExamsScreen/slice';
 import { AuthState } from 'services/auth/state';
 import { PCState } from 'services/ml/types';
@@ -13,3 +14,10 @@ export interface RootState {
   user?: UserDetailState;
   exams?: ExamDetailState;
 }
+
+export const persistConfig = {
+  key: 'root',
+  storage: AsyncStorage,
+  whitelist: ['theme', 'auth', 'pref'],
+  version: 1,
+};
