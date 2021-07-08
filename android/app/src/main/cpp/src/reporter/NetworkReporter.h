@@ -40,7 +40,7 @@ class NetworkReporter: public IResultReporter
         std::shared_ptr<tbb::concurrent_bounded_queue<cv::Mat *>> imgQueue;
         std::shared_ptr<std::thread> mStreamThread;
         ReporterMgr *reporterMgr = nullptr;
-        volatile bool pipelineStop = false;
+        volatile bool pipelineStop = true;
 };
 
 #endif //INVIGILATOR_NETWORKREPORTER_H

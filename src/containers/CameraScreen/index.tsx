@@ -20,15 +20,15 @@ import {
 } from 'react-native-paper';
 import tailwind from 'tailwind-rn';
 
+import { BeforeStart, ResultDisplay } from 'components/BottomControl';
+import DownloadModal from 'components/DownloadModal';
+import InfoBanner, { getInfoLevel } from 'components/InfoBanner';
 import { RootState } from 'store/types';
+import { selectPreference } from 'store/preferences';
+import { PCSlice, selectPCSrv, startInvigilateAction } from 'services/ml';
 import CameraGLView from 'services/ml/CameraGLView';
 import { MLActionTypes } from 'services/ml/types';
-
 import { NativeModulesProxy } from '@unimodules/core';
-import ResultDisplay from 'components/BottomControl/ResultDisplay';
-import { selectPCSrv } from 'services/ml';
-import DownloadModal from 'components/DownloadModal';
-import { selectPreference } from 'store/preferences';
 const { CameraGLModule } = NativeModulesProxy;
 
 type ComponentProps = {
@@ -41,9 +41,13 @@ type Props = ComponentProps &
 
 const CameraScreen: React.FC<Props> = ({
   navigation,
+  status,
   results,
   fps,
   cameraId,
+  lastError,
+  setError,
+  startInvigilateAction,
 }) => {
   const theme = useTheme();
   const [permGranted, setPermGranted] = useState(false);
@@ -135,8 +139,21 @@ const CameraScreen: React.FC<Props> = ({
             <CameraGLView style={tailwind('flex h-full w-full')} />
           )}
         </View>
+        {lastError && (
+          <InfoBanner
+            level={lastError ? getInfoLevel(lastError?.code) : 1}
+            msg={lastError ? lastError.msg : ''}
+            show={lastError ? lastError.show : false}
+            onDismiss={() => setError({ ...lastError!!, show: false })}
+          />
+        )}
         <View style={styles.container}>
-          {!results && (
+          {status === 'LOAD' && (
+            <View style={tailwind('flex h-full items-center justify-center')}>
+              <BeforeStart onClickStart={() => startInvigilateAction()} />
+            </View>
+          )}
+          {status === 'RUNNING' && !results && (
             <View style={tailwind('flex h-full items-center justify-center')}>
               <ActivityIndicator
                 animating
@@ -146,14 +163,16 @@ const CameraScreen: React.FC<Props> = ({
               <Title>Waiting results...</Title>
             </View>
           )}
-          {results && results.length === Object.keys(MLActionTypes).length && (
-            <ResultDisplay
-              results={Object.keys(MLActionTypes).map((it, idx) => ({
-                type: MLActionTypes[it as keyof typeof MLActionTypes],
-                prob: results[idx],
-              }))}
-            />
-          )}
+          {status === 'RUNNING' &&
+            results &&
+            results.length === Object.keys(MLActionTypes).length && (
+              <ResultDisplay
+                results={Object.keys(MLActionTypes).map((it, idx) => ({
+                  type: MLActionTypes[it as keyof typeof MLActionTypes],
+                  prob: results[idx],
+                }))}
+              />
+            )}
           <Caption style={styles.fpsText}>FPS: {fps}</Caption>
         </View>
       </View>
@@ -164,6 +183,8 @@ const CameraScreen: React.FC<Props> = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
+    lastError: selectPCSrv(state).lastError,
+    status: selectPCSrv(state).status,
     results: selectPCSrv(state).result,
     fps: selectPCSrv(state).fps,
     cameraId: selectPreference(state).useCamera,
@@ -171,7 +192,13 @@ const mapStateToProps = (state: RootState) => {
 };
 
 function mapDispatchToProps(dispatch: Dispatch) {
-  return bindActionCreators({}, dispatch);
+  return bindActionCreators(
+    {
+      ...PCSlice.actions,
+      startInvigilateAction,
+    },
+    dispatch
+  );
 }
 
 const withConnect = connect(mapStateToProps, mapDispatchToProps);

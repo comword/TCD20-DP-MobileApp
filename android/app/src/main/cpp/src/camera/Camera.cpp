@@ -81,7 +81,7 @@ bool Camera::start( int index )
             auto srcHeight = recvData->img.size().height;
             ANativeWindow_acquire( textureWindow.get() );
             ANativeWindow_Buffer buffer;
-            ANativeWindow_setBuffersGeometry( textureWindow.get(), srcHeight, srcWidth,
+            ANativeWindow_setBuffersGeometry( textureWindow.get(), srcWidth, srcHeight,
                                               0/* format unchanged */ );
             if( int32_t err = ANativeWindow_lock( textureWindow.get(), &buffer, nullptr ) ) {
                 LOGE( "ANativeWindow_lock failed with error code: %d\n", err );

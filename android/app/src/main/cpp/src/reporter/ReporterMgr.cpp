@@ -15,11 +15,32 @@ ReporterMgr::~ReporterMgr()
     }
 }
 
+bool ReporterMgr::init( void *userData )
+{
+    return true;
+}
+
+void ReporterMgr::registerMgr( ReporterMgr *mgr ) {}
+
+bool ReporterMgr::start()
+{
+    return true;
+}
+
+void ReporterMgr::stop() {}
+
+const char *ReporterMgr::getName()
+{
+    return "ReporterMgr";
+}
+
 void ReporterMgr::addReporter( IResultReporter *reporter )
 {
     assert( reporter );
+    reporter->registerMgr( this );
     auto name = reporter->getName();
     reporterMap[name] = reporter;
+
 }
 
 bool ReporterMgr::removeReporter( const char *name )
@@ -40,14 +61,14 @@ IResultReporter *ReporterMgr::findReporter( const char *name )
     return reporterMap[name];
 }
 
-void ReporterMgr::broadcastMLResult( const std::vector<float> &result )
+void ReporterMgr::onMLResult( const std::vector<float> &result )
 {
     for( const auto &it : reporterMap ) {
         it.second->onMLResult( result );
     }
 }
 
-void ReporterMgr::broadcastVideoFrame( const cv::Mat &result )
+void ReporterMgr::onVideoFrame( const cv::Mat &result )
 {
     for( const auto &it : reporterMap ) {
         it.second->onVideoFrame( result );

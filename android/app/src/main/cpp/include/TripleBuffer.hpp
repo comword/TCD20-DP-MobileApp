@@ -67,6 +67,8 @@ int main() {
 #define TRIPLEBUFFER_H_
 
 #include <atomic>
+#include <mutex>
+#include <condition_variable>
 
 template <typename T>
 class TripleBuffer
@@ -92,6 +94,8 @@ class TripleBuffer
         // wrapper to update with a new element (write + flipWriter)
         void update( T newT );
 
+        T readLastBlock();
+
     private:
         // non-copyable behavior
         TripleBuffer<T>( const TripleBuffer<T> & ) = delete;
@@ -112,6 +116,8 @@ class TripleBuffer
         mutable std::atomic_uint_fast8_t flags;
 
         T buffer[3];
+        std::mutex mtx;
+        std::condition_variable cv;
 };
 
 // include implementation in header since it is a template
@@ -185,10 +191,14 @@ template <typename T>
 void TripleBuffer<T>::flipWriter()
 {
     uint_fast8_t flagsNow( flags.load( std::memory_order_consume ) );
-    while( !flags.compare_exchange_weak( flagsNow,
-                                         newWriteSwapCleanWithDirty( flagsNow ),
-                                         std::memory_order_release,
-                                         std::memory_order_consume ) );
+    {
+        std::lock_guard<std::mutex> lk( mtx );
+        while( !flags.compare_exchange_weak( flagsNow,
+                                             newWriteSwapCleanWithDirty( flagsNow ),
+                                             std::memory_order_release,
+                                             std::memory_order_consume ) );
+        cv.notify_one();
+    }
 }
 
 template <typename T>
@@ -237,6 +247,22 @@ uint_fast8_t TripleBuffer<T>::newWriteSwapCleanWithDirty( uint_fast8_t flags )
            | ( ( flags & 0xC ) << 2 )
            | ( ( flags & 0x30 ) >> 2 )
            | ( flags & 0x3 );
+}
+
+template<typename T>
+T TripleBuffer<T>::readLastBlock()
+{
+    std::unique_lock <std::mutex> lck( mtx );
+    while( !isNewWrite( flags.load( std::memory_order_consume ) ) ) {
+        cv.wait( lck );
+    }
+    lck.unlock();
+    auto flagsNow = flags.load( std::memory_order_consume );
+    while( !flags.compare_exchange_weak( flagsNow,
+                                         swapSnapWithClean( flagsNow ),
+                                         std::memory_order_release,
+                                         std::memory_order_consume ) );
+    return buffer[flags.load( std::memory_order_consume ) & 0x3];
 }
 
 #endif /* TRIPLEBUFFER_H_ */

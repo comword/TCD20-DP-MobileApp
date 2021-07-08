@@ -22,11 +22,13 @@ class PostureClassify: public IClassifier
         PostureClassify( tflite::FlatBufferModel *mHandle, tflite::Interpreter *iHandle );
         virtual ~PostureClassify();
 
-        std::unique_ptr<std::vector<float>> classify( const cv::Mat &imgs );
+        void classify( const cv::Mat &imgs ) override;
+        void registerReporter( IResultReporter *rep ) override;
 
     private:
         tflite::FlatBufferModel *model;
         tflite::Interpreter *interpreter;
+        IResultReporter *reporter = nullptr;
 };
 
 #endif

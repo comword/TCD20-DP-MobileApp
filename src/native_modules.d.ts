@@ -1,5 +1,5 @@
 import '@unimodules/core';
-import { NativeModule } from '@unimodules/react-native-adapter';
+import { ProxyNativeModule } from '@unimodules/react-native-adapter';
 import { PermissionResponse } from 'expo-permissions';
 
 export type IPostureClassify = {
@@ -31,7 +31,7 @@ export type ICameraGLModule = {
 
 declare module '@unimodules/core' {
   declare const NativeModulesProxy: {
-    PostureClassify: NativeModule & IPostureClassify;
-    CameraGLModule: NativeModule & ICameraGLModule;
+    PostureClassify: ProxyNativeModule & IPostureClassify;
+    CameraGLModule: ProxyNativeModule & ICameraGLModule;
   };
 }

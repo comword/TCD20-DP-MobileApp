@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "TripleBuffer.hpp"
+#include "IClassifier.h"
 #include "dlog.h"
 
 #include <sys/stat.h>
@@ -21,6 +22,7 @@ using namespace std;
 FaceDetector::FaceDetector()
 {
     cvFaceCascade = shared_ptr<cv::CascadeClassifier>( new cv::CascadeClassifier() );
+    mlBuffer = make_shared<TripleBuffer<cv::Mat>>();
 }
 
 FaceDetector::~FaceDetector()
@@ -76,7 +78,7 @@ bool FaceDetector::detect( cv::InputArray image, cv::OutputArray faces, FaceDete
     cls->cvFaceCascade->detectMultiScale( image, faces_,
                                           1.1, 3, 0
                                           | cv::CASCADE_FIND_BIGGEST_OBJECT
-//                                          | cv::CASCADE_DO_ROUGH_SEARCH
+                                          //                                          | cv::CASCADE_DO_ROUGH_SEARCH
                                           | cv::CASCADE_SCALE_IMAGE,
                                           cv::Size( 30, 30 ) );
     cv::Mat( faces_ ).copyTo( faces );
@@ -142,7 +144,7 @@ void FaceDetector::pipeline( cv::VideoCapture &cpt,
     [&]( ProcessingChainData * pData )->ProcessingChainData* {
         if( pData == nullptr )
             return nullptr;
-        if( cvFaceMark->empty() )
+        if( cvFaceMark->empty() || !classifier )
             return pData;
         cvFaceMark->getFaces( pData->scaleHalf, pData->faces );
         cvFaceMark->fit( pData->scaleHalf, pData->faces, pData->landmarks );
@@ -185,7 +187,7 @@ void FaceDetector::pipeline( cv::VideoCapture &cpt,
             try {
                 Mat cvtRgba;
                 cvtColor( pData->img, cvtRgba, COLOR_BGR2RGBA );
-                if( classifier && mlBuffer ) {
+                if( classifier ) {
                     mlBuffer->write( move( pData->img ) );
                     mlBuffer->flipWriter();
                 }
@@ -196,8 +198,7 @@ void FaceDetector::pipeline( cv::VideoCapture &cpt,
                 pipelineStop = true;
             }
         }
-    } )
-                     );
+    } ) );
 }
 
 shared_ptr<thread> FaceDetector::startThread( cv::VideoCapture &cpt,
@@ -205,22 +206,32 @@ shared_ptr<thread> FaceDetector::startThread( cv::VideoCapture &cpt,
 {
     pipelineStop = false;
     cachedIndex = index;
+    mInferThread = make_shared<thread>( &FaceDetector::inferThread, this);
+    mInferThread->detach();
     return make_shared<thread>( &FaceDetector::pipeline, this, ref( cpt ), ref( queue ) );
 }
 
 bool FaceDetector::registerClassifier( IClassifier *ml )
 {
     classifier = ml;
-    mlBuffer = make_shared<TripleBuffer<cv::Mat>>();
-    return false;
+    return true;
 }
 
 bool FaceDetector::unloadClassifier()
 {
     if( classifier ) {
         classifier = nullptr;
-        mlBuffer.reset();
     }
     return true;
+}
+
+void FaceDetector::inferThread()
+{
+    while( !pipelineStop ) {
+        auto img = mlBuffer->readLastBlock();
+        if( !img.empty() ) {
+            classifier->classify( img );
+        }
+    }
 }
 

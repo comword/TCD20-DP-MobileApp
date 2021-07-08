@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, FlatList, View, Text } from 'react-native';
 import { Platform } from '@unimodules/react-native-adapter';
 import * as FileSystem from 'expo-file-system';
+import { Asset } from 'expo-asset';
 import Constants from 'expo-constants';
 import {
   ProgressBar,
@@ -140,17 +141,25 @@ const DownloadModal: React.FC<Props> = ({
   }, [loadStatus]);
 
   useEffect(() => {
-    if (step === 0 && loadStatus === 'UNLOAD')
-      if (
-        downloadTasks.every(t1 => modelPaths.find(t2 => t1.name === t2.name))
-      ) {
-        console.log('Download finished');
-        setStep(1);
-        modelInitAction({
-          haarCascade: modelPaths.find(it => it.name === 'Face detect')?.path,
-          modelLBF: modelPaths.find(it => it.name === 'Face landmark')?.path,
-        });
-      }
+    const modelInit = async () => {
+      if (step === 0 && loadStatus === 'UNLOAD')
+        if (
+          downloadTasks.every(t1 => modelPaths.find(t2 => t1.name === t2.name))
+        ) {
+          console.log('Download finished');
+          setStep(1);
+          let model = Asset.fromModule(
+            require('../services/ml/assets/dummy.tflite')
+          );
+          model = await model.downloadAsync();
+          modelInitAction({
+            haarCascade: modelPaths.find(it => it.name === 'Face detect')?.path,
+            modelLBF: modelPaths.find(it => it.name === 'Face landmark')?.path,
+            posture: model.localUri?.replace(/(^\w+:|^)\/\//, ''),
+          });
+        }
+    };
+    modelInit();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modelPaths]);
 

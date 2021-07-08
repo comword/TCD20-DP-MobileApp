@@ -15,11 +15,12 @@ import {
 import PreLoginNavigator from './PreLoginNavigator';
 import PostLoginNavigator from './PostLoginNavigator';
 import LoadingIndicator from 'components/LoadingIndicator';
-import { selectAuth } from 'services/auth';
+import { authSlice, selectAuth } from 'services/auth';
 import { RootState } from 'store/types';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { ThemeContext } from 'styled-components/native';
+import { injectReducer } from 'utils/redux-injectors';
 
 export const navigatorRef = React.createRef<NavigationContainerRef>();
 let stack: Array<object> = [];
@@ -89,4 +90,13 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-export default connect(mapStateToProps, null)(RootNavigator);
+const withConnect = connect(mapStateToProps, null);
+const withReducer = injectReducer({
+  key: authSlice.name,
+  reducer: authSlice.reducer,
+});
+
+export default compose(
+  withConnect,
+  withReducer
+)(RootNavigator) as React.ComponentType<{}>;

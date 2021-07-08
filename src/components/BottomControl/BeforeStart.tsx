@@ -1,6 +1,6 @@
 import React from 'react';
-import { GestureResponderEvent, View } from 'react-native';
-import { IconButton } from 'react-native-paper';
+import { GestureResponderEvent } from 'react-native';
+import { IconButton, Title } from 'react-native-paper';
 import { useTheme } from 'styled-components/native';
 import tailwind from 'tailwind-rn';
 
@@ -8,10 +8,10 @@ interface Props {
   onClickStart: (e: GestureResponderEvent) => void;
 }
 
-const BeforeStart: React.FC<Props> = ({ onClickStart }) => {
+export const BeforeStart: React.FC<Props> = ({ onClickStart }) => {
   const theme = useTheme();
   return (
-    <View>
+    <>
       <IconButton
         icon="play"
         size={50}
@@ -19,8 +19,7 @@ const BeforeStart: React.FC<Props> = ({ onClickStart }) => {
         color={theme.colors.text}
         onPress={onClickStart}
       />
-    </View>
+      <Title>Start exam</Title>
+    </>
   );
 };
-
-export default BeforeStart;

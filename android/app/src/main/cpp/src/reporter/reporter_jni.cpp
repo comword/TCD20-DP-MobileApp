@@ -16,13 +16,11 @@ JNIEXPORT jlong JNICALL
 Java_ie_tcd_cs7cs5_invigilatus_modules_MLModule_nativeReporterInit( JNIEnv *env, jobject thiz,
         jstring address )
 {
-    //    jclass mlClass = env->GetObjectClass( thiz );
-    //    jmethodID idEmitResult = env->GetMethodID( mlClass, "emitResult",
-    //                             "([F)V" );
-    //    jmethodID idEmitError = env->GetMethodID( mlClass, "emitError",
-    //                                               "(Ljava/lang/String;Ljava/lang/String;)V" );
     std::unique_ptr<ReporterMgr> repMgr( new ReporterMgr() );
-
+    if( !repMgr->init( nullptr ) ) {
+        LOGE( "ReporterMgr init failed" );
+        return 0;
+    }
     std::unique_ptr<JavaReporter> javaRep( new JavaReporter() );
     auto tuple = std::make_tuple( env, thiz );
     if( !javaRep->init( &tuple ) ) {

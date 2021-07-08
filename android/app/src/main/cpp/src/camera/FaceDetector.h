@@ -2,6 +2,7 @@
 #define INVIGILATOR_FACEDETECTOR_H
 
 #include <memory>
+#include <thread>
 #include <opencv2/objdetect.hpp>
 
 #include <tbb/concurrent_queue.h>
@@ -34,6 +35,7 @@ class FaceDetector
         virtual ~FaceDetector();
         bool loadModels( const char *haarCascade, const char *modelLBF );
         void pipeline( cv::VideoCapture &cpt, tbb::concurrent_bounded_queue<ProcessingChainData *> &queue );
+        void inferThread();
         bool isPipelineStop() const;
         void stopPipeline();
         std::shared_ptr<std::thread>startThread( cv::VideoCapture &cpt,
@@ -43,8 +45,9 @@ class FaceDetector
     private:
         std::shared_ptr<cv::CascadeClassifier> cvFaceCascade;
         std::shared_ptr<cv::face::FacemarkLBF> cvFaceMark;
-        volatile bool pipelineStop = false;
+        volatile bool pipelineStop = true;
         std::shared_ptr<TripleBuffer<cv::Mat>> mlBuffer;
+        std::shared_ptr<std::thread> mInferThread;
         IClassifier *classifier = nullptr;
         int cachedIndex = -1;
     private:

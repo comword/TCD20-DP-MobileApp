@@ -28,7 +28,6 @@ class CameraModule(context: Context): ExportedModule(context) {
 
     init {
         System.loadLibrary("camera-view")
-        nativeInit()
     }
 
     override fun onDestroy() {
@@ -175,7 +174,7 @@ class CameraModule(context: Context): ExportedModule(context) {
         if(classifierModule.mPCHandle == 0L) {
             promise.reject(
                 "E_CLASSIFIER",
-                "Posture classifier module has null native handle."
+                "Posture classifier has null native handle."
             )
             return
         }
@@ -220,12 +219,12 @@ class CameraModule(context: Context): ExportedModule(context) {
         eventEmitter.emit("OnModelLoaded", bundle)
     }
 
-    private external fun nativeInit()
     private external fun nativeInitCamera(): Long
     private external fun nativeDeInitCamera(camHandle: Long)
     private external fun nativeCameraStart(camHandle: Long, camIdx: Int): Boolean
     private external fun nativeCameraStop(camHandle: Long)
     private external fun nativeCameraSize(camHandle: Long, width: Int, height: Int): Boolean
+
     private external fun nativeConnectClassifier(camHandle: Long, clfHandle: Long): Boolean
     private external fun nativeDisconnectClassifier(camHandle: Long): Boolean
 }

@@ -1,6 +1,7 @@
 #include <jni.h>
 
 #include "PostureClassify.h"
+#include "IResultReporter.h"
 #include "dlog.h"
 #include "utils.h"
 
@@ -11,7 +12,7 @@ using namespace std;
 extern "C"
 JNIEXPORT jlong JNICALL
 Java_ie_tcd_cs7cs5_invigilatus_modules_MLModule_nativeModelInit( JNIEnv *env, jobject thiz,
-        jobject interpreter )
+        jobject interpreter, jlong reporter_mgr_handle )
 {
     auto interpClass = env->GetObjectClass( interpreter );
     auto idNativeInterpWrapper = env->GetFieldID( interpClass, "wrapper",
@@ -28,6 +29,7 @@ Java_ie_tcd_cs7cs5_invigilatus_modules_MLModule_nativeModelInit( JNIEnv *env, jo
     unique_ptr<PostureClassify> posture( new PostureClassify(
             reinterpret_cast<tflite::FlatBufferModel *>( modelHandle ),
             reinterpret_cast<tflite::Interpreter *>( interpreterHandle ) ) );
+    posture->registerReporter( utils::convertLongToCls<IResultReporter>( env, reporter_mgr_handle ) );
     return reinterpret_cast<jlong>( posture.release() );
 }
 extern "C"

@@ -68,18 +68,17 @@ bool NetworkReporter::start()
     return true;
 }
 
-void NetworkReporter::onMLResult( const vector<float> &result )
-{
-
-}
+void NetworkReporter::onMLResult( const vector<float> &result ) {}
 
 void NetworkReporter::onVideoFrame( const cv::Mat &result )
 {
-    auto img = new cv::Mat();
-    result.copyTo( *img );
-    auto success = imgQueue->try_push( img );
-    if( !success ) {
-        LOGI( "Frame queue is full, so a frame is dropped, please check your Internet connection" );
+    if( !pipelineStop ) {
+        auto img = new cv::Mat();
+        result.copyTo( *img );
+        auto success = imgQueue->try_push( img );
+        if( !success ) {
+            LOGI( "Frame queue is full, so a frame is dropped, please check your Internet connection" );
+        }
     }
 }
 

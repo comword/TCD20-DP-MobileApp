@@ -11,7 +11,7 @@ type Props = {
   alertMap?: Map<MLActionTypes, number>;
 };
 
-const ResultDisplay: React.FC<Props> = ({ results, alertMap }) => {
+export const ResultDisplay: React.FC<Props> = ({ results, alertMap }) => {
   const theme = useTheme();
   const alertMapDef = alertMap ? alertMap : DefaultAlertMap;
   const topResult = results.reduce((prev, current) => {
@@ -102,5 +102,3 @@ const getTextColorMap = (
   }
   return textColor;
 };
-
-export default ResultDisplay;

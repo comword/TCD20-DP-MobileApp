@@ -4,24 +4,29 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
+#include "IResultReporter.h"
 
 namespace cv
 {
 class Mat;
 }
 
-class IResultReporter;
-
-class ReporterMgr
+class ReporterMgr: public virtual IResultReporter
 {
     public:
         ReporterMgr();
         virtual ~ReporterMgr();
+        bool init( void *userData ) override;
+        void registerMgr( ReporterMgr *mgr ) override;
+        bool start() override;
+        void stop() override;
+        const char *getName() override;
+        void onMLResult( const std::vector<float> &result ) override;
+        void onVideoFrame( const cv::Mat &result ) override;
+    public:
         void addReporter( IResultReporter *reporter );
         bool removeReporter( const char *name );
         IResultReporter *findReporter( const char *name );
-        void broadcastMLResult( const std::vector<float> &result );
-        void broadcastVideoFrame( const cv::Mat &result );
         std::string getCurrentExamId();
         void setCurrentExamId( std::string &id );
         void notifyError( const char *name, const char *reason );

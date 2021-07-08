@@ -2,6 +2,7 @@
 
 #include "Camera.h"
 #include "IClassifier.h"
+#include "IResultReporter.h"
 #include "dlog.h"
 #include "utils.h"
 
@@ -102,11 +103,4 @@ Java_ie_tcd_cs7cs5_invigilatus_modules_CameraModule_nativeDisconnectClassifier( 
         return false;
     }
     return camera->unloadClassifier();
-}
-
-extern "C"
-JNIEXPORT void JNICALL
-Java_ie_tcd_cs7cs5_invigilatus_modules_CameraModule_nativeInit( JNIEnv *env, jobject thiz )
-{
-    JavaVM *jvm;
 }

@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "utils.h"
+#include "IResultReporter.h"
 
 #include "tensorflow/lite/interpreter.h"
 #include "tensorflow/lite/kernels/register.h"
@@ -18,7 +19,15 @@ PostureClassify::PostureClassify( tflite::FlatBufferModel *mHandle,
 
 PostureClassify::~PostureClassify() = default;
 
-std::unique_ptr<std::vector<float>> PostureClassify::classify( const cv::Mat &imgs )
+void PostureClassify::classify( const cv::Mat &imgs )
 {
-    return std::unique_ptr<std::vector<float>>();
+    if( reporter ) {
+        reporter->onVideoFrame( imgs );
+    }
+    //    return std::unique_ptr<std::vector<float>>();
+}
+
+void PostureClassify::registerReporter( IResultReporter *rep )
+{
+    reporter = rep;
 }

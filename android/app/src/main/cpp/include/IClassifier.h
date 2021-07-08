@@ -2,12 +2,13 @@
 #define INVIGILATOR_ICLASSIFIER_H
 
 #include <memory>
-#include <vector>
 
 namespace cv
 {
 class Mat;
 }
+
+class IResultReporter;
 
 class IClassifier
 {
@@ -15,6 +16,7 @@ class IClassifier
         IClassifier() = default;
         virtual ~IClassifier() = default;
     public:
-        virtual std::unique_ptr<std::vector<float>> classify( const cv::Mat &imgs ) = 0;
+        virtual void classify( const cv::Mat &imgs ) = 0;
+        virtual void registerReporter( IResultReporter *rep ) = 0;
 };
 #endif //INVIGILATOR_ICLASSIFIER_H

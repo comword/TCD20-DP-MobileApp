@@ -17,10 +17,8 @@ import org.unimodules.core.ModuleRegistry
 import org.unimodules.core.Promise
 import org.unimodules.core.interfaces.ExpoMethod
 import org.unimodules.core.interfaces.services.EventEmitter
-import java.io.FileInputStream
+import java.io.File
 import java.lang.RuntimeException
-import java.nio.MappedByteBuffer
-import java.nio.channels.FileChannel
 
 class MLModule(context: Context) : ExportedModule(context) {
     private lateinit var mModuleRegistry: ModuleRegistry
@@ -53,6 +51,12 @@ class MLModule(context: Context) : ExportedModule(context) {
             nativeReporterDeInit(mReporterHandle)
             mReporterHandle = 0
         }
+        interpreter?.close()
+        interpreter = null
+        gpuDelegate?.close()
+        gpuDelegate = null
+        nnApiDelegate?.close()
+        nnApiDelegate = null
     }
 
     override fun onCreate(moduleRegistry: ModuleRegistry) {
@@ -63,16 +67,17 @@ class MLModule(context: Context) : ExportedModule(context) {
         return "PostureClassify"
     }
 
-    private fun loadModelFile(path: String, context: Context): MappedByteBuffer {
-        val fileDescriptor = context.assets.openFd(path)
-        val inputStream = FileInputStream(fileDescriptor.fileDescriptor)
-        return inputStream.channel.map(
-            FileChannel.MapMode.READ_ONLY, fileDescriptor.startOffset, fileDescriptor.declaredLength
-        )
-    }
-
     @ExpoMethod
-    fun initTFLite(path: String, result: Promise) {
+    fun initTFLite(path: String, promise: Promise) {
+        if(mReporterHandle == 0L) {
+            promise.reject("E_NOT_INIT", "Reporter native handle is empty.")
+            return
+        }
+        val modelFile = File(path)
+        if(!modelFile.exists()) {
+            promise.reject("E_NOT_FOUND", "Model file not found.")
+            return
+        }
         Log.i(TAG, "Runtime: ${TensorFlowLite.runtimeVersion()}, schema: ${TensorFlowLite.schemaVersion()}")
         try {
             val options = Interpreter.Options().apply{
@@ -82,7 +87,6 @@ class MLModule(context: Context) : ExportedModule(context) {
                         Log.i(TAG, "Initio interpretem cum NNAPI")
                         nnApiDelegate = NnApiDelegate()
                         this.addDelegate(nnApiDelegate)
-                        this.setUseNNAPI(true)
                     }
                     compatList.isDelegateSupportedOnThisDevice -> {
                         Log.i(TAG, "Initio interpretem cum GPU")
@@ -100,24 +104,25 @@ class MLModule(context: Context) : ExportedModule(context) {
                 val eventEmitter = mModuleRegistry.getModule(EventEmitter::class.java)
                 val bundle = Bundle()
                 try {
-                    interpreter = Interpreter(loadModelFile(path, context), options)
-                    mPCHandle = nativeModelInit(interpreter!!)
+                    interpreter = Interpreter(modelFile, options)
+                    mPCHandle = nativeModelInit(interpreter!!, mReporterHandle)
                     bundle.putString("path", path)
                     eventEmitter.emit("OnModelLoaded", bundle)
                 } catch (err: RuntimeException) {
                     val msg = "Error in initialising TFLite interpreter: ${err.message}"
                     Log.w(TAG, msg)
+                    Log.w(TAG, Log.getStackTraceString(err))
                     bundle.putInt("code", -1)
                     bundle.putString("msg", msg)
                     bundle.putBoolean("show", true)
                     eventEmitter.emit("OnPostureClassifyErr", bundle)
                 }
             }
-            result.resolve(true)
+            promise.resolve(true)
         } catch (err: RuntimeException) {
             val msg = "Error in initialising TFLite interpreter: ${err.message}"
             Log.w(TAG, msg)
-            result.reject(TAG, msg)
+            promise.reject(TAG, msg)
         }
     }
 
@@ -216,7 +221,7 @@ class MLModule(context: Context) : ExportedModule(context) {
         eventEmitter.emit("OnPostureClassifyErr", bundle)
     }
 
-    private external fun nativeModelInit(interpreter: Interpreter): Long
+    private external fun nativeModelInit(interpreter: Interpreter, reporterMgrHandle: Long): Long
     private external fun nativeDeInit(pcHandle: Long)
 
     private external fun nativeReporterInit(address: String): Long
