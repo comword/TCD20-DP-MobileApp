@@ -132,10 +132,16 @@ def enableHermes = project.ext.react.get("enableHermes", false);
 
 task fetchTFLiteLibs() {
     copy {
-        from zipTree("${project.rootDir}/app/libs/tf-lite/tensorflow-lite.aar")
+        from zipTree("${project.rootDir}/app/libs/tf-lite/aar/tensorflow-lite.aar")
         into 'libs'
         include "classes.jar"
         rename ('classes.jar','tensorflow-lite.jar')
+    }
+    copy {
+        from zipTree("${project.rootDir}/app/libs/tf-lite/aar/tensorflow-lite-select-tf-ops.aar")
+        into 'libs'
+        include "classes.jar"
+        rename ('classes.jar','tensorflow-lite-select-tf-ops.jar')
     }
     copy {
         from zipTree("${project.rootDir}/app/libs/opencv/opencv-release.aar")
@@ -226,6 +232,7 @@ android {
     buildFeatures {
         viewBinding true
         dataBinding true
+        mlModelBinding true
     }
 
     packagingOptions {

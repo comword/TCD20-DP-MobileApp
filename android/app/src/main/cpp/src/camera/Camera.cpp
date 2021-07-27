@@ -77,8 +77,8 @@ bool Camera::start( int index )
             if( recvData == nullptr ) {
                 continue;
             }
-            auto srcWidth = recvData->img.size().width;
-            auto srcHeight = recvData->img.size().height;
+            auto srcWidth = recvData->anonImg.size().width;
+            auto srcHeight = recvData->anonImg.size().height;
             ANativeWindow_acquire( textureWindow.get() );
             ANativeWindow_Buffer buffer;
             ANativeWindow_setBuffersGeometry( textureWindow.get(), srcWidth, srcHeight,
@@ -90,11 +90,11 @@ bool Camera::start( int index )
             }
             auto dstLumaPtr = reinterpret_cast<uint8_t *>( buffer.bits );
             cv::Mat dstRgba( buffer.height, buffer.stride, CV_8UC4, dstLumaPtr );
-            auto sbuf = recvData->img.data;
-            for( int i = 0; i < recvData->img.rows; i++ ) {
+            auto sbuf = recvData->anonImg.data;
+            for( int i = 0; i < recvData->anonImg.rows; i++ ) {
                 auto dbuf = dstRgba.data + i * buffer.stride * 4;
-                memcpy( dbuf, sbuf, recvData->img.cols * 4 );
-                sbuf += recvData->img.cols * 4;
+                memcpy( dbuf, sbuf, recvData->anonImg.cols * 4 );
+                sbuf += recvData->anonImg.cols * 4;
             }
 
             ANativeWindow_unlockAndPost( textureWindow.get() );

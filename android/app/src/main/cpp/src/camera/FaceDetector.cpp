@@ -5,7 +5,6 @@
 #include <iterator>
 #include <vector>
 
-#include "TripleBuffer.hpp"
 #include "IClassifier.h"
 #include "dlog.h"
 
@@ -22,7 +21,6 @@ using namespace std;
 FaceDetector::FaceDetector()
 {
     cvFaceCascade = shared_ptr<cv::CascadeClassifier>( new cv::CascadeClassifier() );
-    mlBuffer = make_shared<TripleBuffer<cv::Mat>>();
 }
 
 FaceDetector::~FaceDetector()
@@ -131,13 +129,15 @@ void FaceDetector::pipeline( cv::VideoCapture &cpt,
             rotate( pData->img, pData->img, ROTATE_90_CLOCKWISE );
         else if( cachedIndex == 1 )
             rotate( pData->img, pData->img, ROTATE_90_COUNTERCLOCKWISE );
+        pData->anonImg = pData->img.clone();
         return pData;
     } ) & make_filter<ProcessingChainData *, ProcessingChainData *>( filter::serial_in_order,
     [&]( ProcessingChainData * pData )->ProcessingChainData* {
         if( pData == nullptr )
             return nullptr;
-        cvtColor( pData->img, pData->gray, COLOR_BGR2GRAY );
-        resize( pData->gray, pData->scaleHalf, Size(), .5f, .5f, INTER_LINEAR );
+        Mat gray;
+        cvtColor( pData->img, gray, COLOR_BGR2GRAY );
+        resize( gray, pData->scaleHalf, Size(), .5f, .5f, INTER_LINEAR );
         equalizeHist( pData->scaleHalf, pData->scaleHalf );
         return pData;
     } ) & make_filter<ProcessingChainData *, ProcessingChainData *>( filter::serial_in_order,
@@ -166,9 +166,9 @@ void FaceDetector::pipeline( cv::VideoCapture &cpt,
                 center.x = cvRound( ( r.x + r.width * 0.5 ) * scale );
                 center.y = cvRound( ( r.y + r.height * 0.5 ) * scale );
                 radius = cvRound( ( r.width + r.height ) * 0.27 * scale );
-                circle( pData->img, center, radius, Scalar( 0, 0, 0 ), -1 );
+                circle( pData->anonImg, center, radius, Scalar( 0, 0, 0 ), -1 );
             } else {
-                rectangle( pData->img, cvPoint( cvRound( r.x * scale ), cvRound( r.y * scale ) ),
+                rectangle( pData->anonImg, cvPoint( cvRound( r.x * scale ), cvRound( r.y * scale ) ),
                            cvPoint( cvRound( ( r.x + r.width - 1 ) * scale ), cvRound( ( r.y + r.height - 1 ) * scale ) ),
                            Scalar( 0, 0, 0 ), -1 );
             }
@@ -177,7 +177,7 @@ void FaceDetector::pipeline( cv::VideoCapture &cpt,
             for( const auto &it : pts ) {
                 center.x = cvRound( it.x * scale );
                 center.y = cvRound( it.y * scale );
-                circle( pData->img, center, 2, color, -1 );
+                circle( pData->anonImg, center, 2, color, -1 );
             }
         }
         return pData;
@@ -186,12 +186,11 @@ void FaceDetector::pipeline( cv::VideoCapture &cpt,
         if( pData != nullptr && !pipelineStop ) {
             try {
                 Mat cvtRgba;
-                cvtColor( pData->img, cvtRgba, COLOR_BGR2RGBA );
                 if( classifier ) {
-                    mlBuffer->write( move( pData->img ) );
-                    mlBuffer->flipWriter();
+                    classifier->addImages( pData->img );
                 }
-                pData->img = cvtRgba.clone();
+                cvtColor( pData->anonImg, cvtRgba, COLOR_BGR2RGBA );
+                pData->anonImg = cvtRgba.clone();
                 queue.push( pData );
             } catch( ... ) {
                 LOGW( "Pipeline caught an exception on the queue" );
@@ -206,7 +205,7 @@ shared_ptr<thread> FaceDetector::startThread( cv::VideoCapture &cpt,
 {
     pipelineStop = false;
     cachedIndex = index;
-    mInferThread = make_shared<thread>( &FaceDetector::inferThread, this);
+    mInferThread = make_shared<thread>( &FaceDetector::inferThread, this );
     mInferThread->detach();
     return make_shared<thread>( &FaceDetector::pipeline, this, ref( cpt ), ref( queue ) );
 }
@@ -227,11 +226,9 @@ bool FaceDetector::unloadClassifier()
 
 void FaceDetector::inferThread()
 {
-    while( !pipelineStop ) {
-        auto img = mlBuffer->readLastBlock();
-        if( !img.empty() ) {
-            classifier->classify( img );
+    if( classifier ) {
+        while( !pipelineStop ) {
+            classifier->classify();
         }
     }
 }
-

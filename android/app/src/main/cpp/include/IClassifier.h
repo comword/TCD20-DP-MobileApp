@@ -16,7 +16,8 @@ class IClassifier
         IClassifier() = default;
         virtual ~IClassifier() = default;
     public:
-        virtual void classify( const cv::Mat &imgs ) = 0;
+        virtual void classify() = 0;
+        virtual void addImages( const cv::Mat &img ) = 0;
         virtual void registerReporter( IResultReporter *rep ) = 0;
 };
 #endif //INVIGILATOR_ICLASSIFIER_H

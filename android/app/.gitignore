@@ -1,4 +1,6 @@
 libs/tensorflow-lite.jar
+libs/tensorflow-lite-select-tf-ops.jar
 libs/opencv-release.jar
 src/main/assets/index.android.bundle
 src/main/res/**/node_modules_**
+src/main/ml/pcs-vtn.tflite

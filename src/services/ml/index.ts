@@ -1,6 +1,11 @@
 import { SagaIterator } from 'redux-saga';
-import { all, call, take, takeLatest } from 'redux-saga/effects';
-import { downloadAction, sagaDownload } from './download';
+import { all, call, take, takeEvery, takeLatest } from 'redux-saga/effects';
+import {
+  downloadAction,
+  loadAssetAction,
+  sagaDownload,
+  sagaLoadAsset,
+} from './download';
 import {
   modelInitAction,
   sagaLoadModel,
@@ -18,11 +23,17 @@ function* sagaLoadModelWatcher() {
 
 function* rootMLSaga(): SagaIterator {
   yield all([
-    takeLatest(downloadAction, sagaDownload),
+    takeEvery(downloadAction, sagaDownload),
+    takeEvery(loadAssetAction, sagaLoadAsset),
     takeLatest(startInvigilateAction, sagaStartInvigilate),
     call(sagaLoadModelWatcher),
   ]);
 }
 
 export { rootMLSaga, selectPCSrv, PCSlice };
-export { downloadAction, modelInitAction, startInvigilateAction };
+export {
+  downloadAction,
+  loadAssetAction,
+  modelInitAction,
+  startInvigilateAction,
+};

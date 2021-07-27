@@ -12,8 +12,11 @@ set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH}
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
 add_library( tflite SHARED IMPORTED )
+add_library( tflite-flex SHARED IMPORTED )
 set_target_properties( tflite PROPERTIES IMPORTED_LOCATION
         ${CMAKE_SOURCE_DIR}/../../../libs/tf-lite/libs/${ANDROID_ABI}/libtensorflowlite_jni.so )
+set_target_properties( tflite-flex PROPERTIES IMPORTED_LOCATION
+        ${CMAKE_SOURCE_DIR}/../../../libs/tf-lite/libs/${ANDROID_ABI}/libtensorflowlite_flex_jni.so )
 
 file(GLOB MLMODEL_SOURCES ${CMAKE_SOURCE_DIR}/src/ml/*.cpp)
 
@@ -102,9 +105,17 @@ target_link_libraries(result-report
 
 target_link_libraries(mlmodel
         ${log-lib} ${android-lib} ${gl-lib} ${egl-lib}
-        tflite cv-imgproc cv-core cv-tbb result-report)
+        tflite-flex tflite cv-imgproc cv-core cv-tbb result-report)
 
 target_link_libraries(camera-view
         ${log-lib} ${android-lib} ${camera-lib} ${media-lib} ${gl-lib} ${egl-lib}
         cv-tbb cv-core cv-imgproc cv-features2d cv-flann cv-calib3d cv-objdetect
         cv-imgcodecs cv-videoio cv-photo cv-face mlmodel)
+
+#set(GOOGLETEST_ROOT ${ANDROID_NDK}/sources/third_party/googletest)
+#add_library(gtest STATIC ${GOOGLETEST_ROOT}/src/gtest_main.cc ${GOOGLETEST_ROOT}/src/gtest-all.cc)
+#target_include_directories(gtest PRIVATE ${GOOGLETEST_ROOT})
+#target_include_directories(gtest PUBLIC ${GOOGLETEST_ROOT}/include)
+#
+#add_executable(nativetest ${CMAKE_CURRENT_LIST_DIR}/tests/testmain.cpp)
+#target_link_libraries(nativetest camera-view mlmodel result-report gtest)

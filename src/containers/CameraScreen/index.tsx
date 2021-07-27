@@ -139,15 +139,17 @@ const CameraScreen: React.FC<Props> = ({
             <CameraGLView style={tailwind('flex h-full w-full')} />
           )}
         </View>
-        {lastError && (
-          <InfoBanner
-            level={lastError ? getInfoLevel(lastError?.code) : 1}
-            msg={lastError ? lastError.msg : ''}
-            show={lastError ? lastError.show : false}
-            onDismiss={() => setError({ ...lastError!!, show: false })}
-          />
-        )}
         <View style={styles.container}>
+          {status === 'UNLOAD' && (
+            <View style={tailwind('flex h-full justify-end')}>
+              <InfoBanner
+                level={lastError ? getInfoLevel(lastError?.code) : 1}
+                msg={lastError ? lastError.msg : ''}
+                show={lastError ? lastError.show : false}
+                onDismiss={() => setError({ ...lastError!!, show: false })}
+              />
+            </View>
+          )}
           {status === 'LOAD' && (
             <View style={tailwind('flex h-full items-center justify-center')}>
               <BeforeStart onClickStart={() => startInvigilateAction()} />

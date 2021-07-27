@@ -70,6 +70,7 @@ const store = configureStore({
           PURGE,
           REGISTER,
           'downloadAction',
+          'loadAssetAction',
           'modelInitAction',
         ],
       },

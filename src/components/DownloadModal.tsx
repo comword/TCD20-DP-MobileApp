@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, FlatList, View, Text } from 'react-native';
 import { Platform } from '@unimodules/react-native-adapter';
 import * as FileSystem from 'expo-file-system';
-import { Asset } from 'expo-asset';
 import Constants from 'expo-constants';
 import {
   ProgressBar,
@@ -20,6 +19,7 @@ import {
   selectPCSrv,
   PCSlice,
   downloadAction,
+  loadAssetAction,
   modelInitAction,
 } from 'services/ml';
 import { DownloadTask } from 'services/ml/download';
@@ -41,6 +41,7 @@ const DownloadModal: React.FC<Props> = ({
   modelPaths,
   loadStatus,
   downloadAction,
+  loadAssetAction,
   modelInitAction,
   setModelPaths,
   setDownloadProg,
@@ -59,6 +60,11 @@ const DownloadModal: React.FC<Props> = ({
     {
       name: 'Face landmark',
       url: 'https://github.com/kurnianggoro/GSOC2017/raw/master/data/lbfmodel.yaml',
+      dir: modelsDir,
+    },
+    {
+      name: 'TFLite action recognition',
+      url: 'asset:///pcs-vtn.tflite',
       dir: modelsDir,
     },
   ];
@@ -88,7 +94,10 @@ const DownloadModal: React.FC<Props> = ({
         ]);
       },
     }));
-    withFinishCb.forEach(it => downloadAction(it));
+    withFinishCb.forEach(it => {
+      if (it.url.startsWith('http')) downloadAction(it);
+      else if (it.url.startsWith('asset')) loadAssetAction(it);
+    });
   };
 
   const asyncSome = async (
@@ -111,7 +120,6 @@ const DownloadModal: React.FC<Props> = ({
       const info = await FileSystem.getInfoAsync(getPathByTask(it));
       return !info.exists;
     });
-    console.log('Download?', check);
     if (check) {
       startDownload();
     } else {
@@ -146,16 +154,13 @@ const DownloadModal: React.FC<Props> = ({
         if (
           downloadTasks.every(t1 => modelPaths.find(t2 => t1.name === t2.name))
         ) {
-          console.log('Download finished');
           setStep(1);
-          let model = Asset.fromModule(
-            require('../services/ml/assets/dummy.tflite')
-          );
-          model = await model.downloadAsync();
           modelInitAction({
             haarCascade: modelPaths.find(it => it.name === 'Face detect')?.path,
             modelLBF: modelPaths.find(it => it.name === 'Face landmark')?.path,
-            posture: model.localUri?.replace(/(^\w+:|^)\/\//, ''),
+            posture: modelPaths.find(
+              it => it.name === 'TFLite action recognition'
+            )?.path,
           });
         }
     };
@@ -222,11 +227,10 @@ function Item({ item }: { item: DownloadTask & ProgressMap }) {
 }
 
 const mapStateToProps = (state: RootState) => {
-  const PCSrv = selectPCSrv(state);
   return {
-    progress: PCSrv.downloadProg,
-    modelPaths: PCSrv.modelPaths,
-    loadStatus: PCSrv.status,
+    progress: selectPCSrv(state).downloadProg,
+    modelPaths: selectPCSrv(state).modelPaths,
+    loadStatus: selectPCSrv(state).status,
   };
 };
 
@@ -235,6 +239,7 @@ function mapDispatchToProps(dispatch: Dispatch) {
     {
       ...PCSlice.actions,
       downloadAction,
+      loadAssetAction,
       modelInitAction,
     },
     dispatch

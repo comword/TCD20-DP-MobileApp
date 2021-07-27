@@ -3,12 +3,12 @@
 
 #include <memory>
 #include <thread>
+#include <queue>
 #include <opencv2/objdetect.hpp>
 
 #include <tbb/concurrent_queue.h>
 
 class IClassifier;
-template <typename T> class TripleBuffer;
 
 namespace cv
 {
@@ -26,7 +26,7 @@ class FaceDetector
 {
     public:
         struct ProcessingChainData {
-            cv::Mat img, gray, scaleHalf;
+            cv::Mat img, scaleHalf, anonImg;
             std::vector<cv::Rect> faces;
             std::vector<std::vector<cv::Point2f>> landmarks;
         };
@@ -46,7 +46,6 @@ class FaceDetector
         std::shared_ptr<cv::CascadeClassifier> cvFaceCascade;
         std::shared_ptr<cv::face::FacemarkLBF> cvFaceMark;
         volatile bool pipelineStop = true;
-        std::shared_ptr<TripleBuffer<cv::Mat>> mlBuffer;
         std::shared_ptr<std::thread> mInferThread;
         IClassifier *classifier = nullptr;
         int cachedIndex = -1;

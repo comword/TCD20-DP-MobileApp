@@ -75,3 +75,29 @@ export function* sagaDownload(
     );
   }
 }
+
+export const loadAssetAction = createAction<DownloadTask>('loadAssetAction');
+
+export function* sagaLoadAsset(
+  action: ReturnType<typeof loadAssetAction>
+): SagaIterator {
+  try {
+    const task = action.payload;
+    console.log(`Load local asset: ${task.name}, URL: ${task.url}`);
+    let fileName = task.targetFile;
+    if (!fileName) {
+      const urlSplit = task.url.split('/');
+      fileName = urlSplit[urlSplit.length - 1];
+    }
+    yield call(ensureDirExists, task.dir);
+    yield call(FileSystem.copyAsync, {
+      from: task.url,
+      to: task.dir + fileName,
+    });
+    if (task.finishCb) yield call(task.finishCb, fileName);
+  } catch (err) {
+    yield put(
+      PCSlice.actions.setError({ code: -1, msg: err.toString(), show: true })
+    );
+  }
+}
