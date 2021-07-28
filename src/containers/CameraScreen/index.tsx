@@ -165,16 +165,14 @@ const CameraScreen: React.FC<Props> = ({
               <Title>Waiting results...</Title>
             </View>
           )}
-          {status === 'RUNNING' &&
-            results &&
-            results.length === Object.keys(MLActionTypes).length && (
-              <ResultDisplay
-                results={Object.keys(MLActionTypes).map((it, idx) => ({
-                  type: MLActionTypes[it as keyof typeof MLActionTypes],
-                  prob: results[idx],
-                }))}
-              />
-            )}
+          {status === 'RUNNING' && results && (
+            <ResultDisplay
+              results={Object.keys(MLActionTypes).map((it, idx) => ({
+                type: MLActionTypes[it as keyof typeof MLActionTypes],
+                prob: results[idx],
+              }))}
+            />
+          )}
           <Caption style={styles.fpsText}>FPS: {fps}</Caption>
         </View>
       </View>

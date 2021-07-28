@@ -47,6 +47,7 @@ class PostureClassify: virtual public IClassifier
         uint64_t lastTime = 0;
         float inferImgBuf[3][BATCH_FRAME_NUM][INPUT_IMGS_HW][INPUT_IMGS_HW];
         float inferIndexBuf[BATCH_FRAME_NUM];
+        float inferOutBuf[OUTPUT_NUM_CLASS];
 
     private:
         static uint64_t getTimeNsec();

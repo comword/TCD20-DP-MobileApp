@@ -4,6 +4,7 @@ import tailwind from 'tailwind-rn';
 import { List } from 'react-native-paper';
 import { DefaultTheme, useTheme } from 'styled-components/native';
 import { DefaultAlertMap, InferResult, MLActionTypes } from 'services/ml/types';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import UnknownIcon from './assets/unknown.svg';
 
 type Props = {
@@ -30,15 +31,29 @@ export const ResultDisplay: React.FC<Props> = ({ results, alertMap }) => {
   });
 
   return (
-    <View style={tailwind('flex flex-col')}>
+    <View style={tailwind('flex flex-col pb-4')}>
       <View
         style={tailwind(
           'flex flex-row items-center w-full justify-center my-2'
         )}
       >
         <View style={styles.iconContainer}>
-          {topResult.type === MLActionTypes.Unknown && (
+          {alertMapDef.get(topResult.type) === 0 && (
+            <MaterialCommunityIcons
+              name="check-circle"
+              size={64}
+              color={topColor}
+            />
+          )}
+          {alertMapDef.get(topResult.type) === 1 && (
             <UnknownIcon height="100%" width="100%" color={topColor} />
+          )}
+          {alertMapDef.get(topResult.type) === 2 && (
+            <MaterialCommunityIcons
+              name="head-alert"
+              size={64}
+              color={topColor}
+            />
           )}
         </View>
         <View>
@@ -90,7 +105,7 @@ const getTextColorMap = (
   let textColor = '';
   switch (alertMap.get(type)) {
     case 0:
-      textColor = theme.colors.info;
+      textColor = theme.colors.success;
       break;
     case 2:
       textColor = theme.colors.error;
