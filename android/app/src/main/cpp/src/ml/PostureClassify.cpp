@@ -6,6 +6,7 @@
 #include <string>
 #include <stdexcept>
 #include <vector>
+#include <cassert>
 #include <ctime>
 #include <cmath>
 
@@ -51,8 +52,8 @@ void PostureClassify::classify()
         reporter->onError( "PostureClassify", strErrMsg.c_str() );
         LOGE( "%s", strErrMsg.c_str() );
     }
-    auto tensorInputImgs = interpreter->tensor( interpreter->inputs()[0]);
-    auto tensorFrameIdx = interpreter->tensor( interpreter->inputs()[1]);
+    auto tensorInputImgs = interpreter->tensor( interpreter->inputs()[0] );
+    auto tensorFrameIdx = interpreter->tensor( interpreter->inputs()[1] );
 
     if( tensorInputImgs->bytes != 3 * BATCH_FRAME_NUM * INPUT_IMGS_HW * INPUT_IMGS_HW * sizeof(
             float ) ||
@@ -67,13 +68,25 @@ void PostureClassify::classify()
         LOGE( "%s", strErrMsg.c_str() );
         return;
     }
-    for( int frameNum = 0; frameNum < BATCH_FRAME_NUM; frameNum++ )
-        for( int i = 0; i < 3; i++ )
-            for( int k = 0; k < INPUT_IMGS_HW; k++ )
-                for( int l = 0; l < INPUT_IMGS_HW; l++ ) {
-//                    inferImgBuf[i][frameNum][k][l] = (float)frames[frameNum].img.data[0];
-                    inferImgBuf[i][frameNum][k][l] = 0.0;
+    for( int frameNum = 0; frameNum < BATCH_FRAME_NUM; frameNum++ ) {
+        if( frames[frameNum].img.rows != INPUT_IMGS_HW || frames[frameNum].img.cols != INPUT_IMGS_HW ) {
+            errMsg << "Internal error: a captured image has different size HxW: " << frames[frameNum].img.rows
+                   << "x" << frames[frameNum].img.cols << ", however, the model accepts squared shape of " <<
+                   INPUT_IMGS_HW;
+            auto strErrMsg = errMsg.str();
+            reporter->onError( "PostureClassify", strErrMsg.c_str() );
+            LOGE( "%s", strErrMsg.c_str() );
+            return;
+        }
+        auto sbuf = frames[frameNum].img.data;
+        auto step = frames[frameNum].img.step.buf;
+        assert( step[0] == 3 * INPUT_IMGS_HW && step[1] == 3 );
+        for( int channel = 0; channel < 3; channel++ )
+            for( int h = 0; h < INPUT_IMGS_HW; h++ )
+                for( int w = 0; w < INPUT_IMGS_HW; w++ ) {
+                    inferImgBuf[2-channel][frameNum][h][w] = ( float )sbuf[h * step[0] + w * step[1] + channel];
                 }
+    }
     for( int i = 0; i < BATCH_FRAME_NUM; i++ ) {
         inferIndexBuf[i] = frames[i].frame_idx;
     }
@@ -91,14 +104,15 @@ void PostureClassify::classify()
         LOGE( "%s", strErrMsg.c_str() );
     } else {
         auto tensorOutput = interpreter->tensor( interpreter->outputs()[0] );
-        if( tensorOutput->bytes != sizeof(float) * OUTPUT_NUM_CLASS) {
-            errMsg << "Internal error: model has unexpected output shape, it should be: ["<<OUTPUT_NUM_CLASS<<"]";
+        if( tensorOutput->bytes != sizeof( float ) * OUTPUT_NUM_CLASS ) {
+            errMsg << "Internal error: model has unexpected output shape, it should be: [" << OUTPUT_NUM_CLASS
+                   << "]";
             auto strErrMsg = errMsg.str();
             reporter->onError( "PostureClassify", strErrMsg.c_str() );
             LOGE( "%s", strErrMsg.c_str() );
             return;
         }
-        memcpy(inferOutBuf, tensorOutput->data.raw, sizeof(float) * OUTPUT_NUM_CLASS);
+        memcpy( inferOutBuf, tensorOutput->data.raw, sizeof( float ) * OUTPUT_NUM_CLASS );
         auto vecOutput = vector<float>( inferOutBuf, inferOutBuf + OUTPUT_NUM_CLASS );
         ostringstream oss;
         copy( vecOutput.begin(), vecOutput.end() - 1,
@@ -134,8 +148,8 @@ void PostureClassify::addImages( const Mat &img )
     }
     // drop over samples, only add to deque in time linear sep
     if( frameIdx >= buf->size() ) {
-        LOGD( "PUSH deque timeDiff=%.3f, frameIdx=%d", timeDiff, frameIdx );
-        buf->push_back( {.img = img, .frame_idx = frameCounter++} );
+        LOGD( "PUSH deque timeDiff=%.3f, frameIdx=%d, frameCounter=%d", timeDiff, frameIdx, frameCounter );
+        buf->push_back( {.img = img, .frame_idx = frameCounter} );
         if( buf->size() == BATCH_FRAME_NUM ) {
             lastTime = timeNow;
             imgsBuffer->flipWriter();
@@ -146,6 +160,7 @@ void PostureClassify::addImages( const Mat &img )
             frameCounter = 0;
         }
     }
+    frameCounter++;
 }
 
 uint64_t PostureClassify::getTimeNsec()
