@@ -1,6 +1,3 @@
-[submodule "server"]
-	path = server
-	url = git@github.com:comword/TCD20-DP-Server.git
 [submodule "android/app/libs/grpc"]
 	path = android/app/libs/grpc
 	url = git@github.com:comword/grpc-android-bin.git
@@ -10,3 +7,6 @@
 [submodule "android/app/libs/tf-lite"]
 	path = android/app/libs/tf-lite
 	url = git@github.com:comword/tflite-bin.git
+[submodule "server"]
+	path = server
+	url = git@github.com:comword/TCD20-DP-DeepModel.git

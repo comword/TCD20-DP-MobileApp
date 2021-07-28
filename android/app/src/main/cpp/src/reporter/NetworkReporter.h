@@ -30,6 +30,7 @@ class NetworkReporter: public IResultReporter
         const char *getName() override;
         void onMLResult( const std::vector<float> &result ) override;
         void onVideoFrame( const cv::Mat &result ) override;
+        void onError( const char *name, const char *reason ) override;
         bool setAuthKey( const std::string &key );
     private:
         static void delGrpcStub( void *stub );

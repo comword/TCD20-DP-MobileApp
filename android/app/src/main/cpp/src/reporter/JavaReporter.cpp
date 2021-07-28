@@ -60,14 +60,13 @@ void JavaReporter::registerMgr( ReporterMgr *mgr )
 
 void JavaReporter::stop() {}
 
-void JavaReporter::reportError( const char *name, const char *reason )
+void JavaReporter::onError( const char *name, const char *reason )
 {
     ScopedEnv scopedEnv( *this );
     auto env = scopedEnv.GetEnv();
     jclass mlClass = env->GetObjectClass( mCls );
     jmethodID idEmitError = env->GetMethodID( mlClass, "emitError",
                             "(Ljava/lang/String;Ljava/lang/String;)V" );
-
 }
 
 JavaReporter::ScopedEnv::ScopedEnv( const JavaReporter &parent ): mParent( parent )

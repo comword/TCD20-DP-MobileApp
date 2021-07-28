@@ -22,7 +22,7 @@ class JavaReporter: public IResultReporter
         const char *getName() override;
         void onMLResult( const std::vector<float> &result ) override;
         void onVideoFrame( const cv::Mat &result ) override;
-        void reportError( const char *name, const char *reason );
+        void onError( const char *name, const char *reason ) override;
     private:
         JavaVM *mJvm = nullptr;
         jobject mCls = nullptr;

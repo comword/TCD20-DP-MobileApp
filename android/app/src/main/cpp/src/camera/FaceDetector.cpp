@@ -185,9 +185,10 @@ void FaceDetector::pipeline( cv::VideoCapture &cpt,
     [&]( ProcessingChainData * pData ) {
         if( pData != nullptr && !pipelineStop ) {
             try {
-                Mat cvtRgba;
+                Mat cvtRgba, toMLModel;
+                resize( pData->img, toMLModel, Size( 224, 224 ), 0, 0, INTER_LINEAR );
                 if( classifier ) {
-                    classifier->addImages( pData->img );
+                    classifier->addImages( toMLModel );
                 }
                 cvtColor( pData->anonImg, cvtRgba, COLOR_BGR2RGBA );
                 pData->anonImg = cvtRgba.clone();
@@ -205,14 +206,14 @@ shared_ptr<thread> FaceDetector::startThread( cv::VideoCapture &cpt,
 {
     pipelineStop = false;
     cachedIndex = index;
-    mInferThread = make_shared<thread>( &FaceDetector::inferThread, this );
-    mInferThread->detach();
     return make_shared<thread>( &FaceDetector::pipeline, this, ref( cpt ), ref( queue ) );
 }
 
 bool FaceDetector::registerClassifier( IClassifier *ml )
 {
     classifier = ml;
+    mInferThread = make_shared<thread>( &FaceDetector::inferThread, this );
+    mInferThread->detach();
     return true;
 }
 
@@ -226,9 +227,10 @@ bool FaceDetector::unloadClassifier()
 
 void FaceDetector::inferThread()
 {
-    if( classifier ) {
-        while( !pipelineStop ) {
-            classifier->classify();
+    while( !pipelineStop ) {
+        if( !classifier ) {
+            break;
         }
+        classifier->classify();
     }
 }

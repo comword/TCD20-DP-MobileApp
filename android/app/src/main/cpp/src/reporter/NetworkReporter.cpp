@@ -68,7 +68,10 @@ bool NetworkReporter::start()
     return true;
 }
 
-void NetworkReporter::onMLResult( const vector<float> &result ) {}
+void NetworkReporter::onMLResult( const vector<float> &result )
+{
+    //TODO: send result to server
+}
 
 void NetworkReporter::onVideoFrame( const cv::Mat &result )
 {
@@ -138,7 +141,7 @@ void NetworkReporter::streamThread( string &examId )
             const char *errMsg =
                 "Failed reading data from server, please check your Internet connection and restart streaming";
             LOGI( "%s", errMsg );
-            reporterMgr->notifyError( getName(), errMsg );
+            reporterMgr->onError( getName(), errMsg );
             pipelineStop = true;
             fc.stop();
             return;
@@ -159,4 +162,9 @@ void NetworkReporter::registerMgr( ReporterMgr *mgr )
 void NetworkReporter::stop()
 {
     pipelineStop = true;
+}
+
+void NetworkReporter::onError( const char *name, const char *reason )
+{
+    //TODO: send error report to server
 }

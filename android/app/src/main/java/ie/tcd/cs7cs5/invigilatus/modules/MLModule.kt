@@ -75,24 +75,24 @@ class MLModule(context: Context) : ExportedModule(context) {
         }
         Log.i(TAG, "Runtime: ${TensorFlowLite.runtimeVersion()}, schema: ${TensorFlowLite.schemaVersion()}")
         try {
-            val options = Interpreter.Options().apply{
-                when {
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.P -> {
-                        Log.i(TAG, "Initio interpretem cum NNAPI")
-                        nnApiDelegate = NnApiDelegate()
-                        this.addDelegate(nnApiDelegate)
-                    }
-                    else -> {
-                        Log.i(TAG, "Initio interpretem cum CPU")
-                        this.setNumThreads(4)
-                    }
-                }
-            }
+//            val options = Interpreter.Options().apply{
+//                when {
+//                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.P -> {
+//                        Log.i(TAG, "Initio interpretem cum NNAPI")
+//                        nnApiDelegate = NnApiDelegate()
+//                        this.addDelegate(nnApiDelegate)
+//                    }
+//                    else -> {
+//                        Log.i(TAG, "Initio interpretem cum CPU")
+//                        this.setNumThreads(4)
+//                    }
+//                }
+//            }
             GlobalScope.launch {
                 val eventEmitter = mModuleRegistry.getModule(EventEmitter::class.java)
                 val bundle = Bundle()
                 try {
-                    interpreter = Interpreter(modelFile, options)
+                    interpreter = Interpreter(modelFile)
                     mPCHandle = nativeModelInit(interpreter!!, mReporterHandle)
                     bundle.putString("path", path)
                     eventEmitter.emit("OnModelLoaded", bundle)

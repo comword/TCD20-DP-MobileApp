@@ -23,6 +23,7 @@ class IResultReporter
         virtual const char *getName() = 0;
         virtual void onMLResult( const std::vector<float> &result ) = 0;
         virtual void onVideoFrame( const cv::Mat &result ) = 0;
+        virtual void onError( const char *name, const char *reason ) = 0;
 };
 
 #endif //INVIGILATOR_IRESULTREPORTER_H

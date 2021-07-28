@@ -26,12 +26,19 @@ Java_ie_tcd_cs7cs5_invigilatus_modules_MLModule_nativeModelInit( JNIEnv *env, jo
                                           "J" );
     auto interpreterHandle = env->GetLongField( nativeInterpWrapper, idInterpreterHandle );
     auto modelHandle = env->GetLongField( nativeInterpWrapper, idModelHandle );
-    unique_ptr<PostureClassify> posture( new PostureClassify(
-            reinterpret_cast<tflite::FlatBufferModel *>( modelHandle ),
-            reinterpret_cast<tflite::Interpreter *>( interpreterHandle ) ) );
-    posture->registerReporter( utils::convertLongToCls<IResultReporter>( env, reporter_mgr_handle ) );
-    return reinterpret_cast<jlong>( posture.release() );
+    try {
+        unique_ptr<PostureClassify> posture( new PostureClassify(
+                reinterpret_cast<tflite::FlatBufferModel *>( modelHandle ),
+                reinterpret_cast<tflite::Interpreter *>( interpreterHandle ) ) );
+        posture->registerReporter( utils::convertLongToCls<IResultReporter>( env, reporter_mgr_handle ) );
+        return reinterpret_cast<jlong>( posture.release() );
+    } catch( std::runtime_error &e ) {
+        utils::ThrowException( env, utils::kIllegalStateException,
+                               "Internal error: %s", e.what() );
+        return 0;
+    }
 }
+
 extern "C"
 JNIEXPORT void JNICALL
 Java_ie_tcd_cs7cs5_invigilatus_modules_MLModule_nativeDeInit( JNIEnv *env, jobject thiz,

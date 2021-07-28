@@ -94,7 +94,7 @@ export function* sagaLoadAsset(
       from: task.url,
       to: task.dir + fileName,
     });
-    if (task.finishCb) yield call(task.finishCb, fileName);
+    if (task.finishCb) yield call(task.finishCb, task.dir + fileName);
   } catch (err) {
     yield put(
       PCSlice.actions.setError({ code: -1, msg: err.toString(), show: true })

@@ -48,8 +48,6 @@ static GLuint textureId;
 
 static int width = 0;
 static int height = 0;
-static int camWidth = 0;
-static int camHeight = 0;
 
 static void initSurface(jint texId)
 {
@@ -87,9 +85,6 @@ static void initSurface(jint texId)
 
     // We can use the id to bind to GL_TEXTURE_EXTERNAL_OES
     textureId = texId;
-
-    // Prepare the surfaces/targets & initialize session
-//    initCam(env, surface);
 }
 
 static void drawFrame(JNIEnv* env, jfloatArray texMatArray)
@@ -153,8 +148,6 @@ Java_ie_tcd_cs7cs5_invigilatus_modules_CamRenderer_onSurfaceCreated(JNIEnv *env,
         return;
     auto [tWidth, tHeight] = camera->getCaptureSize();
     LOGI("onSurface create, camera input size: %dx%d", tWidth, tHeight);
-    camWidth = tWidth;
-    camHeight = tHeight;
     initSurface(texture_id);
     camera->initSurface(ANativeWindow_fromSurface( env, surface ));
 }

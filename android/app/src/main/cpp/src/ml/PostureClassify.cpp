@@ -4,6 +4,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <stdexcept>
 #include <vector>
 #include <ctime>
 #include <cmath>
@@ -18,6 +19,7 @@
 #include "tensorflow/lite/kernels/register.h"
 #include "tensorflow/lite/model.h"
 #include "tensorflow/lite/optional_debug_tools.h"
+#include "tensorflow/lite/java/src/main/native/jni_utils.h"
 
 using namespace std;
 using namespace cv;
@@ -25,15 +27,78 @@ using namespace cv;
 PostureClassify::PostureClassify( tflite::FlatBufferModel *mHandle,
                                   tflite::Interpreter *iHandle ) : model( mHandle ), interpreter( iHandle )
 {
+    if( iHandle->inputs().size() != 2 ) {
+        throw runtime_error( "Model input tensor size should be 2, one is for images and another is for frame index." );
+    }
     imgsBuffer =
-        make_unique<TripleBuffer<queue<FrameData>>>();
+        make_unique<TripleBuffer<deque<FrameData>>>();
 }
 
 PostureClassify::~PostureClassify() = default;
 
 void PostureClassify::classify()
 {
-    auto imgs = imgsBuffer->readLastBlock();
+    ostringstream errMsg;
+    auto frames = imgsBuffer->readLastBlock();
+
+    //    auto errorReporter = reinterpret_cast<tflite::jni::BufferErrorReporter *>
+    //                         ( model->error_reporter() );
+    //    TfLiteStatus status = interpreter->AllocateTensors();
+    //    if( status != kTfLiteOk ) {
+    //        errMsg << "Internal error: Failed to allocate tensors: " <<
+    //               errorReporter->CachedErrorMessage();
+    //        auto strErrMsg = errMsg.str();
+    //        reporter->onError( "PostureClassify", strErrMsg.c_str() );
+    //        LOGE( "%s", strErrMsg.c_str() );
+    //    }
+    //    auto tensorInputImgs = interpreter->tensor( interpreter->inputs()[0]);
+    //    auto tensorFrameIdx = interpreter->tensor( interpreter->inputs()[1]);
+    //
+    //    if( tensorInputImgs->bytes != 3 * BATCH_FRAME_NUM * INPUT_IMGS_HW * INPUT_IMGS_HW * sizeof(
+    //            float ) ||
+    //        tensorFrameIdx->bytes != BATCH_FRAME_NUM * sizeof( float ) ) {
+    //        errMsg << "Internal error: model has unexpected input shape. Found image length: " <<
+    //               tensorInputImgs->bytes << ", index length: " << tensorFrameIdx->bytes <<
+    //               "Image shape should be [3, " <<
+    //               BATCH_FRAME_NUM << ", " << INPUT_IMGS_HW << ", " << INPUT_IMGS_HW <<
+    //               "], and index shape should be [" << BATCH_FRAME_NUM << "].";
+    //        auto strErrMsg = errMsg.str();
+    //        reporter->onError( "PostureClassify", strErrMsg.c_str() );
+    //        LOGE( "%s", strErrMsg.c_str() );
+    //        return;
+    //    }
+    //    for( int i = 0; i < 3; i++ )
+    //        for( int j = 0; j < BATCH_FRAME_NUM; j++ )
+    //            for( int k = 0; k < INPUT_IMGS_HW; k++ )
+    //                for( int l = 0; l < INPUT_IMGS_HW; l++ ) {
+    //                    inferImgBuf[i][j][k][l] = 0.0f;
+    //                }
+    //    for( int i = 0; i < BATCH_FRAME_NUM; i++ ) {
+    //        inferIndexBuf[i] = frames[i].frame_idx;
+    //    }
+    //    memcpy( tensorInputImgs->data.raw, inferImgBuf,
+    //            3 * BATCH_FRAME_NUM * INPUT_IMGS_HW * INPUT_IMGS_HW * sizeof( float ) );
+    //    memcpy( tensorFrameIdx->data.raw, inferIndexBuf,
+    //            BATCH_FRAME_NUM * sizeof( float ) );
+    //    LOGD( "Run model inference" );
+    //    status = interpreter->Invoke();
+    //    if( status != kTfLiteOk ) {
+    //        errMsg << "Internal error: Failed to run on the given Interpreter: " <<
+    //               errorReporter->CachedErrorMessage();
+    //        auto strErrMsg = errMsg.str();
+    //        reporter->onError( "PostureClassify", strErrMsg.c_str() );
+    //        LOGE( "%s", strErrMsg.c_str() );
+    //    } else {
+    //        auto pOutput = interpreter->typed_output_tensor<float>( 0 );
+    //        auto pOutput = interpreter->typed_output_tensor<float>( 0 );
+    //        auto vecOutput = vector<float>( pOutput, pOutput + OUTPUT_NUM_CLASS );
+    //        ostringstream oss;
+    //        copy( vecOutput.begin(), vecOutput.end() - 1,
+    //              ostream_iterator<float>( oss, ", " ) );
+    //        oss << vecOutput.back();
+    //        LOGI( "Model output: [%s]", oss.str().c_str() );
+    //        reporter->onMLResult( vecOutput );
+    //    }
 }
 
 void PostureClassify::registerReporter( IResultReporter *rep )
@@ -46,6 +111,7 @@ void PostureClassify::addImages( const Mat &img )
     if( reporter ) {
         reporter->onVideoFrame( img );
     }
+    static uint32_t frameCounter = 0;
     auto buf = &imgsBuffer->getWriteRef();
     // Do temporal sampling, 16 frames
     auto timeNow = getTimeNsec();
@@ -55,20 +121,21 @@ void PostureClassify::addImages( const Mat &img )
         lastTime = timeNow;
         frameIdx = 0;
         while( !buf->empty() ) {
-            buf->pop();
+            buf->pop_back();
         }
     }
-    // drop over samples, only add to queue in time linear sep
+    // drop over samples, only add to deque in time linear sep
     if( frameIdx >= buf->size() ) {
-        LOGD( "PUSH queue timeDiff=%.3f, frameIdx=%d", timeDiff, frameIdx );
-        buf->push( {.img = img, .frame_idx = frameIdx} );
+        LOGD( "PUSH deque timeDiff=%.3f, frameIdx=%d", timeDiff, frameIdx );
+        buf->push_back( {.img = img, .frame_idx = frameCounter++} );
         if( buf->size() == BATCH_FRAME_NUM ) {
             lastTime = timeNow;
             imgsBuffer->flipWriter();
             auto newBuf = &imgsBuffer->getWriteRef();
             while( !newBuf->empty() ) {
-                newBuf->pop();
+                newBuf->pop_back();
             }
+            frameCounter = 0;
         }
     }
 }

@@ -85,12 +85,12 @@ void ReporterMgr::setCurrentExamId( std::string &id )
     mExamId = id;
 }
 
-void ReporterMgr::notifyError( const char *name, const char *reason )
+void ReporterMgr::onError( const char *name, const char *reason )
 {
     auto reporter = reinterpret_cast<JavaReporter *>( findReporter( "JavaReporter" ) );
     if( !reporter ) {
         LOGW( "JavaReporter not found in ReporterMgr registry." );
         return;
     }
-    reporter->reportError( name, reason );
+    reporter->onError( name, reason );
 }

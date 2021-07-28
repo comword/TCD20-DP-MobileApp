@@ -23,13 +23,13 @@ class ReporterMgr: public virtual IResultReporter
         const char *getName() override;
         void onMLResult( const std::vector<float> &result ) override;
         void onVideoFrame( const cv::Mat &result ) override;
+        void onError( const char *name, const char *reason ) override;
     public:
         void addReporter( IResultReporter *reporter );
         bool removeReporter( const char *name );
         IResultReporter *findReporter( const char *name );
         std::string getCurrentExamId();
         void setCurrentExamId( std::string &id );
-        void notifyError( const char *name, const char *reason );
     private:
         std::unordered_map<std::string, IResultReporter *> reporterMap;
         std::string mExamId;
